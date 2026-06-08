@@ -1,0 +1,346 @@
+@model RunPlannerViewModel
+
+@{
+    ViewData["Title"] = "Run Planner";
+}
+
+<div class="kicker">
+    Decision Support
+</div>
+
+<h2>
+    Run Planner
+</h2>
+
+<p class="hint">
+    Choose a map, condition, goal, and entry style.
+    Raiders Vault recommends the kit, skill focus,
+    blueprint targets, and objective priorities.
+</p>
+
+<form method="get" class="planner-form">
+    <div>
+        <label>Map</label>
+        <select name="selectedMap"
+                onchange="this.form.submit()">
+            @foreach (var map in Model.Maps)
+            {
+                <option value="@map"
+                        selected="@(map == Model.SelectedMap)">
+                    @map
+                </option>
+            }
+        </select>
+    </div>
+
+    <div>
+        <label>Condition</label>
+        <select name="selectedCondition">
+            @foreach (var condition in Model.Conditions)
+            {
+                <option value="@condition"
+                        selected="@(condition == Model.SelectedCondition)">
+                    @condition
+                </option>
+            }
+        </select>
+    </div>
+
+    <div>
+        <label>Goal</label>
+        <select name="selectedGoal">
+            @foreach (var goal in Model.Goals)
+            {
+                <option value="@goal"
+                        selected="@(goal == Model.SelectedGoal)">
+                    @goal
+                </option>
+            }
+        </select>
+    </div>
+
+    <div>
+        <label>Entry Style</label>
+        <select name="selectedStyle">
+            @foreach (var style in Model.Styles)
+            {
+                <option value="@style"
+                        selected="@(style == Model.SelectedStyle)">
+                    @style
+                </option>
+            }
+        </select>
+    </div>
+
+    <div>
+        <label>Skill Points</label>
+        <input name="totalSkillPoints"
+               type="number"
+               min="0"
+               max="120"
+               value="@Model.TotalSkillPoints" />
+    </div>
+
+    <button type="submit">
+        Update Plan
+    </button>
+</form>
+
+<div class="card">
+    <h3>
+        Next Run Plan
+    </h3>
+
+    <p>
+        @Model.Summary
+    </p>
+
+    <p>
+        <strong>Route Advice:</strong>
+        @Model.RouteAdvice
+    </p>
+
+    <p>
+        <strong>Skill Focus:</strong>
+        @Model.SkillFocus
+    </p>
+
+    <p>
+        <strong>Blueprint Target:</strong>
+        @Model.BlueprintTarget
+    </p>
+
+    <p>
+        <strong>Objective Target:</strong>
+        @Model.ObjectiveTarget
+    </p>
+</div>
+
+@if (Model.Loadout != null)
+{
+    <div class="card">
+        <h3>
+            Recommended Loadout
+        </h3>
+
+        <div class="cards">
+            <div class="card">
+                <div class="kicker">Primary</div>
+                <h4>@Model.Loadout.PrimaryWeapon</h4>
+                <p class="hint">Main weapon recommendation.</p>
+            </div>
+
+            <div class="card">
+                <div class="kicker">Secondary</div>
+                <h4>@Model.Loadout.SecondaryWeapon</h4>
+                <p class="hint">Backup weapon recommendation.</p>
+            </div>
+
+            <div class="card">
+                <div class="kicker">Shield</div>
+                <h4>@Model.Loadout.Shield</h4>
+                <p class="hint">Protection level for this route.</p>
+            </div>
+
+            <div class="card">
+                <div class="kicker">Augment</div>
+                <h4>@Model.Loadout.Augment</h4>
+                <p class="hint">Utility focus for the chosen style.</p>
+            </div>
+        </div>
+
+        <h4>
+            Quick Use Items
+        </h4>
+
+        <div class="badge-row">
+            @foreach (var item in Model.Loadout.QuickUseItems)
+            {
+                <span class="badge">
+                    @item
+                </span>
+            }
+        </div>
+    </div>
+}
+
+<div class="card">
+    <h3>
+        Suggested Skills
+    </h3>
+
+    <p class="hint">
+        These skills match the selected entry style and point total.
+        Use the Skill Planner to apply or adjust the build.
+    </p>
+
+    @if (Model.SuggestedSkills.Any())
+    {
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Branch</th>
+                        <th>Skill</th>
+                        <th>Points</th>
+                        <th>Requires</th>
+                        <th>Reason</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var skill in Model.SuggestedSkills)
+                    {
+                        <tr>
+                            <td>@skill.Branch</td>
+                            <td>@skill.Name</td>
+                            <td>@skill.RecommendedPoints / @skill.MaxPoints</td>
+                            <td>@skill.Requires</td>
+                            <td>@skill.Reason</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <p class="hint">
+            For a complete skill tree breakdown, advanced point allocation,
+            and full progression planning, open the Skill Planner.
+        </p>
+
+        <a class="button"
+           asp-controller="Skills"
+           asp-action="Index"
+           asp-route-entryStyle="@Model.SelectedStyle"
+           asp-route-totalPoints="@Model.TotalSkillPoints">
+
+            Open Skill Planner
+        </a>
+    }
+    else
+    {
+        <p class="hint">
+            Enter a skill point total to generate suggested skills.
+        </p>
+    }
+</div>
+
+<div class="card">
+    <h3>
+        Suggested Blueprints
+    </h3>
+
+    @if (Model.SuggestedBlueprints.Any())
+    {
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Blueprint</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Where to Get</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var blueprint in Model.SuggestedBlueprints)
+                    {
+                        <tr>
+                            <td>@blueprint.Name</td>
+                            <td>@blueprint.Category</td>
+                            <td>@blueprint.CollectionStatus</td>
+                            <td>@blueprint.WhereToGet</td>
+                            <td>
+                                <a asp-controller="Blueprints"
+                                   asp-action="FarmPlan"
+                                   asp-route-id="@blueprint.Id"
+                                   asp-route-playstyle="@Model.SelectedStyle">
+                                    Farm Plan
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <a class="button secondary"
+           asp-controller="Blueprints"
+           asp-action="Index"
+           asp-route-playstyle="@Model.SelectedStyle">
+            Open Blueprints
+        </a>
+    }
+    else
+    {
+        <p class="hint">
+            No specific blueprint match found for this route.
+            Open Blueprints to pick a target.
+        </p>
+
+        <a class="button secondary"
+           asp-controller="Blueprints"
+           asp-action="Index">
+            Open Blueprints
+        </a>
+    }
+</div>
+
+<div class="card">
+    <h3>
+        Suggested Objectives
+    </h3>
+
+    @if (Model.SuggestedQuests.Any())
+    {
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Objective</th>
+                        <th>Status</th>
+                        <th>Priority</th>
+                        <th>Activity</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var quest in Model.SuggestedQuests)
+                    {
+                        <tr>
+                            <td>@quest.Name</td>
+                            <td>@quest.Status</td>
+                            <td>@quest.Priority</td>
+                            <td>@quest.RelatedActivity</td>
+                            <td>
+                                <a asp-controller="Quests"
+                                   asp-action="Edit"
+                                   asp-route-id="@quest.Id">
+                                    Update
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <a class="button secondary"
+           asp-controller="Quests"
+           asp-action="Index">
+            Open Objectives
+        </a>
+    }
+    else
+    {
+        <p class="hint">
+            No objective match found for this map.
+        </p>
+
+        <a class="button secondary"
+           asp-controller="Quests"
+           asp-action="Index">
+            Open Objectives
+        </a>
+    }
+</div>

@@ -1,0 +1,77 @@
+@model Quest
+
+@{
+    ViewData["Title"] = "Edit Quest";
+}
+
+<h2>Edit Quest</h2>
+
+<form method="post">
+    @Html.AntiForgeryToken()
+
+    <div asp-validation-summary="ModelOnly" class="error"></div>
+
+    <input type="hidden"
+           asp-for="Id" />
+
+    <input type="hidden"
+           asp-for="CreatedAt" />
+
+    <label>
+        Name
+    </label>
+
+    <input asp-for="Name" />
+
+    <span asp-validation-for="Name"></span>
+
+    <label>
+        Status
+    </label>
+
+    <select asp-for="Status">
+        <option>Not Started</option>
+        <option>In Progress</option>
+        <option>Complete</option>
+    </select>
+
+    <span asp-validation-for="Status"></span>
+
+    <label>
+        Priority
+    </label>
+
+    <select asp-for="Priority">
+        <option>Low</option>
+        <option>Medium</option>
+        <option>High</option>
+    </select>
+
+    <span asp-validation-for="Priority"></span>
+
+    <label>
+        Related Activity / Map
+    </label>
+
+    <input asp-for="RelatedActivity" />
+
+    <label>
+        Completion Notes
+    </label>
+
+    <textarea asp-for="CompletionNotes"></textarea>
+
+    <label>
+        Quest Details / Notes
+    </label>
+
+    <textarea asp-for="Notes"></textarea>
+
+    <button type="submit">
+        Update
+    </button>
+
+    <a asp-action="Index">
+        Cancel
+    </a>
+</form>

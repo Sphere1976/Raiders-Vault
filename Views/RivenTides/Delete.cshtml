@@ -1,0 +1,31 @@
+@model RaidersVault.Models.RivenTidesRecord
+
+@{
+    ViewData["Title"] = "Delete Riven Tides Entry";
+}
+
+<h2>Delete Riven Tides Entry</h2>
+
+<section class="panel">
+    <p>
+        Are you sure you want to delete
+        <strong>@Model.Name</strong>?
+    </p>
+
+    <p class="hint">
+        @Model.GetSummary()
+    </p>
+</section>
+
+<form method="post">
+    @Html.AntiForgeryToken()
+
+    <button type="submit" class="danger">
+        Delete
+    </button>
+
+    <a class="button secondary"
+       asp-action="Index">
+        Cancel
+    </a>
+</form>

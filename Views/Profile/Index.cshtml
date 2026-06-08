@@ -1,0 +1,81 @@
+@model PlayerProfile
+
+@{
+    ViewData["Title"] = "Settings";
+}
+
+<div class="page-heading">
+    <div>
+        <div class="kicker">
+            Player setup
+        </div>
+
+        <h2>Settings / Profile</h2>
+
+        <p class="hint">
+            Set defaults used by the dashboard,
+            Run Planner, Skill Planner,
+            and map-condition recommendations.
+        </p>
+    </div>
+</div>
+
+<form asp-action="Index"
+      method="post"
+      class="panel">
+
+    @Html.AntiForgeryToken()
+
+    <div asp-validation-summary="ModelOnly" class="error"></div>
+
+    <label>
+        Player Name
+    </label>
+
+    <input asp-for="PlayerName" />
+
+    <span asp-validation-for="PlayerName"></span>
+
+    <label>
+        Preferred Playstyle
+    </label>
+
+    <select asp-for="PreferredPlaystyle">
+        <option>PvE</option>
+        <option>PvP</option>
+        <option>Balanced</option>
+    </select>
+
+    <label>
+        Default Map
+    </label>
+
+    <select asp-for="DefaultMap">
+        <option>Dam Battlegrounds</option>
+        <option>Buried City</option>
+        <option>Riven Tides</option>
+        <option>Spaceport</option>
+        <option>Stella Montis</option>
+        <option>The Blue Gate</option>
+    </select>
+
+    <label>
+        Current Skill Points
+    </label>
+
+    <input asp-for="CurrentSkillPoints"
+           type="number"
+           min="0" />
+
+    <label>
+        Notes
+    </label>
+
+    <textarea asp-for="Notes"
+              placeholder="Optional planning notes">
+    </textarea>
+
+    <button type="submit">
+        Save Settings
+    </button>
+</form>

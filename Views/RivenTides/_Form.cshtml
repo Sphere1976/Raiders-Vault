@@ -1,0 +1,84 @@
+@model RaidersVault.Models.RivenTidesRecord
+
+<form method="post">
+    @Html.AntiForgeryToken()
+
+    <div asp-validation-summary="ModelOnly" class="error"></div>
+
+    <input type="hidden" asp-for="Id" />
+
+    <input type="hidden" asp-for="CreatedAt" />
+
+    <input type="hidden" asp-for="UpdatedAt" />
+
+    <label asp-for="Name"></label>
+
+    <input asp-for="Name" />
+
+    <span asp-validation-for="Name" class="error"></span>
+
+    <label asp-for="RecordType">
+        Record Type
+    </label>
+
+    <select asp-for="RecordType">
+        <option>Zone Note</option>
+        <option>Beachcombing</option>
+        <option>Boss Prep</option>
+        <option>Event</option>
+        <option>Blueprint</option>
+        <option>Loadout Note</option>
+    </select>
+
+    <span asp-validation-for="RecordType" class="error"></span>
+
+    <label asp-for="Zone"></label>
+
+    <input asp-for="Zone" />
+
+    <span asp-validation-for="Zone" class="error"></span>
+
+    <label asp-for="RiskLevel">
+        Risk Level
+    </label>
+
+    <select asp-for="RiskLevel">
+        <option>Low</option>
+        <option>Medium</option>
+        <option>High</option>
+    </select>
+
+    <span asp-validation-for="RiskLevel" class="error"></span>
+
+    <label asp-for="RecommendedTool">
+        Recommended Tool
+    </label>
+
+    <input asp-for="RecommendedTool" />
+
+    <label asp-for="LootFocus">
+        Loot / Goal Focus
+    </label>
+
+    <input asp-for="LootFocus" />
+
+    <label asp-for="Notes"></label>
+
+    <textarea asp-for="Notes"></textarea>
+
+    <label>
+        <input asp-for="Completed"
+               style="width:auto" />
+
+        Completed
+    </label>
+
+    <button type="submit">
+        Save
+    </button>
+
+    <a class="button secondary"
+       asp-action="Index">
+        Cancel
+    </a>
+</form>

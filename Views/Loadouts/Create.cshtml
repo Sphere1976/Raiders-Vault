@@ -1,0 +1,97 @@
+@model Loadout
+
+@{
+    ViewData["Title"] = "Add Loadout";
+}
+
+<h2>Add Loadout</h2>
+
+<form method="post">
+    @Html.AntiForgeryToken()
+
+    <div asp-validation-summary="ModelOnly" class="error"></div>
+
+    <label>
+        Name
+    </label>
+
+    <input asp-for="Name" />
+
+    <span asp-validation-for="Name"></span>
+
+    <label>
+        Activity Type
+    </label>
+
+    <select asp-for="ActivityType">
+        <option value="">
+            Select
+        </option>
+
+        <option>
+            Map Run
+        </option>
+
+        <option>
+            Trial
+        </option>
+
+        <option>
+            Event
+        </option>
+    </select>
+
+    <span asp-validation-for="ActivityType"></span>
+
+    <label>
+        Map or Event
+    </label>
+
+    <input asp-for="MapOrEvent" />
+
+    <span asp-validation-for="MapOrEvent"></span>
+
+    <label>
+        Focus Area
+    </label>
+
+    <input asp-for="FocusArea" />
+
+    <label>
+        Risk Level
+    </label>
+
+    <select asp-for="RiskLevel">
+        <option>
+            Low
+        </option>
+
+        <option>
+            Medium
+        </option>
+
+        <option>
+            High
+        </option>
+    </select>
+
+    <label>
+        Gear Notes
+    </label>
+
+    <textarea asp-for="GearNotes"></textarea>
+
+    <label>
+        Strategy Notes
+    </label>
+
+    <textarea asp-for="Notes"></textarea>
+
+    <button type="submit">
+        Save
+    </button>
+
+    <a asp-action="Index">
+        Cancel
+    </a>
+</form>

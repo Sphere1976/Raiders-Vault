@@ -1,0 +1,75 @@
+@model Loadout
+
+@{
+    ViewData["Title"] = "Edit Loadout";
+}
+
+<h2>Edit Loadout</h2>
+
+<form method="post">
+    @Html.AntiForgeryToken()
+
+    <div asp-validation-summary="ModelOnly" class="error"></div>
+
+    <input type="hidden"
+           asp-for="Id" />
+
+    <input type="hidden"
+           asp-for="CreatedAt" />
+
+    <label>
+        Name
+    </label>
+
+    <input asp-for="Name" />
+
+    <span asp-validation-for="Name"></span>
+
+    <label>
+        Activity Type
+    </label>
+
+    <input asp-for="ActivityType" />
+
+    <span asp-validation-for="ActivityType"></span>
+
+    <label>
+        Map or Event
+    </label>
+
+    <input asp-for="MapOrEvent" />
+
+    <span asp-validation-for="MapOrEvent"></span>
+
+    <label>
+        Focus Area
+    </label>
+
+    <input asp-for="FocusArea" />
+
+    <label>
+        Risk Level
+    </label>
+
+    <input asp-for="RiskLevel" />
+
+    <label>
+        Gear Notes
+    </label>
+
+    <textarea asp-for="GearNotes"></textarea>
+
+    <label>
+        Strategy Notes
+    </label>
+
+    <textarea asp-for="Notes"></textarea>
+
+    <button type="submit">
+        Update
+    </button>
+
+    <a asp-action="Index">
+        Cancel
+    </a>
+</form>

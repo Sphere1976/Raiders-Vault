@@ -1,0 +1,128 @@
+@model BlueprintFarmPlanViewModel
+
+@{
+    ViewData["Title"] = "Blueprint Farm Plan";
+}
+
+<h2>@Model.BlueprintName Farm Plan</h2>
+
+<p class="hint">
+    This page connects the selected blueprint to a map, condition,
+    route, recommended loadout, and quick-use kit.
+    The probability value is a relative farming weight,
+    not a guaranteed percentage.
+</p>
+
+<div class="card">
+    <h3>Best Run</h3>
+
+    <p>
+        <strong>Entry Style:</strong>
+        @Model.Playstyle
+    </p>
+
+    <p>
+        <strong>Map:</strong>
+        @Model.BestMap
+    </p>
+
+    <p>
+        <strong>Condition:</strong>
+        @Model.BestCondition
+    </p>
+
+    <p>
+        <strong>Rarity / Pool:</strong>
+        @Model.RarityTier
+    </p>
+
+    <p>
+        <strong>Farming Weight:</strong>
+        @Model.ProbabilityWeight/100 - @Model.ProbabilityLabel
+    </p>
+</div>
+
+<div class="card">
+    <h3>Condition Rules</h3>
+
+    @if (Model.RequiredConditions.Any())
+    {
+        <p>
+            <strong>Required Condition:</strong>
+            @string.Join(", ", Model.RequiredConditions)
+        </p>
+    }
+    else
+    {
+        <p>
+            <strong>Required Condition:</strong>
+            None
+        </p>
+    }
+
+    <p>
+        <strong>Optimal Conditions:</strong>
+        @string.Join(", ", Model.OptimalConditions)
+    </p>
+
+    <p>
+        <strong>Valid Maps:</strong>
+        @string.Join(", ", Model.ValidMaps)
+    </p>
+
+    <p class="hint">
+        @Model.ConditionNote
+    </p>
+</div>
+
+<div class="card">
+    <h3>Where to Farm</h3>
+
+    <p>
+        <strong>Container Type:</strong>
+        @Model.ContainerType
+    </p>
+
+    <p>
+        <strong>Best Areas:</strong>
+        @Model.BestAreas
+    </p>
+
+    <p>
+        <strong>Route:</strong>
+        @Model.FarmingRoute
+    </p>
+</div>
+
+<div class="card">
+    <h3>Recommended Loadout</h3>
+
+    <p>
+        @Model.LoadoutSummary
+    </p>
+
+    <h4>Quick Use Items</h4>
+
+    <ul>
+        @foreach (var quickItem in Model.QuickUseItems)
+        {
+            <li>@quickItem</li>
+        }
+    </ul>
+</div>
+
+<div class="card">
+    <h3>Why This Plan</h3>
+
+    <p>
+        @Model.WhyThisPlan
+    </p>
+</div>
+
+<p>
+    <a asp-action="Index"
+       asp-route-playstyle="@Model.Playstyle">
+
+        Back to Blueprints
+    </a>
+</p>

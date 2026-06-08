@@ -1,0 +1,29 @@
+@model Quest
+
+@{
+    ViewData["Title"] = "Delete Quest";
+}
+
+<h2>Delete Quest</h2>
+
+<p>
+    Are you sure you want to delete
+    <strong>@Model.Name</strong>?
+</p>
+
+<form method="post">
+    @Html.AntiForgeryToken()
+
+    <input type="hidden"
+           asp-for="Id" />
+
+    <button class="danger"
+            type="submit">
+
+        Delete
+    </button>
+
+    <a asp-action="Index">
+        Cancel
+    </a>
+</form>

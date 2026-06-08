@@ -1,0 +1,51 @@
+@model RaidersVault.Models.Blueprint
+
+@{
+    ViewData["Title"] = "Edit Blueprint";
+}
+
+<h2>Edit Blueprint</h2>
+
+<form method="post">
+    @Html.AntiForgeryToken()
+
+    <div asp-validation-summary="ModelOnly" class="error"></div>
+
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="CreatedAt" />
+
+    <label>Name</label>
+    <input asp-for="Name" />
+    <span asp-validation-for="Name" class="field-validation-valid"></span>
+
+    <label>Item Type</label>
+    <input asp-for="Category" />
+    <span asp-validation-for="Category" class="field-validation-valid"></span>
+
+    <label>Collection Status</label>
+    <select asp-for="CollectionStatus">
+        <option value="Not Collected">Not Collected</option>
+        <option value="Tracking">Tracking</option>
+        <option value="Collected">Collected</option>
+    </select>
+    <span asp-validation-for="CollectionStatus" class="field-validation-valid"></span>
+
+    <label>Recipe Materials</label>
+    <textarea asp-for="RecipeMaterials"></textarea>
+    <span asp-validation-for="RecipeMaterials" class="field-validation-valid"></span>
+
+    <label>Where to Get</label>
+    <input asp-for="WhereToGet" />
+    <span asp-validation-for="WhereToGet" class="field-validation-valid"></span>
+
+    <label>Description / Notes</label>
+    <textarea asp-for="Notes"></textarea>
+    <span asp-validation-for="Notes" class="field-validation-valid"></span>
+
+    <button type="submit">Update</button>
+    <a asp-action="Index">Cancel</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

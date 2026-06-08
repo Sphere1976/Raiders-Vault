@@ -1,0 +1,178 @@
+@model RaidersVault.ViewModels.BlueprintIndexViewModel
+
+@{
+    ViewData["Title"] = "Blueprints";
+}
+
+<h2>Blueprint Tracker</h2>
+
+<a
+    class="button"
+    asp-action="Create">
+    Add Blueprint
+</a>
+
+<form method="get" class="search">
+    <input
+        name="searchTerm"
+        value="@Model.SearchTerm"
+        placeholder="Search by name, type, status, location, or materials" />
+
+    <select name="playstyle">
+        <option value="Balanced" selected="@(Model.Playstyle == "Balanced")">Balanced</option>
+        <option value="PvE" selected="@(Model.Playstyle == "PvE")">PvE</option>
+        <option value="PvP" selected="@(Model.Playstyle == "PvP")">PvP</option>
+    </select>
+
+    <button type="submit">
+        Search
+    </button>
+
+    <a asp-action="Index">
+        Clear
+    </a>
+</form>
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Item Type</th>
+            <th>Status</th>
+            <th>Where To Get</th>
+            <th>Best Map</th>
+            <th>Updated</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var blueprint in Model.Blueprints)
+        {
+            var farmPlan = Model.FarmPlans.ContainsKey(blueprint.Id)
+                ? Model.FarmPlans[blueprint.Id]
+                : null;
+
+            <tr>
+                <td>@blueprint.Name</td>
+
+                <td>@blueprint.Category</td>
+
+                <td>@blueprint.CollectionStatus</td>
+
+                <td>@blueprint.WhereToGet</td>
+
+                <td>
+                    @(farmPlan == null ? "N/A" : farmPlan.BestMap)
+                </td>
+
+                <td>
+                    @blueprint.UpdatedAt.ToShortDateString()
+                </td>
+
+                <td>
+                    <a
+                        asp-action="FarmPlan"
+                        asp-route-id="@blueprint.Id"
+                        asp-route-playstyle="@Model.Playstyle">
+                        Farm Plan
+                    </a>
+
+                    |
+
+                    <a
+                        asp-action="Edit"
+                        asp-route-id="@blueprint.Id">
+                        Edit
+                    </a>
+
+                    |
+
+                    <form
+                        asp-action="ToggleCollected"
+                        asp-route-id="@blueprint.Id"
+                        method="post"
+                        style="display:inline">
+
+                        @Html.AntiForgeryToken()
+
+                        <button
+                            type="submit"
+                            class="link-button">
+                            @(blueprint.Collected || blueprint.CollectionStatus == "Collected"
+                                ? "Undo Collected"
+                                : "Collected")
+                        </button>
+                    </form>
+
+                    |
+
+                    <form
+                        asp-action="MarkTracking"
+                        asp-route-id="@blueprint.Id"
+                        method="post"
+                        style="display:inline">
+
+                        @Html.AntiForgeryToken()
+
+                        <button
+                            type="submit"
+                            class="link-button">
+                            Track
+                        </button>
+                    </form>
+
+                    |
+
+                    <form
+                        asp-controller="Favorites"
+                        asp-action="Toggle"
+                        method="post"
+                        style="display:inline">
+
+                        @Html.AntiForgeryToken()
+
+                        <input
+                            type="hidden"
+                            name="itemType"
+                            value="Blueprint" />
+
+                        <input
+                            type="hidden"
+                            name="itemId"
+                            value="@blueprint.Id" />
+
+                        <input
+                            type="hidden"
+                            name="displayName"
+                            value="@blueprint.Name" />
+
+                        <input
+                            type="hidden"
+                            name="returnController"
+                            value="Blueprints" />
+
+                        <input
+                            type="hidden"
+                            name="returnAction"
+                            value="Index" />
+
+                        <button
+                            type="submit"
+                            class="link-button">
+                            Pin
+                        </button>
+                    </form>
+
+                    |
+
+                    <a
+                        asp-action="Delete"
+                        asp-route-id="@blueprint.Id">
+                        Delete
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

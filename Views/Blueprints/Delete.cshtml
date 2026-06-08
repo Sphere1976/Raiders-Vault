@@ -1,0 +1,27 @@
+@model RaidersVault.Models.Blueprint
+
+@{
+    ViewData["Title"] = "Delete Blueprint";
+}
+
+<h2>Delete Blueprint</h2>
+
+<div class="card">
+    <p>
+        Are you sure you want to delete
+        <strong>@Model.Name</strong>?
+    </p>
+
+    <p class="hint">
+        This action cannot be undone.
+    </p>
+
+    <form method="post">
+        @Html.AntiForgeryToken()
+
+        <input type="hidden" asp-for="Id" />
+
+        <button class="danger" type="submit">Delete</button>
+        <a asp-action="Index">Cancel</a>
+    </form>
+</div>

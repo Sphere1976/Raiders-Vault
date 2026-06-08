@@ -1,0 +1,323 @@
+@model SkillsPageViewModel
+
+@{
+    ViewData["Title"] = "Skill Planner";
+
+    var selectedBranch = Model.SelectedBranch;
+
+    var recommendedNames = Model.SelectedRecommendations
+        .Select(x => x.Name)
+        .ToHashSet();
+
+    var savedTotal = Model.TotalCurrentPoints;
+}
+
+<div class="hero-panel">
+    <div class="kicker">Skill Planning</div>
+
+    <h2>Skill Planner</h2>
+
+    <p>
+        Enter total available points and an entry style to generate
+        a prerequisite-aware allocation. Saved skills can still be
+        tracked below, but the page now uses a cleaner branch planner
+        instead of a bulky fake tree.
+    </p>
+</div>
+
+<section class="recommendations">
+    <h3>Recommended Skill Point Allocation</h3>
+
+    <p class="hint">
+        The recommendation shows only the selected entry style and includes
+        prerequisite skills and point-gate paths before high-tier skills are added.
+        If the field is blank, the planner uses the saved skill total:
+        <strong>@Model.TotalCurrentPoints</strong> points.
+    </p>
+
+    <form method="get" class="recommendation-form">
+        <label for="totalPoints">
+            <strong>Total available skill points</strong>
+        </label>
+
+        <input id="totalPoints"
+               type="number"
+               name="totalPoints"
+               value="@(Model.TotalAvailablePoints == 0 ? "" : Model.TotalAvailablePoints.ToString())"
+               min="0" />
+
+        <label for="entryStyle">
+            <strong>Entry Style</strong>
+        </label>
+
+        <select id="entryStyle" name="entryStyle">
+            <option value="PvE"
+                    selected="@(Model.SelectedEntryStyle == "PvE")">
+                PvE
+            </option>
+
+            <option value="PvP"
+                    selected="@(Model.SelectedEntryStyle == "PvP")">
+                PvP
+            </option>
+
+            <option value="Balanced"
+                    selected="@(Model.SelectedEntryStyle == "Balanced")">
+                Balanced
+            </option>
+        </select>
+
+        @if (!string.IsNullOrWhiteSpace(selectedBranch))
+        {
+            <input type="hidden"
+                   name="branch"
+                   value="@selectedBranch" />
+        }
+
+        <button type="submit">
+            Update Recommendations
+        </button>
+    </form>
+
+    @if (Model.TotalAvailablePoints == 0)
+    {
+        <div class="error">
+            Enter a total point amount to see the matching skill recommendation.
+        </div>
+    }
+    else
+    {
+        <div class="recommendation-summary">
+            <div class="recommendation-mini">
+                <div class="kicker">Entry Style</div>
+
+                <strong>@Model.SelectedEntryStyle</strong>
+            </div>
+
+            <div class="recommendation-mini">
+                <div class="kicker">Available Points</div>
+
+                <strong>@Model.TotalAvailablePoints</strong>
+            </div>
+
+            <div class="recommendation-mini">
+                <div class="kicker">Recommended Skills</div>
+
+                <strong>@Model.SelectedRecommendations.Count</strong>
+            </div>
+        </div>
+
+        <div class="card wide-card">
+            <h4>@Model.SelectedEntryStyle Allocation</h4>
+
+            @await Html.PartialAsync(
+                "_RecommendationTable",
+                Model.SelectedRecommendations)
+        </div>
+    }
+</section>
+
+<form method="get" class="search panel">
+    <h3>Filter Skill Branches</h3>
+
+    <div class="form-grid">
+        <label>
+            Branch
+
+            <select name="branch">
+                <option value="">
+                    All Branches
+                </option>
+
+                <option value="Conditioning"
+                        selected="@(selectedBranch == "Conditioning")">
+                    Conditioning
+                </option>
+
+                <option value="Mobility"
+                        selected="@(selectedBranch == "Mobility")">
+                    Mobility
+                </option>
+
+                <option value="Survival"
+                        selected="@(selectedBranch == "Survival")">
+                    Survival
+                </option>
+            </select>
+        </label>
+    </div>
+
+    @if (Model.TotalAvailablePoints > 0)
+    {
+        <input type="hidden"
+               name="totalPoints"
+               value="@Model.TotalAvailablePoints" />
+
+        <input type="hidden"
+               name="entryStyle"
+               value="@Model.SelectedEntryStyle" />
+    }
+
+    <button type="submit">
+        Filter
+    </button>
+
+    <a class="button secondary"
+       asp-action="Index"
+       asp-route-totalPoints="@Model.TotalAvailablePoints"
+       asp-route-entryStyle="@Model.SelectedEntryStyle">
+        Clear
+    </a>
+</form>
+
+<form asp-action="Save" method="post">
+    @Html.AntiForgeryToken()
+
+    <div class="skill-planner">
+        <aside class="panel skill-summary">
+            <h3>Current Saved Skills</h3>
+
+            <div class="stat">
+                @savedTotal
+            </div>
+
+            <p class="hint">
+                Total points currently saved across all branches.
+            </p>
+
+            <div class="badge-row">
+                <span class="badge gold">
+                    Saved Points
+                </span>
+
+                <span class="badge teal">
+                    In Recommendation
+                </span>
+
+                <span class="badge">
+                    Prerequisite Path
+                </span>
+            </div>
+
+            <p class="hint">
+                Use the inputs on each card to track the user’s real current build.
+                Use the recommendation section above for suggested allocation planning.
+            </p>
+
+            <button type="submit">
+                Save Skills
+            </button>
+        </aside>
+
+        <section>
+            @foreach (var group in Model.Skills.GroupBy(x => x.Branch))
+            {
+                var branchPoints = group.Sum(x => x.CurrentPoints);
+
+                var recommendedBranchPoints = Model.SelectedRecommendations
+                    .Where(x => x.Branch == group.Key)
+                    .Sum(x => x.RecommendedPoints);
+
+                var branchMax = group.Sum(x => x.MaxPoints);
+
+                var width = branchMax == 0
+                    ? 0
+                    : Math.Min(100, (branchPoints * 100) / branchMax);
+
+                <div class="branch-section">
+                    <div class="branch-header">
+                        <div>
+                            <h3>@group.Key</h3>
+
+                            <span class="hint">
+                                Saved:
+                                @branchPoints / @branchMax points ·
+                                Recommended for @Model.SelectedEntryStyle:
+                                @recommendedBranchPoints
+                            </span>
+                        </div>
+
+                        <span class="badge teal">
+                            @group.Count() skills
+                        </span>
+                    </div>
+
+                    <div style="padding:0 16px 4px">
+                        <div class="progress-bar">
+                            <div class="progress-fill"
+                                 style="@($"width:{width}%")">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="skill-list">
+                        @foreach (var skill in group)
+                        {
+                            var recommended = Model.SelectedRecommendations
+                                .FirstOrDefault(x => x.Name == skill.Name);
+
+                            var cardClass = "skill-card";
+
+                            if (skill.CurrentPoints > 0)
+                            {
+                                cardClass += " active";
+                            }
+
+                            if (recommended != null)
+                            {
+                                cardClass += " recommended";
+                            }
+
+                            <div class="@cardClass">
+                                <strong>@skill.Name</strong>
+
+                                <div class="skill-meta">
+                                    <span>
+                                        @(string.IsNullOrWhiteSpace(skill.Requires)
+                                            ? "No prerequisite"
+                                            : skill.Requires)
+                                    </span>
+
+                                    <span>
+                                        @skill.CurrentPoints / @skill.MaxPoints
+                                    </span>
+                                </div>
+
+                                <p class="hint">
+                                    @skill.Description
+                                </p>
+
+                                @if (recommended != null)
+                                {
+                                    <span class="badge teal">
+                                        Recommended
+                                        @recommended.RecommendedPoints /
+                                        @recommended.MaxPoints
+                                    </span>
+
+                                    <p class="hint">
+                                        <strong>Why:</strong>
+                                        @recommended.Reason
+                                    </p>
+                                }
+
+                                <div class="skill-input-row">
+                                    <label for="points_@skill.Id">
+                                        Current points
+                                    </label>
+
+                                    <input id="points_@skill.Id"
+                                           type="number"
+                                           name="points_@skill.Id"
+                                           value="@skill.CurrentPoints"
+                                           min="0"
+                                           max="@skill.MaxPoints" />
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </section>
+    </div>
+</form>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>@ViewData["Title"] - Raiders Vault</title>
+
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <div class="top-bar">
+            <h1>
+                <a asp-controller="Home" asp-action="Index">
+                    Raiders Vault
+                </a>
+            </h1>
+
+            <nav>
+                <a asp-controller="Home" asp-action="Index">
+                    Dashboard
+                </a>
+
+                <a asp-controller="RunPlanner" asp-action="Index">
+                    Run Planner
+                </a>
+
+                <a asp-controller="Loadouts" asp-action="Index">
+                    Loadouts
+                </a>
+
+                <a asp-controller="MapConditions" asp-action="Index">
+                    Map Conditions
+                </a>
+
+                <a asp-controller="Quests" asp-action="Index">
+                    Quests
+                </a>
+
+                <a asp-controller="Blueprints" asp-action="Index">
+                    Blueprints
+                </a>
+
+                <a asp-controller="Skills" asp-action="Index">
+                    Skills
+                </a>
+
+                <a asp-controller="Favorites" asp-action="Index">
+                    Favorites
+                </a>
+
+                <a asp-controller="Profile" asp-action="Index">
+                    Profile
+                </a>
+
+                <a asp-controller="Reports" asp-action="Index">
+                    Reports
+                </a>
+
+                <a asp-controller="Account" asp-action="Logout">
+                    Logout
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="content">
+        @RenderBody()
+    </main>
+
+    <footer>
+        <p>
+            Raiders Vault Planner - ARC Raiders Companion Project
+        </p>
+    </footer>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

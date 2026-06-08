@@ -1,0 +1,367 @@
+@{
+    ViewData["Title"] = "Dashboard";
+
+    var nextRunTitle = ViewBag.NextRunTitle ?? "Balanced loot and objective run";
+    var nextRunMap = ViewBag.NextRunMap ?? "Dam Battlegrounds";
+    var nextRunCondition = ViewBag.NextRunCondition ?? "Standard Patrol";
+    var nextRunGoal = ViewBag.NextRunGoal ?? "Complete Quests";
+    var playerName = ViewBag.PlayerName ?? "Raider";
+    var preferredPlaystyle = ViewBag.PreferredPlaystyle ?? "Balanced";
+    var currentSkillPoints = ViewBag.CurrentSkillPoints ?? 20;
+    var defaultMap = ViewBag.DefaultMap ?? "Dam Battlegrounds";
+
+    var loadoutCount = ViewBag.LoadoutCount ?? 0;
+    var favoriteCount = ViewBag.FavoriteCount ?? 0;
+    var completedQuestCount = ViewBag.CompletedQuestCount ?? 0;
+    var questCount = ViewBag.QuestCount ?? 0;
+    var questCompletionPercent = ViewBag.QuestCompletionPercent ?? 0;
+    var activeQuestCount = ViewBag.ActiveQuestCount ?? 0;
+    var collectedBlueprintCount = ViewBag.CollectedBlueprintCount ?? 0;
+    var blueprintCount = ViewBag.BlueprintCount ?? 0;
+    var blueprintCompletionPercent = ViewBag.BlueprintCompletionPercent ?? 0;
+    var remainingBlueprintCount = ViewBag.RemainingBlueprintCount ?? 0;
+}
+
+<div class="hero-panel"
+     style="
+    background-image:
+    linear-gradient(
+    120deg,
+    rgba(244,177,66,0.18),
+    rgba(32,171,154,0.12)),
+    url('/images/raider-emblem.svg');
+    background-repeat:no-repeat;
+    background-position:right 24px center;
+    background-size:230px auto;">
+
+    <div class="kicker">
+        Operations Console
+    </div>
+
+    <h2>
+        Plan the next run before you drop in.
+    </h2>
+
+    <p>
+        Raiders Vault brings loadouts, quests,
+        blueprints, map conditions, and skill planning
+        into one clean decision-support app.
+        Use it to decide what to carry,
+        what to farm, and how to spend points
+        for PvE, PvP, or balanced runs.
+    </p>
+
+    <div class="hero-actions">
+        <a class="button"
+           asp-controller="RunPlanner"
+           asp-action="Index">
+
+            Open Run Planner
+        </a>
+
+        <a class="button secondary"
+           asp-controller="MapConditions"
+           asp-action="Index">
+
+            Review Map Conditions
+        </a>
+
+        <a class="button secondary"
+           asp-controller="Blueprints"
+           asp-action="Index">
+
+            Open Blueprint Farm Plans
+        </a>
+
+        <a class="button secondary"
+           asp-controller="Skills"
+           asp-action="Index">
+
+            Open Skill Planner
+        </a>
+    </div>
+</div>
+
+<div class="notification-panel">
+    <div class="kicker">
+        Next Best Run
+    </div>
+
+    <h3>
+        @nextRunTitle
+    </h3>
+
+    <p>
+        <strong>Map:</strong>
+        @nextRunMap
+
+        &nbsp;
+
+        <strong>Condition:</strong>
+        @nextRunCondition
+
+        &nbsp;
+
+        <strong>Goal:</strong>
+        @nextRunGoal
+    </p>
+
+    <p class="hint">
+        Using @playerName&apos;s default style:
+        @preferredPlaystyle with
+        @currentSkillPoints skill points.
+    </p>
+
+    <a class="button"
+       asp-controller="RunPlanner"
+       asp-action="Index"
+       asp-route-selectedMap="@defaultMap"
+       asp-route-selectedStyle="@preferredPlaystyle"
+       asp-route-totalSkillPoints="@currentSkillPoints">
+
+        Build This Run
+    </a>
+</div>
+
+<div class="cards">
+    <div class="card">
+        <div class="kicker">
+            Saved Kits
+        </div>
+
+        <div class="stat">
+            @loadoutCount
+        </div>
+
+        <h3>My Loadouts</h3>
+
+        <p class="hint">
+            Custom PvE, PvP, balanced,
+            blueprint, and map-condition kits
+            are ready to edit.
+        </p>
+
+        <a asp-controller="Loadouts"
+           asp-action="Index">
+
+            Manage Loadouts
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="kicker">
+            Pinned Items
+        </div>
+
+        <div class="stat">
+            @favoriteCount
+        </div>
+
+        <h3>Favorites</h3>
+
+        <p class="hint">
+            Pinned loadouts, blueprints,
+            and objectives for quick planning.
+        </p>
+
+        <a asp-controller="Favorites"
+           asp-action="Index">
+
+            View Pinned Items
+        </a>
+    </div>
+
+    <div class="card progress-card">
+        <div class="kicker">
+            Current Objectives Complete
+        </div>
+
+        <div class="stat">
+            @completedQuestCount /
+            @questCount
+        </div>
+
+        <h3>
+            @questCompletionPercent% Complete
+        </h3>
+
+        <div class="progress-shell">
+            <div class="progress-fill"
+                 style="@($"width:{questCompletionPercent}%")">
+            </div>
+        </div>
+
+        <p class="hint">
+            @activeQuestCount objectives
+            still need attention.
+        </p>
+
+        <a asp-controller="Quests"
+           asp-action="Index">
+
+            Update Objectives
+        </a>
+    </div>
+
+    <div class="card progress-card">
+        <div class="kicker">
+            Blueprints Obtained
+        </div>
+
+        <div class="stat">
+            @collectedBlueprintCount /
+            @blueprintCount
+        </div>
+
+        <h3>
+            @blueprintCompletionPercent% Collected
+        </h3>
+
+        <div class="progress-shell">
+            <div class="progress-fill teal-fill"
+                 style="@($"width:{blueprintCompletionPercent}%")">
+            </div>
+        </div>
+
+        <p class="hint">
+            @remainingBlueprintCount blueprints
+            remain in the farming plan.
+        </p>
+
+        <a asp-controller="Blueprints"
+           asp-action="Index">
+
+            Update Blueprints
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="kicker">
+            Coastal Operations
+        </div>
+
+        <h3>
+            Riven Tides Planning
+        </h3>
+
+        <p class="hint">
+            Riven Tides routes, beachcombing runs,
+            storm conditions, and coastal extraction
+            planning are included in the main planning workflow.
+        </p>
+
+        <a asp-controller="RunPlanner"
+           asp-action="Index"
+           asp-route-selectedMap="Riven Tides">
+
+            Open Run Planner
+        </a>
+    </div>
+</div>
+
+<div class="split">
+    <section class="panel">
+        <h3>
+            Recommended Workflow
+        </h3>
+
+        <ul class="quick-list">
+            <li>
+                <strong>
+                    1. Choose the map condition.
+                </strong>
+
+                <br />
+
+                <span class="hint">
+                    Start with the active map and condition,
+                    then pick PvE, PvP, or Balanced.
+                </span>
+            </li>
+
+            <li>
+                <strong>
+                    2. Review the suggested loadout.
+                </strong>
+
+                <br />
+
+                <span class="hint">
+                    The app recommends primary,
+                    secondary, shield, augment,
+                    and quick-use items.
+                </span>
+            </li>
+
+            <li>
+                <strong>
+                    3. Check skill allocation.
+                </strong>
+
+                <br />
+
+                <span class="hint">
+                    Enter total skill points and review
+                    the suggested skill focus for
+                    the chosen entry style.
+                </span>
+            </li>
+
+            <li>
+                <strong>
+                    4. Farm blueprints with a plan.
+                </strong>
+
+                <br />
+
+                <span class="hint">
+                    Blueprint routes include map,
+                    condition, containers,
+                    and route planning notes.
+                </span>
+            </li>
+        </ul>
+    </section>
+
+    <section class="panel">
+        <h3>
+            Planning Tools
+        </h3>
+
+        <div class="badge-row">
+            <span class="badge gold">
+                PvE
+            </span>
+
+            <span class="badge teal">
+                PvP
+            </span>
+
+            <span class="badge green">
+                Balanced
+            </span>
+
+            <span class="badge">
+                Map Conditions
+            </span>
+
+            <span class="badge">
+                Blueprint Farming
+            </span>
+
+            <span class="badge">
+                Skill Points
+            </span>
+
+            <span class="badge">
+                Riven Tides
+            </span>
+        </div>
+
+        <p class="hint">
+            This layout keeps the planning tools organized
+            while supporting map, loadout, blueprint,
+            objective, and skill decisions.
+        </p>
+    </section>
+</div>

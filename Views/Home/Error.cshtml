@@ -1,0 +1,26 @@
+﻿@{
+    ViewData["Title"] = "Error";
+}
+
+<div class="page-header">
+    <h1>
+        Application Error
+    </h1>
+</div>
+
+<div class="card">
+    <p>
+        An unexpected error occurred while processing the request.
+    </p>
+
+    <p>
+        Please return to the home page and try again.
+    </p>
+
+    <a asp-controller="Home"
+       asp-action="Index"
+       class="button-link">
+
+        Return Home
+    </a>
+</div>

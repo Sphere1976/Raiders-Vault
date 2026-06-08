@@ -1,0 +1,122 @@
+@model IEnumerable<Quest>
+
+@{
+    ViewData["Title"] = "Quests";
+}
+
+<h2>Quest Log</h2>
+
+<a class="button"
+   asp-action="Create">
+    Add Quest
+</a>
+
+<form method="get" class="search">
+    <input name="searchTerm"
+           value="@ViewBag.SearchTerm"
+           placeholder="Search by name, status, priority, activity, or notes" />
+
+    <button type="submit">
+        Search
+    </button>
+
+    <a asp-action="Index">
+        Clear
+    </a>
+</form>
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Status</th>
+            <th>Priority</th>
+            <th>Activity / Map</th>
+            <th>Updated</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var quest in Model)
+        {
+            <tr>
+                <td>@quest.Name</td>
+
+                <td>@quest.Status</td>
+
+                <td>@quest.Priority</td>
+
+                <td>@quest.RelatedActivity</td>
+
+                <td>
+                    @quest.UpdatedAt.ToShortDateString()
+                </td>
+
+                <td>
+                    <a asp-action="Edit"
+                       asp-route-id="@quest.Id">
+                        Edit
+                    </a>
+
+                    |
+
+                    <form asp-action="ToggleComplete"
+                          asp-route-id="@quest.Id"
+                          method="post"
+                          style="display:inline">
+
+                        @Html.AntiForgeryToken()
+
+                        <button type="submit"
+                                class="link-button">
+                            @(quest.Status == "Complete" ? "Undo Complete" : "Complete")
+                        </button>
+                    </form>
+
+                    |
+
+                    <form asp-controller="Favorites"
+                          asp-action="Toggle"
+                          method="post"
+                          style="display:inline">
+
+                        @Html.AntiForgeryToken()
+
+                        <input type="hidden"
+                               name="itemType"
+                               value="Objective" />
+
+                        <input type="hidden"
+                               name="itemId"
+                               value="@quest.Id" />
+
+                        <input type="hidden"
+                               name="displayName"
+                               value="@quest.Name" />
+
+                        <input type="hidden"
+                               name="returnController"
+                               value="Quests" />
+
+                        <input type="hidden"
+                               name="returnAction"
+                               value="Index" />
+
+                        <button type="submit"
+                                class="link-button">
+                            Pin
+                        </button>
+                    </form>
+
+                    |
+
+                    <a asp-action="Delete"
+                       asp-route-id="@quest.Id">
+                        Delete
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

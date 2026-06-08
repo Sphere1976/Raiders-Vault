@@ -1,0 +1,362 @@
+[
+  {
+    "Branch": "Conditioning",
+    "Name": "Used To The Weight",
+    "Description": "Wearing a shield does not slow you down as much.",
+    "Details": "Reduces movement speed penalty by up to half.",
+    "MaxPoints": 5,
+    "Requires": null
+  },
+  {
+    "Branch": "Conditioning",
+    "Name": "Blast-Born",
+    "Description": "Your hearing is less affected by nearby explosions.",
+    "Details": "Reduces explosion hearing penalty duration.",
+    "MaxPoints": 5,
+    "Requires": "Used To The Weight"
+  },
+  {
+    "Branch": "Conditioning",
+    "Name": "Gentle Pressure",
+    "Description": "You make less noise when breaching.",
+    "Details": "Each upgrade reduces breaching noise range.",
+    "MaxPoints": 5,
+    "Requires": "Used To The Weight"
+  },
+  {
+    "Branch": "Conditioning",
+    "Name": "Fight Or Flight",
+    "Description": "When hurt in combat, regain stamina.",
+    "Details": "Recover stamina after being hit by another player.",
+    "MaxPoints": 5,
+    "Requires": "Blast-Born"
+  },
+  {
+    "Branch": "Conditioning",
+    "Name": "Proficient Pryer",
+    "Description": "Breaching doors and containers takes less time.",
+    "Details": "Increases breach speed.",
+    "MaxPoints": 5,
+    "Requires": "Gentle Pressure"
+  },
+  {
+    "Branch": "Conditioning",
+    "Name": "Survivor's Stamina",
+    "Description": "When critically hurt, stamina regenerates faster.",
+    "Details": "Improves stamina recovery while badly hurt.",
+    "MaxPoints": 1,
+    "Requires": "Fight Or Flight and 15 points in Conditioning"
+  },
+  {
+    "Branch": "Conditioning",
+    "Name": "Unburdened Roll",
+    "Description": "If your shield breaks, your first dodge roll soon after costs no stamina.",
+    "Details": "Useful after shield break pressure.",
+    "MaxPoints": 1,
+    "Requires": "Proficient Pryer and 15 points in Conditioning"
+  },
+  {
+    "Branch": "Conditioning",
+    "Name": "Downed But Determined",
+    "Description": "When downed, it takes longer before you collapse.",
+    "Details": "Adds extra time while downed.",
+    "MaxPoints": 5,
+    "Requires": "Survivor's Stamina"
+  },
+  {
+    "Branch": "Conditioning",
+    "Name": "A Little Extra",
+    "Description": "Breaching an object generates resources.",
+    "Details": "Breaching gives crafting materials.",
+    "MaxPoints": 1,
+    "Requires": "Survivor's Stamina or Unburdened Roll"
+  },
+  {
+    "Branch": "Conditioning",
+    "Name": "Effortless Swing",
+    "Description": "Melee abilities cost less stamina.",
+    "Details": "Allows more melee swings before stamina runs out.",
+    "MaxPoints": 5,
+    "Requires": "Unburdened Roll"
+  },
+  {
+    "Branch": "Conditioning",
+    "Name": "Turtle Crawl",
+    "Description": "While downed, you take less damage.",
+    "Details": "Reduces damage taken while downed.",
+    "MaxPoints": 5,
+    "Requires": "Downed But Determined"
+  },
+  {
+    "Branch": "Conditioning",
+    "Name": "Loaded Arms",
+    "Description": "Your equipped weapon has less impact on encumbrance.",
+    "Details": "Reduces weapon weight impact.",
+    "MaxPoints": 1,
+    "Requires": "A Little Extra"
+  },
+  {
+    "Branch": "Conditioning",
+    "Name": "Sky-Clearing Swing",
+    "Description": "You deal more melee damage to drones.",
+    "Details": "Improves melee effectiveness against drones.",
+    "MaxPoints": 5,
+    "Requires": "Effortless Swing"
+  },
+  {
+    "Branch": "Conditioning",
+    "Name": "Back On Your Feet",
+    "Description": "When critically hurt, your health regenerates up to a limit.",
+    "Details": "Health regenerates after avoiding damage.",
+    "MaxPoints": 1,
+    "Requires": "Turtle Crawl or Loaded Arms and 36 points in Conditioning"
+  },
+  {
+    "Branch": "Conditioning",
+    "Name": "Flyswatter",
+    "Description": "Wasps and Turrets can be destroyed with one melee attack.",
+    "Details": "Improves melee utility against small ARC threats.",
+    "MaxPoints": 1,
+    "Requires": "Loaded Arms or Sky-Clearing Swing and 36 points in Conditioning"
+  },
+  {
+    "Branch": "Mobility",
+    "Name": "Nimble Climber",
+    "Description": "You can climb and vault more quickly.",
+    "Details": "Improves vertical movement and traversal.",
+    "MaxPoints": 5,
+    "Requires": null
+  },
+  {
+    "Branch": "Mobility",
+    "Name": "Marathon Runner",
+    "Description": "Moving around costs less stamina.",
+    "Details": "Allows longer sprinting.",
+    "MaxPoints": 5,
+    "Requires": "Nimble Climber"
+  },
+  {
+    "Branch": "Mobility",
+    "Name": "Slip and Slide",
+    "Description": "You can slide further and faster.",
+    "Details": "Improves sliding movement.",
+    "MaxPoints": 5,
+    "Requires": "Nimble Climber"
+  },
+  {
+    "Branch": "Mobility",
+    "Name": "Youthful Lungs",
+    "Description": "Increases maximum stamina.",
+    "Details": "Improves sustained movement.",
+    "MaxPoints": 5,
+    "Requires": "Marathon Runner"
+  },
+  {
+    "Branch": "Mobility",
+    "Name": "Sturdy Ankles",
+    "Description": "You take less fall damage from non-lethal falls.",
+    "Details": "Supports rooftop and vertical movement.",
+    "MaxPoints": 5,
+    "Requires": "Slip and Slide"
+  },
+  {
+    "Branch": "Mobility",
+    "Name": "Carry The Momentum",
+    "Description": "After a sprint dodge roll, sprinting briefly costs no stamina.",
+    "Details": "Useful for repositioning and disengaging.",
+    "MaxPoints": 1,
+    "Requires": "Youthful Lungs and 15 points in Mobility"
+  },
+  {
+    "Branch": "Mobility",
+    "Name": "Calming Stroll",
+    "Description": "While walking, stamina regenerates as if standing still.",
+    "Details": "Improves stamina recovery while walking.",
+    "MaxPoints": 1,
+    "Requires": "Sturdy Ankles and 15 points in Mobility"
+  },
+  {
+    "Branch": "Mobility",
+    "Name": "Effortless Roll",
+    "Description": "Dodge rolls cost less stamina.",
+    "Details": "Improves defensive movement.",
+    "MaxPoints": 5,
+    "Requires": "Carry The Momentum"
+  },
+  {
+    "Branch": "Mobility",
+    "Name": "Crawl Before You Walk",
+    "Description": "When downed, you crawl faster.",
+    "Details": "Improves downed movement.",
+    "MaxPoints": 5,
+    "Requires": "Carry The Momentum or Calming Stroll"
+  },
+  {
+    "Branch": "Mobility",
+    "Name": "Off The Wall",
+    "Description": "You can wall leap further.",
+    "Details": "Improves advanced vertical movement.",
+    "MaxPoints": 5,
+    "Requires": "Calming Stroll"
+  },
+  {
+    "Branch": "Mobility",
+    "Name": "Heroic Leap",
+    "Description": "You can sprint dodge roll further.",
+    "Details": "Improves aggressive repositioning.",
+    "MaxPoints": 5,
+    "Requires": "Effortless Roll"
+  },
+  {
+    "Branch": "Mobility",
+    "Name": "Vigorous Vaulter",
+    "Description": "Vaulting is no longer slowed while exhausted.",
+    "Details": "Improves vaulting while out of stamina.",
+    "MaxPoints": 1,
+    "Requires": "Crawl Before You Walk"
+  },
+  {
+    "Branch": "Mobility",
+    "Name": "Ready To Roll",
+    "Description": "When falling, the recovery roll timing window is increased.",
+    "Details": "Makes recovery rolls easier.",
+    "MaxPoints": 5,
+    "Requires": "Off The Wall"
+  },
+  {
+    "Branch": "Mobility",
+    "Name": "Vaults on Vaults on Vaults",
+    "Description": "Vaulting no longer costs stamina.",
+    "Details": "Improves long movement chains.",
+    "MaxPoints": 1,
+    "Requires": "Heroic Leap or Vigorous Vaulter and 36 points in Mobility"
+  },
+  {
+    "Branch": "Mobility",
+    "Name": "Vault Spring",
+    "Description": "Lets you jump at the end of a vault.",
+    "Details": "Adds extra movement options after vaulting.",
+    "MaxPoints": 1,
+    "Requires": "Vigorous Vaulter or Ready To Roll and 36 points in Mobility"
+  },
+  {
+    "Branch": "Survival",
+    "Name": "Agile Croucher",
+    "Description": "Your movement speed while crouching is increased.",
+    "Details": "Improves stealth movement.",
+    "MaxPoints": 5,
+    "Requires": null
+  },
+  {
+    "Branch": "Survival",
+    "Name": "Looter's Instincts",
+    "Description": "When searching a container, loot is revealed faster.",
+    "Details": "Improves looting speed.",
+    "MaxPoints": 5,
+    "Requires": "Agile Croucher"
+  },
+  {
+    "Branch": "Survival",
+    "Name": "Revitalizing Squat",
+    "Description": "Stamina regeneration while crouched is increased.",
+    "Details": "Improves stamina recovery while crouched.",
+    "MaxPoints": 5,
+    "Requires": "Agile Croucher"
+  },
+  {
+    "Branch": "Survival",
+    "Name": "Silent Scavenger",
+    "Description": "You make less noise when looting.",
+    "Details": "Useful for quieter farming routes.",
+    "MaxPoints": 5,
+    "Requires": "Looter's Instincts"
+  },
+  {
+    "Branch": "Survival",
+    "Name": "In-round Crafting",
+    "Description": "Unlocks the ability to field-craft items while topside.",
+    "Details": "Adds crafting utility during raids.",
+    "MaxPoints": 1,
+    "Requires": "Revitalizing Squat"
+  },
+  {
+    "Branch": "Survival",
+    "Name": "Suffer In Silence",
+    "Description": "While critically hurt, your movement makes less noise.",
+    "Details": "Improves stealth survival while injured.",
+    "MaxPoints": 1,
+    "Requires": "Silent Scavenger and 15 points in Survival"
+  },
+  {
+    "Branch": "Survival",
+    "Name": "Good As New",
+    "Description": "While under a healing effect, stamina regeneration is increased.",
+    "Details": "Improves recovery while healing.",
+    "MaxPoints": 1,
+    "Requires": "In-round Crafting and 15 points in Survival"
+  },
+  {
+    "Branch": "Survival",
+    "Name": "Broad Shoulders",
+    "Description": "Increases the maximum weight you can carry.",
+    "Details": "Adds carry capacity for loot-heavy runs.",
+    "MaxPoints": 5,
+    "Requires": "Suffer In Silence"
+  },
+  {
+    "Branch": "Survival",
+    "Name": "Traveling Tinkerer",
+    "Description": "Unlocks additional items to field craft.",
+    "Details": "Adds more crafting options during runs.",
+    "MaxPoints": 1,
+    "Requires": "Suffer In Silence or Good As New"
+  },
+  {
+    "Branch": "Survival",
+    "Name": "Stubborn Mule",
+    "Description": "Stamina regeneration is less affected by over-encumbrance.",
+    "Details": "Useful while carrying heavy loot.",
+    "MaxPoints": 5,
+    "Requires": "Good As New"
+  },
+  {
+    "Branch": "Survival",
+    "Name": "Looter's Luck",
+    "Description": "While looting, there is a chance to reveal twice as many items at once.",
+    "Details": "Improves looting efficiency.",
+    "MaxPoints": 5,
+    "Requires": "Broad Shoulders"
+  },
+  {
+    "Branch": "Survival",
+    "Name": "One Raider's Scraps",
+    "Description": "When looting Raider containers, there is a chance of finding additional field-crafted items.",
+    "Details": "Improves Raider container value.",
+    "MaxPoints": 5,
+    "Requires": "Traveling Tinkerer"
+  },
+  {
+    "Branch": "Survival",
+    "Name": "Three Deep Breaths",
+    "Description": "After an ability drains stamina, you recover more quickly.",
+    "Details": "Improves recovery after exhaustion.",
+    "MaxPoints": 5,
+    "Requires": "Stubborn Mule"
+  },
+  {
+    "Branch": "Survival",
+    "Name": "Security Breach",
+    "Description": "Lets you breach Security Lockers.",
+    "Details": "Adds secured loot route utility.",
+    "MaxPoints": 1,
+    "Requires": "Looter's Luck or One Raider's Scraps and 36 points in Survival"
+  },
+  {
+    "Branch": "Survival",
+    "Name": "Minesweeper",
+    "Description": "Mines and explosive deployables can be defused nearby.",
+    "Details": "Adds trap safety utility.",
+    "MaxPoints": 1,
+    "Requires": "One Raider's Scraps or Three Deep Breaths and 36 points in Survival"
+  }
+]

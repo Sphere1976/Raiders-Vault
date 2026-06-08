@@ -1,0 +1,164 @@
+@model List<RaidersVault.Models.RivenTidesRecord>
+
+@{
+    ViewData["Title"] = "Riven Tides";
+
+    var recordTypes =
+        ViewBag.RecordTypes as List<string>
+        ?? new List<string>();
+}
+
+<div class="page-heading">
+    <div>
+        <div class="kicker">
+            Expansion Planner
+        </div>
+
+        <h2>Riven Tides</h2>
+
+        <p class="helper-text">
+            Track Riven Tides zones, beachcombing notes,
+            boss prep, event progress, and expansion blueprint goals.
+        </p>
+    </div>
+
+    <a class="button"
+       asp-action="Create">
+        Add Riven Tides Entry
+    </a>
+</div>
+
+<div class="notification-panel">
+    <div class="kicker">
+        Riven Tides Progress
+    </div>
+
+    <h3>
+        @ViewBag.CompletedRecords /
+        @ViewBag.TotalRecords entries completed
+    </h3>
+
+    <p class="hint">
+        Use this page as a focused expansion checklist while the main
+        quest, blueprint, loadout, and reports pages continue to track
+        the full app.
+    </p>
+</div>
+
+<form method="get" class="search">
+    <input name="searchTerm"
+           value="@ViewBag.SearchTerm"
+           placeholder="Search Riven Tides entries" />
+
+    <select name="recordType">
+        <option value="">
+            All Types
+        </option>
+
+        @foreach (var type in recordTypes)
+        {
+            <option value="@type"
+                    selected="@(ViewBag.RecordType == type)">
+                @type
+            </option>
+        }
+    </select>
+
+    <button type="submit">
+        Search
+    </button>
+
+    <a asp-action="Index">
+        Clear
+    </a>
+</form>
+
+<div class="cards">
+    @foreach (var record in Model)
+    {
+        <article class="card">
+            <div class="kicker">
+                @record.RecordType
+            </div>
+
+            <h3>@record.Name</h3>
+
+            <p>
+                <strong>Zone:</strong>
+                @record.Zone
+            </p>
+
+            <p>
+                <strong>Risk:</strong>
+                @record.RiskLevel
+            </p>
+
+            @if (!string.IsNullOrWhiteSpace(record.RecommendedTool))
+            {
+                <p>
+                    <strong>Recommended Tool:</strong>
+                    @record.RecommendedTool
+                </p>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(record.LootFocus))
+            {
+                <p>
+                    <strong>Loot / Goal:</strong>
+                    @record.LootFocus
+                </p>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(record.Notes))
+            {
+                <p class="hint">
+                    @record.Notes
+                </p>
+            }
+
+            <span class="badge @(record.Completed ? "green" : "gold")">
+                @(record.Completed ? "Completed" : "Active")
+            </span>
+
+            <div class="card-actions pin-actions">
+                <a asp-action="Edit"
+                   asp-route-id="@record.Id">
+                    Edit
+                </a>
+
+                <form asp-action="ToggleComplete"
+                      asp-route-id="@record.Id"
+                      method="post">
+
+                    @Html.AntiForgeryToken()
+
+                    <button type="submit"
+                            class="link-button">
+                        @(record.Completed
+                            ? "Mark Active"
+                            : "Complete")
+                    </button>
+                </form>
+
+                <a asp-action="Delete"
+                   asp-route-id="@record.Id">
+                    Delete
+                </a>
+            </div>
+        </article>
+    }
+</div>
+
+@if (!Model.Any())
+{
+    <section class="panel">
+        <h3>
+            No Riven Tides entries found.
+        </h3>
+
+        <p class="hint">
+            Clear the search or add a new
+            Riven Tides planning entry.
+        </p>
+    </section>
+}

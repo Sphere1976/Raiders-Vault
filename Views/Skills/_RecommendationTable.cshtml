@@ -1,0 +1,32 @@
+@model List<RaidersVault.ViewModels.SkillRecommendationItem>
+
+<table>
+    <thead>
+        <tr>
+            <th>Branch</th>
+            <th>Skill</th>
+            <th>Points</th>
+            <th>Requires</th>
+            <th>Why</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Branch</td>
+
+                <td>@item.Name</td>
+
+                <td>
+                    @item.RecommendedPoints / @item.MaxPoints
+                </td>
+
+                <td>@item.Requires</td>
+
+                <td>@item.Reason</td>
+            </tr>
+        }
+    </tbody>
+</table>

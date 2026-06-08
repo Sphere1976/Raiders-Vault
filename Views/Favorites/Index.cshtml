@@ -1,0 +1,77 @@
+@model IEnumerable<FavoriteItem>
+
+@{
+    ViewData["Title"] = "Pinned Items";
+}
+
+<div class="page-heading">
+    <div>
+        <div class="kicker">Favorites</div>
+
+        <h2>Pinned Items</h2>
+
+        <p class="hint">
+            Pinned loadouts, blueprints, and objectives stay visible for quick planning.
+        </p>
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="panel">
+        <p>
+            No pinned items yet. Use the Pin buttons on loadouts, blueprints, and objectives.
+        </p>
+    </div>
+}
+else
+{
+    <div class="cards">
+        @foreach (var favorite in Model)
+        {
+            <div class="card">
+                <div class="kicker">
+                    @favorite.ItemType
+                </div>
+
+                <h3>@favorite.DisplayName</h3>
+
+                <p class="hint">
+                    Pinned @favorite.CreatedAt.ToShortDateString()
+                </p>
+
+                <form asp-controller="Favorites"
+                      asp-action="Toggle"
+                      method="post">
+
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden"
+                           name="itemType"
+                           value="@favorite.ItemType" />
+
+                    <input type="hidden"
+                           name="itemId"
+                           value="@favorite.ItemId" />
+
+                    <input type="hidden"
+                           name="displayName"
+                           value="@favorite.DisplayName" />
+
+                    <input type="hidden"
+                           name="returnController"
+                           value="Favorites" />
+
+                    <input type="hidden"
+                           name="returnAction"
+                           value="Index" />
+
+                    <button type="submit"
+                            class="button secondary">
+                        Unpin
+                    </button>
+                </form>
+            </div>
+        }
+    </div>
+}

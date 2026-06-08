@@ -1,0 +1,202 @@
+@model ReportViewModel
+
+@{
+    ViewData["Title"] = "Reports";
+}
+
+<div class="page-heading">
+    <div>
+        <div class="kicker">Interactive report</div>
+
+        <h2>@Model.Title</h2>
+
+        <p class="hint">
+            Use the filters below to review saved loadouts, quests,
+            and blueprints by category, status, or keyword.
+        </p>
+    </div>
+</div>
+
+<section class="panel report-summary">
+    <form asp-controller="Reports"
+          asp-action="Index"
+          method="get"
+          class="filter-form">
+
+        <div class="form-row">
+            <div>
+                <label for="recordType">
+                    Record Type
+                </label>
+
+                <select id="recordType" name="recordType">
+                    <option value="All"
+                            selected="@(Model.SelectedRecordType == "All")">
+                        All
+                    </option>
+
+                    <option value="Loadout"
+                            selected="@(Model.SelectedRecordType == "Loadout")">
+                        Loadouts
+                    </option>
+
+                    <option value="Quest"
+                            selected="@(Model.SelectedRecordType == "Quest")">
+                        Quests
+                    </option>
+
+                    <option value="Blueprint"
+                            selected="@(Model.SelectedRecordType == "Blueprint")">
+                        Blueprints
+                    </option>
+                </select>
+            </div>
+
+            <div>
+                <label for="statusFilter">
+                    Status
+                </label>
+
+                <select id="statusFilter" name="statusFilter">
+                    <option value="All"
+                            selected="@(Model.SelectedStatusFilter == "All")">
+                        All
+                    </option>
+
+                    <option value="Open"
+                            selected="@(Model.SelectedStatusFilter == "Open")">
+                        Open / Missing
+                    </option>
+
+                    <option value="Completed"
+                            selected="@(Model.SelectedStatusFilter == "Completed")">
+                        Completed / Collected
+                    </option>
+                </select>
+            </div>
+
+            <div>
+                <label for="searchTerm">
+                    Search
+                </label>
+
+                <input id="searchTerm"
+                       name="searchTerm"
+                       value="@Model.SearchTerm"
+                       placeholder="Search report rows" />
+            </div>
+        </div>
+
+        <div class="button-row">
+            <button type="submit" class="button-primary">
+                Update Report
+            </button>
+
+            <a asp-controller="Reports"
+               asp-action="Index"
+               class="button-secondary">
+                Reset
+            </a>
+        </div>
+    </form>
+</section>
+
+<section class="dashboard-grid">
+    <div class="panel stat-card">
+        <span class="stat-label">
+            Loadouts
+        </span>
+
+        <strong>@Model.TotalLoadouts</strong>
+    </div>
+
+    <div class="panel stat-card">
+        <span class="stat-label">
+            Quests
+        </span>
+
+        <strong>@Model.TotalQuests</strong>
+
+        <small>
+            @Model.CompletedQuests completed /
+            @Model.OpenQuests open
+        </small>
+    </div>
+
+    <div class="panel stat-card">
+        <span class="stat-label">
+            Blueprints
+        </span>
+
+        <strong>@Model.TotalBlueprints</strong>
+
+        <small>
+            @Model.CollectedBlueprints collected /
+            @Model.MissingBlueprints missing
+        </small>
+    </div>
+
+    <div class="panel stat-card">
+        <span class="stat-label">
+            Visible Rows
+        </span>
+
+        <strong>@Model.Rows.Count</strong>
+
+        <small>
+            Generated @Model.GeneratedAt.ToString("yyyy-MM-dd h:mm tt")
+        </small>
+    </div>
+</section>
+
+<table>
+    <thead>
+        <tr>
+            <th>Record Type</th>
+            <th>Name</th>
+            <th>Detail One</th>
+            <th>Detail Two</th>
+            <th>Last Updated</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @if (!Model.Rows.Any())
+        {
+            <tr>
+                <td colspan="6">
+                    No report rows match the current filters.
+                    Change the filters or add more records.
+                </td>
+            </tr>
+        }
+        else
+        {
+            foreach (var row in Model.Rows)
+            {
+                <tr>
+                    <td>@row.RecordType</td>
+
+                    <td>@row.Name</td>
+
+                    <td>@row.DetailOne</td>
+
+                    <td>@row.DetailTwo</td>
+
+                    <td>
+                        @row.LastUpdated.ToString("yyyy-MM-dd h:mm tt")
+                    </td>
+
+                    <td>
+                        <a asp-controller="@row.ControllerName"
+                           asp-action="Edit"
+                           asp-route-id="@row.RecordId">
+                            Open
+                        </a>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

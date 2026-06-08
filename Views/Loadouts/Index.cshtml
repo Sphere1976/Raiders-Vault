@@ -1,0 +1,149 @@
+@model IEnumerable<Loadout>
+
+@{
+    ViewData["Title"] = "My Loadouts";
+}
+
+<div class="page-heading">
+    <div>
+        <div class="kicker">
+            Saved kits
+        </div>
+
+        <h2>My Loadouts</h2>
+
+        <p class="hint">
+            Use these custom starter kits as quick planning templates,
+            then edit them for your own inventory.
+        </p>
+    </div>
+
+    <a class="button"
+       asp-action="Create">
+
+        Add Custom Loadout
+    </a>
+</div>
+
+<form method="get" class="search">
+    <input name="searchTerm"
+           value="@ViewBag.SearchTerm"
+           placeholder="Search by name, activity, map, or style" />
+
+    <button type="submit">
+        Search
+    </button>
+
+    <a asp-action="Index">
+        Clear
+    </a>
+</form>
+
+<div class="loadout-grid">
+    @foreach (var loadout in Model)
+    {
+        var riskClass =
+            (loadout.RiskLevel ?? "Medium")
+                .ToLowerInvariant()
+                .Contains("high")
+                    ? "danger"
+                    : ((loadout.RiskLevel ?? "")
+                        .ToLowerInvariant()
+                        .Contains("low")
+                            ? "green"
+                            : "gold");
+
+        <article class="loadout-card">
+            <div class="loadout-card-top">
+                <div>
+                    <div class="kicker">
+                        @loadout.ActivityType
+                    </div>
+
+                    <h3>@loadout.Name</h3>
+                </div>
+
+                <span class="badge @riskClass">
+                    @loadout.RiskLevel Risk
+                </span>
+            </div>
+
+            <p>
+                <strong>Map/Event:</strong>
+                @loadout.MapOrEvent
+            </p>
+
+            <p>
+                <strong>Focus:</strong>
+
+                @(string.IsNullOrWhiteSpace(loadout.FocusArea)
+                    ? "General"
+                    : loadout.FocusArea)
+            </p>
+
+            <p>
+                <strong>Kit:</strong>
+
+                @(string.IsNullOrWhiteSpace(loadout.GearNotes)
+                    ? "No gear notes entered."
+                    : loadout.GearNotes)
+            </p>
+
+            <p class="hint">
+                <strong>Plan:</strong>
+
+                @(string.IsNullOrWhiteSpace(loadout.Notes)
+                    ? "No strategy notes entered."
+                    : loadout.Notes)
+            </p>
+
+            <div class="card-actions">
+                <a asp-action="Edit"
+                   asp-route-id="@loadout.Id">
+
+                    Edit
+                </a>
+
+                <form asp-controller="Favorites"
+                      asp-action="Toggle"
+                      method="post"
+                      style="display:inline">
+
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden"
+                           name="itemType"
+                           value="Loadout" />
+
+                    <input type="hidden"
+                           name="itemId"
+                           value="@loadout.Id" />
+
+                    <input type="hidden"
+                           name="displayName"
+                           value="@loadout.Name" />
+
+                    <input type="hidden"
+                           name="returnController"
+                           value="Loadouts" />
+
+                    <input type="hidden"
+                           name="returnAction"
+                           value="Index" />
+
+                    <button type="submit"
+                            class="link-button">
+
+                        Pin
+                    </button>
+                </form>
+
+                <a asp-action="Delete"
+                   asp-route-id="@loadout.Id">
+
+                    Delete
+                </a>
+            </div>
+        </article>
+    }
+</div>
