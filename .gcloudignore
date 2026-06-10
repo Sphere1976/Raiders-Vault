@@ -1,0 +1,13 @@
+bin/
+obj/
+
+.vs/
+
+.git/
+.gitignore
+
+raidersvault.db
+raidersvault.db-shm
+raidersvault.db-wal
+
+node_modules/

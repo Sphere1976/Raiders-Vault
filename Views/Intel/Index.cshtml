@@ -1,0 +1,4 @@
+@model IEnumerable<RaidersVault.Models.IntelGuide>
+@{ ViewData["Title"] = "Intel Hub"; }
+<section class="hero-panel feature-hero"><div><span class="eyebrow">Interactive-map inspired intelligence</span><h1>Route Intel, Loot Logic & Map Conditions</h1><p>Companion-style guidance for where to go, what container type to prioritize, and how risky the route is before launching topside.</p></div></section>
+<section class="intel-grid">@foreach (var guide in Model){<article class="command-card intel-card"><span class="eyebrow">@guide.GuideType · @guide.MapCondition</span><h2>@guide.Name</h2><p>@guide.Notes</p><dl class="intel-list"><div><dt>Map</dt><dd>@guide.MapName</dd></div><div><dt>Difficulty</dt><dd>@guide.Difficulty</dd></div><div><dt>Route</dt><dd>@guide.RecommendedRoute</dd></div><div><dt>Loot Focus</dt><dd>@guide.LootFocus</dd></div><div><dt>Risk</dt><dd>@guide.RiskWarning</dd></div></dl></article>}</section>

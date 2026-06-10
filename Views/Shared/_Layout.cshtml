@@ -3,76 +3,54 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Raiders Vault is a full-stack operational planning platform for ARC Raiders loadouts, objectives, blueprints, route planning, and progression analytics." />
 
     <title>@ViewData["Title"] - Raiders Vault</title>
 
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 <body>
-    <header>
-        <div class="top-bar">
-            <h1>
-                <a asp-controller="Home" asp-action="Index">
-                    Raiders Vault
-                </a>
-            </h1>
+    <header class="app-header">
+        <div class="header-row">
+            <a class="brand" asp-controller="Home" asp-action="Index" aria-label="Raiders Vault dashboard">
+                <img src="~/images/raider-emblem.svg" alt="Raiders Vault emblem" />
+                <span>
+                    <strong>Raiders Vault</strong>
+                    <small>Operations Intelligence Platform</small>
+                </span>
+            </a>
 
-            <nav>
-                <a asp-controller="Home" asp-action="Index">
-                    Dashboard
-                </a>
-
-                <a asp-controller="RunPlanner" asp-action="Index">
-                    Run Planner
-                </a>
-
-                <a asp-controller="Loadouts" asp-action="Index">
-                    Loadouts
-                </a>
-
-                <a asp-controller="MapConditions" asp-action="Index">
-                    Map Conditions
-                </a>
-
-                <a asp-controller="Quests" asp-action="Index">
-                    Quests
-                </a>
-
-                <a asp-controller="Blueprints" asp-action="Index">
-                    Blueprints
-                </a>
-
-                <a asp-controller="Skills" asp-action="Index">
-                    Skills
-                </a>
-
-                <a asp-controller="Favorites" asp-action="Index">
-                    Favorites
-                </a>
-
-                <a asp-controller="Profile" asp-action="Index">
-                    Profile
-                </a>
-
-                <a asp-controller="Reports" asp-action="Index">
-                    Reports
-                </a>
-
-                <a asp-controller="Account" asp-action="Logout">
-                    Logout
-                </a>
-            </nav>
+            <div class="system-status" aria-label="System status">
+                <span class="status-dot"></span>
+                Live Production Console
+            </div>
         </div>
+
+        <nav class="primary-nav" aria-label="Primary navigation">
+            <a asp-controller="Home" asp-action="Index">Command Center</a>
+            <a asp-controller="RunPlanner" asp-action="Index">Run Planner</a>
+            <a asp-controller="Loadouts" asp-action="Index">Loadouts</a>
+            <a asp-controller="MapConditions" asp-action="Index">Map Conditions</a>
+            <a asp-controller="Intel" asp-action="Index">Intel Hub</a>
+            <a asp-controller="Database" asp-action="Index">Item Database</a>
+            <a asp-controller="Trials" asp-action="Index">Weekly Trials</a>
+            <a asp-controller="Quests" asp-action="Index">Objectives</a>
+            <a asp-controller="Blueprints" asp-action="Index">Blueprints</a>
+            <a asp-controller="Skills" asp-action="Index">Skills</a>
+            <a asp-controller="Favorites" asp-action="Index">Watchlist</a>
+            <a asp-controller="Profile" asp-action="Index">Operator Profile</a>
+            <a asp-controller="Reports" asp-action="Index">Analytics</a>
+            <a asp-controller="Account" asp-action="Logout">Logout</a>
+        </nav>
     </header>
 
-    <main class="content">
+    <main class="content-shell">
         @RenderBody()
     </main>
 
-    <footer>
-        <p>
-            Raiders Vault Planner - ARC Raiders Companion Project
-        </p>
+    <footer class="app-footer">
+        <span>Raiders Vault Enterprise Command Platform</span>
+        <span>Strategic planning, progression analytics, and operational reporting.</span>
     </footer>
 
     @await RenderSectionAsync("Scripts", required: false)

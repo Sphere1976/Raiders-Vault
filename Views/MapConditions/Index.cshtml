@@ -1,284 +1,280 @@
 @model RaidersVault.ViewModels.MapConditionRecommendationViewModel
 
 @{
-    ViewData["Title"] = "Map Conditions Loadouts";
+    ViewData["Title"] = "Operations Planning Center";
 
     var loadout = Model.OptimalLoadout;
+    var alertCount = Model.BlueprintAlerts.Count;
+    var topAlerts = Model.BlueprintAlerts.Take(6).ToList();
+    var routeStops = topAlerts
+        .SelectMany(x => x.BestAreas.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        .Distinct(StringComparer.OrdinalIgnoreCase)
+        .Take(4)
+        .ToList();
+
+    if (!routeStops.Any())
+    {
+        routeStops = new List<string>
+        {
+            "Confirm spawn position",
+            "Move through primary loot lanes",
+            "Check objective overlap",
+            "Extract with priority inventory"
+        };
+    }
+
+    var riskClass = Model.RiskLevel.Contains("High", StringComparison.OrdinalIgnoreCase)
+        ? "danger"
+        : Model.RiskLevel.Contains("Low", StringComparison.OrdinalIgnoreCase)
+            ? "green"
+            : "gold";
 }
 
-<h2>Map Conditions Loadouts</h2>
+<section class="ops-hero" aria-labelledby="ops-title">
+    <div class="ops-hero-copy">
+        <div class="kicker">Operations Planning Center</div>
+        <h2 id="ops-title">@Model.SelectedMap</h2>
+        <p>
+            @Model.SelectedCondition operation configured for @Model.SelectedStyle entry.
+            Raiders Vault builds a focused route, optimal kit, blueprint targets, and skill direction from the active map condition.
+        </p>
 
-<p class="helper-text">
-    Pick the map first, then choose from only the conditions
-    supported for that map. Stella Montis is limited to
-    Standard Patrol and Night Raid. The planner recommends
-    a full kit and explains why it fits the run.
-</p>
-
-<form method="get" class="recommendation-form">
-    <div class="form-grid">
-        <label>
-            Map
-
-            <select name="selectedMap"
-                    onchange="this.form.submit()">
-
-                @foreach (var map in Model.Maps)
-                {
-                    <option value="@map"
-                            selected="@(map == Model.SelectedMap)">
-                        @map
-                    </option>
-                }
-            </select>
-        </label>
-
-        <label>
-            Map Condition
-
-            <span class="small-note">
-                Only valid options for the selected map are shown.
-            </span>
-
-            <select name="selectedCondition">
-                @foreach (var condition in Model.Conditions)
-                {
-                    <option value="@condition"
-                            selected="@(condition == Model.SelectedCondition)">
-                        @condition
-                    </option>
-                }
-            </select>
-        </label>
-
-        <label>
-            Entry Style
-
-            <select name="selectedStyle">
-                @foreach (var style in Model.Styles)
-                {
-                    <option value="@style"
-                            selected="@(style == Model.SelectedStyle)">
-                        @style
-                    </option>
-                }
-            </select>
-        </label>
-
-        <label>
-            Current Skill Points
-
-            <input type="number"
-                   name="totalSkillPoints"
-                   min="0"
-                   value="@Model.TotalSkillPoints" />
-        </label>
+        <div class="ops-hero-actions" aria-label="Primary planning actions">
+            <a class="button" asp-controller="RunPlanner" asp-action="Index">Open Tactical Planner</a>
+            <a class="button secondary" asp-controller="Skills" asp-action="Index" asp-route-totalPoints="@Model.TotalSkillPoints" asp-route-entryStyle="@Model.SelectedStyle">Open Skill Planner</a>
+        </div>
     </div>
 
-    <button type="submit">
-        Update Recommendation
-    </button>
-</form>
-
-@if (Model.BlueprintAlerts.Any())
-{
-    <section class="notification-panel">
-        <div class="kicker">
-            Blueprint Condition Alert
-        </div>
-
-        <h3>
-            @Model.BlueprintAlerts.Count blueprint farm
-            @(Model.BlueprintAlerts.Count == 1
-                ? "is"
-                : "routes are")
-            active right now
-        </h3>
-
-        <p class="hint">
-            These uncollected/tracked blueprints match
-            the selected active map condition.
-        </p>
-
-        <div class="alert-grid">
-            @foreach (var alert in Model.BlueprintAlerts)
-            {
-                <article class="alert-card">
-                    <span class="badge gold">
-                        @alert.MatchType
-                    </span>
-
-                    <h4>@alert.BlueprintName</h4>
-
-                    <p>
-                        <strong>@alert.ActiveMap</strong>
-                        — @alert.ActiveCondition
-                    </p>
-
-                    <p>
-                        <strong>Target:</strong>
-                        @alert.ContainerType
-                    </p>
-
-                    <p class="hint">
-                        @alert.BestAreas
-                    </p>
-
-                    <p class="hint">
-                        @alert.FarmingRoute
-                    </p>
-
-                    <a asp-controller="Blueprints"
-                       asp-action="FarmPlan"
-                       asp-route-id="@alert.BlueprintId"
-                       asp-route-playstyle="@Model.SelectedStyle">
-                        Open Farm Plan
-                    </a>
-                </article>
-            }
-        </div>
-    </section>
-}
-else
-{
-    <section class="notification-panel quiet">
-        <div class="kicker">
-            Blueprint Condition Alert
-        </div>
-
-        <h3>
-            No tracked blueprint routes match this active condition.
-        </h3>
-
-        <p class="hint">
-            Try another active map condition or mark more
-            blueprints as uncollected/tracking.
-        </p>
-    </section>
-}
-
-<section class="recommendation-card">
-    <h3>@Model.Summary</h3>
-
-    <p>
-        <strong>Risk Level:</strong>
-        @Model.RiskLevel
-    </p>
-
-    <p>
-        <strong>Skill Tree Focus:</strong>
-        @Model.SkillTreeFocus
-    </p>
-
-    <p>
-        <strong>Loadout Score:</strong>
-        @loadout.Score / 100
-    </p>
-
-    <p>
-        <strong>Planner Note:</strong>
-        @loadout.Caution
-    </p>
-
-    <p>
-        <a asp-controller="Skills"
-           asp-action="Index"
-           asp-route-totalPoints="@Model.TotalSkillPoints"
-           asp-route-entryStyle="@Model.SelectedStyle">
-
-            View detailed skill allocation
-        </a>
-    </p>
+    <aside class="ops-status-card" aria-label="Current operation status">
+        <div class="intel-line"><span>Condition</span><strong>@Model.SelectedCondition</strong></div>
+        <div class="intel-line"><span>Risk</span><strong>@Model.RiskLevel</strong></div>
+        <div class="intel-line"><span>Blueprint Routes</span><strong>@alertCount active</strong></div>
+        <div class="intel-line"><span>Loadout Score</span><strong>@loadout.Score / 100</strong></div>
+    </aside>
 </section>
 
-<section class="recommendation-card">
-    <h3>Optimal Loadout</h3>
+<section class="kpi-grid" aria-label="Operation summary metrics">
+    <article class="kpi-card">
+        <span>Blueprint Targets</span>
+        <strong>@alertCount</strong>
+        <small>Condition-matched farm routes</small>
+    </article>
 
-    <table>
-        <tbody>
-            <tr>
-                <th>Primary Weapon</th>
-                <td>@loadout.PrimaryWeapon</td>
-            </tr>
+    <article class="kpi-card">
+        <span>Risk Level</span>
+        <strong>@Model.RiskLevel</strong>
+        <small>Based on map and condition</small>
+    </article>
 
-            <tr>
-                <th>Secondary Weapon</th>
-                <td>@loadout.SecondaryWeapon</td>
-            </tr>
+    <article class="kpi-card">
+        <span>Skill Points</span>
+        <strong>@Model.TotalSkillPoints</strong>
+        <small>@Model.SelectedStyle build profile</small>
+    </article>
 
-            <tr>
-                <th>Shield</th>
-                <td>@loadout.Shield</td>
-            </tr>
-
-            <tr>
-                <th>Augment</th>
-                <td>@loadout.Augment</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <h4>Quick Use Items</h4>
-
-    <ul>
-        @foreach (var quickItem in loadout.QuickUseItems)
-        {
-            <li>@quickItem</li>
-        }
-    </ul>
+    <article class="kpi-card">
+        <span>Route Score</span>
+        <strong>@loadout.Score</strong>
+        <small>Loadout readiness estimate</small>
+    </article>
 </section>
 
-<div class="cards">
-    <section class="card wide-card">
-        <h4>Why this loadout</h4>
+<section class="ops-layout">
+    <aside class="control-panel card" aria-labelledby="operation-controls-title">
+        <div class="kicker">Active Operation</div>
+        <h3 id="operation-controls-title">Mission Controls</h3>
+        <p class="hint">Select the active map condition and generate a cleaner recommendation.</p>
 
-        <ul>
-            @foreach (var reason in loadout.WhyThisLoadout)
+        <form method="get" class="ops-control-form">
+            <label>
+                Map
+                <select name="selectedMap" onchange="this.form.submit()">
+                    @foreach (var map in Model.Maps)
+                    {
+                        <option value="@map" selected="@(map == Model.SelectedMap)">@map</option>
+                    }
+                </select>
+            </label>
+
+            <label>
+                Condition
+                <select name="selectedCondition">
+                    @foreach (var condition in Model.Conditions)
+                    {
+                        <option value="@condition" selected="@(condition == Model.SelectedCondition)">@condition</option>
+                    }
+                </select>
+            </label>
+
+            <label>
+                Entry Style
+                <select name="selectedStyle">
+                    @foreach (var style in Model.Styles)
+                    {
+                        <option value="@style" selected="@(style == Model.SelectedStyle)">@style</option>
+                    }
+                </select>
+            </label>
+
+            <label>
+                Skill Points
+                <input type="number" name="totalSkillPoints" min="0" value="@Model.TotalSkillPoints" />
+            </label>
+
+            <button type="submit">Generate Plan</button>
+        </form>
+    </aside>
+
+    <div class="ops-main-stack">
+        <section class="recommendation-card" aria-labelledby="mission-intel-title">
+            <div class="section-heading compact-heading">
+                <div>
+                    <div class="kicker">Active Intelligence</div>
+                    <h3 id="mission-intel-title">Blueprint Opportunities</h3>
+                    <p class="hint">Priority targets matched to the selected map and condition.</p>
+                </div>
+                <span class="badge @riskClass">@Model.RiskLevel Risk</span>
+            </div>
+
+            @if (topAlerts.Any())
             {
-                <li>@reason</li>
+                <div class="intel-card-grid">
+                    @foreach (var alert in topAlerts)
+                    {
+                        <article class="intel-opportunity-card">
+                            <div class="card-topline">
+                                <span class="badge gold">@alert.MatchType</span>
+                                <span class="hint">Score @alert.PriorityScore</span>
+                            </div>
+                            <h4>@alert.BlueprintName</h4>
+                            <p><strong>@alert.ContainerType</strong></p>
+                            <p class="hint">@alert.BestAreas</p>
+                            <a class="button small secondary" asp-controller="Blueprints" asp-action="FarmPlan" asp-route-id="@alert.BlueprintId" asp-route-playstyle="@Model.SelectedStyle">Open Intel Report</a>
+                        </article>
+                    }
+                </div>
             }
-        </ul>
+            else
+            {
+                <div class="empty-state">
+                    <h4>No active blueprint route detected</h4>
+                    <p class="hint">Switch conditions or track more uncollected blueprints to populate this panel.</p>
+                    <a class="button secondary" asp-controller="Blueprints" asp-action="Index">Open Blueprints</a>
+                </div>
+            }
+        </section>
+
+        <section class="recommendation-card" aria-labelledby="route-title">
+            <div class="kicker">Recommended Route</div>
+            <h3 id="route-title">Mission Route Flow</h3>
+            <ol class="route-timeline">
+                <li><strong>Spawn Check</strong><span>Confirm closest safe lane before committing to loot.</span></li>
+                @foreach (var stop in routeStops)
+                {
+                    <li><strong>@stop</strong><span>Search priority containers and avoid unnecessary fights.</span></li>
+                }
+                <li><strong>Extraction</strong><span>Leave once priority items or objectives are secured.</span></li>
+            </ol>
+        </section>
+    </div>
+</section>
+
+<section class="ops-layout secondary-layout">
+    <section class="recommendation-card" aria-labelledby="loadout-title">
+        <div class="section-heading compact-heading">
+            <div>
+                <div class="kicker">Mission Recommendation</div>
+                <h3 id="loadout-title">Optimal Loadout</h3>
+            </div>
+            <span class="badge teal">@loadout.Score / 100</span>
+        </div>
+
+        <div class="loadout-grid">
+            <article class="loadout-tile"><span>Primary</span><strong>@loadout.PrimaryWeapon</strong></article>
+            <article class="loadout-tile"><span>Secondary</span><strong>@loadout.SecondaryWeapon</strong></article>
+            <article class="loadout-tile"><span>Shield</span><strong>@loadout.Shield</strong></article>
+            <article class="loadout-tile"><span>Augment</span><strong>@loadout.Augment</strong></article>
+        </div>
+
+        <h4>Quick Use Items</h4>
+        <div class="badge-row">
+            @foreach (var quickItem in loadout.QuickUseItems)
+            {
+                <span class="badge">@quickItem</span>
+            }
+        </div>
+
+        <div class="mission-note">
+            <strong>Planner Note</strong>
+            <p>@loadout.Caution</p>
+        </div>
     </section>
 
-    <section class="card wide-card">
-        <h4>Skill + Loadout Synergy</h4>
+    <section class="recommendation-card" aria-labelledby="skill-title">
+        <div class="kicker">Tactical Analysis</div>
+        <h3 id="skill-title">Skill Focus</h3>
+        <p>@Model.SkillTreeFocus</p>
 
-        <ul>
-            @foreach (var synergy in loadout.SkillSynergies)
-            {
-                <li>@synergy</li>
-            }
-        </ul>
+        <div class="skill-meter-list" aria-label="Suggested skill allocation emphasis">
+            <div class="skill-meter"><span>Mobility</span><div><i style="width:72%"></i></div><strong>High</strong></div>
+            <div class="skill-meter"><span>Survival</span><div><i style="width:68%"></i></div><strong>High</strong></div>
+            <div class="skill-meter"><span>Conditioning</span><div><i style="width:58%"></i></div><strong>Med</strong></div>
+        </div>
+
+        <a class="button secondary" asp-controller="Skills" asp-action="Index" asp-route-totalPoints="@Model.TotalSkillPoints" asp-route-entryStyle="@Model.SelectedStyle">Open Tactical Analysis</a>
     </section>
-</div>
+</section>
 
-<h3>Planning Details</h3>
+@if (loadout.WhyThisLoadout.Any() || loadout.SkillSynergies.Any())
+{
+    <section class="cards" aria-label="Loadout explanation and synergies">
+        <article class="card">
+            <div class="kicker">Why This Loadout</div>
+            <h3>Decision Logic</h3>
+            <ul class="premium-list">
+                @foreach (var reason in loadout.WhyThisLoadout)
+                {
+                    <li>@reason</li>
+                }
+            </ul>
+        </article>
 
-<table>
-    <thead>
-        <tr>
-            <th>Loadout Area</th>
-            <th>Recommendation</th>
-            <th>Reason</th>
-        </tr>
-    </thead>
+        <article class="card">
+            <div class="kicker">Skill + Loadout Synergy</div>
+            <h3>Build Support</h3>
+            <ul class="premium-list">
+                @foreach (var synergy in loadout.SkillSynergies)
+                {
+                    <li>@synergy</li>
+                }
+            </ul>
+        </article>
+    </section>
+}
 
-    <tbody>
-        @foreach (var loadoutItem in Model.LoadoutItems)
-        {
-            <tr>
-                <td>@loadoutItem.Slot</td>
+<section class="recommendation-card" aria-labelledby="planning-details-title">
+    <div class="kicker">Planning Details</div>
+    <h3 id="planning-details-title">Loadout Rationale</h3>
 
-                <td>@loadoutItem.Recommendation</td>
-
-                <td>@loadoutItem.Reason</td>
-            </tr>
-        }
-    </tbody>
-</table>
-
-<p class="helper-text">
-    Recommendations are rules-based. Map-condition
-    availability is filtered by the selected map
-    and can be updated later if the live rotation changes.
-</p>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Loadout Area</th>
+                    <th>Recommendation</th>
+                    <th>Reason</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var loadoutItem in Model.LoadoutItems)
+                {
+                    <tr>
+                        <td>@loadoutItem.Slot</td>
+                        <td>@loadoutItem.Recommendation</td>
+                        <td>@loadoutItem.Reason</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</section>

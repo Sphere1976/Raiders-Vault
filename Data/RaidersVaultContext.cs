@@ -31,6 +31,10 @@ public class RaidersVaultContext : DbContext
 
     public DbSet<MapConditionOption> MapConditionOptions => Set<MapConditionOption>();
 
+    public DbSet<InventoryItem> InventoryItems => Set<InventoryItem>();
+    public DbSet<IntelGuide> IntelGuides => Set<IntelGuide>();
+    public DbSet<WeeklyTrial> WeeklyTrials => Set<WeeklyTrial>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -54,5 +58,9 @@ public class RaidersVaultContext : DbContext
                 x.ConditionName
             })
             .IsUnique();
+
+        modelBuilder.Entity<InventoryItem>().HasIndex(x => x.Name).IsUnique();
+        modelBuilder.Entity<IntelGuide>().HasIndex(x => new { x.Name, x.MapName, x.MapCondition }).IsUnique();
+        modelBuilder.Entity<WeeklyTrial>().HasIndex(x => x.Name).IsUnique();
     }
 }

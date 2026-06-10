@@ -1,285 +1,228 @@
 # Raiders Vault
 
-## Student Information
+> Enterprise-style operations intelligence platform for ARC Raiders planning, progression tracking, equipment strategy, and collection analytics.
 
-**Course:** D424 – Software Engineering Capstone  
-**Project:** Raiders Vault – ARC Raiders Companion Planner  
-**Platform:** ASP.NET Core MVC (.NET 8) with SQLite  
-**IDE Used:** Microsoft Visual Studio  
-**Database:** SQLite
-
----
-
-# Project Overview
-
-Raiders Vault is a companion planning application created for ARC Raiders players.  
-The application helps users organize gameplay preparation and progression through:
-
-- Loadout tracking
-- Quest management
-- Blueprint collection tracking
-- Farming route planning
-- Map condition planning
-- Skill recommendation support
-- Favorites management
-- Player profile tracking
-- Summary reporting
-
-The application uses a local SQLite database and follows a simple ASP.NET Core MVC structure designed for easy local execution and evaluation.
+![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?style=for-the-badge&logo=dotnet)
+![ASP.NET Core](https://img.shields.io/badge/ASP.NET_Core-MVC-5C2D91?style=for-the-badge&logo=dotnet)
+![SQLite](https://img.shields.io/badge/SQLite-Database-003B57?style=for-the-badge&logo=sqlite)
+![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker)
+![Google Cloud](https://img.shields.io/badge/Google_Cloud-Run-4285F4?style=for-the-badge&logo=googlecloud)
 
 ---
 
-# Technologies Used
+## Executive Overview
 
-- ASP.NET Core MVC (.NET 8)
+Raiders Vault is a full-stack ASP.NET Core MVC application that turns fragmented gameplay planning into a centralized operational command center. It combines loadout management, objective tracking, blueprint analytics, route planning, map-condition intelligence, skill progression, watchlists, and reporting into one cohesive platform.
+
+This version is positioned as a production-quality portfolio application: clean branding, secure defaults, deployment readiness, technical documentation, and an enterprise-style product structure.
+
+---
+
+## Product Capabilities
+
+| Domain | Capability |
+|---|---|
+| Equipment Operations | Create, edit, score, search, and compare loadouts. |
+| Objective Management | Track active, completed, and reopened objectives. |
+| Blueprint Intelligence | Monitor collected and missing blueprints with farming context. |
+| Route Planning | Generate farming strategies based on map, condition, and goal. |
+| Map Intel | Evaluate active conditions and recommended loadout strategies. |
+| Skill Planning | Build PvE, PvP, and balanced progression paths. |
+| Watchlist | Pin high-value records for faster planning. |
+| Reporting | Generate operational summaries across core data sets. |
+
+---
+
+## Architecture
+
+```
+    A[Browser Client] --> B[ASP.NET Core MVC]
+    B --> C[Controllers]
+    B --> D[Razor Views]
+    C --> E[Application Services]
+    E --> F[Entity Framework Core]
+    F --> G[(SQLite Database)]
+    B --> H[Session Authentication]
+    B --> I[Security Headers Middleware]
+    B --> J[Health Check Endpoint]
+```
+
+---
+
+## Technology Stack
+
+### Application
+
+- ASP.NET Core 8 MVC
+- C#
+- Razor Views
 - Entity Framework Core
 - SQLite
-- Razor Views
-- CSS
+- Dependency Injection
 - Session-based authentication
 
-NuGet packages used:
+### Production Readiness
+
+- Dockerfile included
+- Google Cloud Run compatible
+- Health check endpoint: `/health`
+- Response compression enabled
+- Secure session cookie configuration
+- Security headers middleware
+- Anti-forgery validation enabled globally
+- Environment-aware cookie security policy
+
+### Security Controls
+
+- Anti-forgery validation on MVC actions
+- HttpOnly session cookies
+- Strict SameSite cookie policy
+- Secure cookies outside local development
+- Fixed-time password hash comparison
+- Input sanitization helper
+- Content Security Policy
+- X-Frame-Options
+- X-Content-Type-Options
+- Referrer Policy
+- Permissions Policy
+
+---
+
+## Repository Structure
 
 ```
-Microsoft.EntityFrameworkCore.Sqlite
-Microsoft.EntityFrameworkCore.Tools
+RaidersVault/
+├── Controllers/              # MVC request handlers
+├── Data/                     # EF Core context and data access
+├── Middleware/               # Security and platform middleware
+├── Models/                   # Domain entities
+├── Services/                 # Business logic and recommendation services
+├── ViewModels/               # UI-specific data contracts
+├── Views/                    # Razor UI
+├── wwwroot/                  # CSS, images, static assets
+├── docs/                     # Architecture and product documentation
+├── .github/workflows/        # CI pipeline
+├── Dockerfile                # Container deployment
+└── RaidersVault.csproj       # .NET project file
 ```
 
 ---
 
-# Default Login
+## Getting Started
+
+### Requirements
+
+- .NET 8 SDK
+- Visual Studio 2022, VS Code, or JetBrains Rider
+
+### Run Locally
+
+```
+dotnet restore
+dotnet build
+dotnet run
+```
+
+The SQLite database is created and seeded automatically on first launch.
+
+### Default Development Login
 
 ```
 Username: admin
 Password: password
 ```
 
----
-
-# Features Included
-
-## Authentication
-
-- Session-based login system
-- Basic password hashing
-- Input sanitization
-- Protected application pages
+For public deployment, replace the seeded development account with an environment-driven identity strategy.
 
 ---
 
-## Dashboard
-
-The dashboard displays:
-
-- Total quests
-- Completed quests
-- Blueprint collection progress
-- Favorite tracked items
-- Player profile information
-
----
-
-## Loadout Management
-
-Users can:
-
-- Create loadouts
-- Edit loadouts
-- Delete loadouts
-- Assign playstyles
-- Store equipment notes
-
----
-
-## Quest Tracking
-
-Users can:
-
-- Add quests
-- Track completion status
-- Set priorities
-- Store completion notes
-- Search quests
-
----
-
-## Blueprint Tracking
-
-Users can:
-
-- Track blueprint collection progress
-- Store farming notes
-- Track materials
-- View recommended farming routes
-- View condition-based recommendations
-
-The project includes updated blueprint support aligned with the current ARC Raiders blueprint list.
-
----
-
-## Farming Planner
-
-The farming planner provides:
-
-- Map recommendations
-- Recommended conditions
-- Farming weight indicators
-- Suggested routes
-- Suggested loadouts
-
----
-
-## Skill Recommendations
-
-The skill system includes:
-
-- PvE recommendations
-- PvP recommendations
-- Balanced recommendations
-- Skill point tracking
-- Skill category organization
-
----
-
-## Favorites System
-
-Users can:
-
-- Save favorite items
-- Track commonly used planning content
-- Quickly revisit important records
-
----
-
-## Reporting
-
-The application includes summary report generation for:
-
-- Quest progress
-- Blueprint progress
-- Profile information
-- Planning summaries
-
----
-
-# Database Information
-
-Database file:
+## Docker Deployment
 
 ```
-raidersvault.db
-```
-
-The database is automatically created and seeded on first launch.
-
-Seed data includes:
-
-- Demo user account
-- Sample quests
-- Sample blueprints
-- Sample loadouts
-- Sample player profile
-- Sample skills
-
----
-
-# Running the Application
-
-## Requirements
-
-- Windows operating system
-- .NET 8 SDK
-- Visual Studio with ASP.NET workload installed
-
----
-
-## Steps
-
-1. Extract the project zip
-2. Open the solution file in Visual Studio
-3. Restore NuGet packages if prompted
-4. Build the solution
-5. Run the application
-
-The SQLite database will generate automatically on first launch.
-
----
-
-# Project Structure
-
-## Main Folders
-
-```
-Controllers/
-Models/
-Views/
-ViewModels/
-Services/
-Data/
-wwwroot/
+docker build -t raiders-vault .
+docker run -p 8080:8080 raiders-vault
 ```
 
 ---
 
-# Security Features
-
-The application includes:
-
-- Session validation
-- Input sanitization
-- Anti-forgery validation
-- Password hashing
-- Protected routes
-
----
-
-# Notes for Evaluator
-
-- The application is intended for local execution.
-- SQLite is embedded and does not require separate database installation.
-- Seed data is automatically generated.
-- The application uses a simplified UI focused on functionality and usability.
-- Internet access is not required after package extraction and NuGet restore.
-
----
-
-# Files Included in This Submission
-
-## Core Project Files
+## Google Cloud Run Deployment
 
 ```
-RaidersVault.sln
-RaidersVault.csproj
-Program.cs
+gcloud run deploy raiders-vault \
+  --source . \
+  --region us-central1 \
+  --platform managed \
+  --allow-unauthenticated
 ```
 
 ---
 
-## Core Folders
+## Screenshots
 
-```
-Controllers/
-Data/
-Models/
-Services/
-ViewModels/
-Views/
-wwwroot/
-```
+Add production screenshots under `wwwroot/images/portfolio/` and reference them here.
 
----
-
-## Documentation Files
-
-```
-README.md
-```
+| Area | Screenshot |
+|---|---|
+| Command Center | `dashboard.png` |
+| Run Planner | `run-planner.png` |
+| Blueprint Intelligence | `blueprints.png` |
+| Map Intel | `map-intel.png` |
+| Analytics | `reports.png` |
 
 ---
 
-# Final Notes
+## Enterprise Upgrade Roadmap
 
-This submission represents the completed final version of the Raiders Vault capstone project.  
-The project was developed incrementally using ASP.NET Core MVC and SQLite while following the requirements of D424 Software Engineering Capstone.
+See [`docs/ENTERPRISE_UPGRADE.md`](docs/ENTERPRISE_UPGRADE.md) for the full modernization plan.
 
-The application focuses on practical planning tools and progression tracking functionality for ARC Raiders players while maintaining a simple local deployment structure suitable for local execution and testing.
+High-impact future upgrades:
+
+- ASP.NET Core Identity or external OAuth provider
+- PostgreSQL or SQL Server production database
+- Role-based access control
+- Audit logging
+- API layer with OpenAPI/Swagger
+- Automated tests and coverage gates
+- Structured logging with correlation IDs
+- CI/CD deployment pipeline
+- Observability dashboards
+- Multi-user cloud synchronization
+
+---
+
+## Author
+
+Steven Buchholtz  
+Full Stack Software Engineer  
+ASP.NET Core • C# • EF Core • Cloud Deployment • Product Architecture
+
+---
+
+## License
+
+Portfolio demonstration project.
+
+---
+
+## Production Portfolio Upgrade
+
+This version is prepared for resume and portfolio review with a stronger product story, cleaner repository hygiene, release automation, and production-readiness documentation.
+
+### What This Demonstrates
+
+- ASP.NET Core 8 MVC application architecture
+- EF Core + SQLite persistence
+- CRUD workflows across multiple domain entities
+- Service-layer recommendation and report logic
+- Session authentication and anti-forgery validation
+- Security response headers
+- Google Cloud Run deployment readiness
+- Health-check endpoint for operational validation
+- CI workflow for restore, build, and publish validation
+- Polished command-center UI suitable for screenshots and recruiter review
+
+### Resume-Ready Summary
+
+**Raiders Vault** is a production-style game companion platform built with ASP.NET Core MVC, EF Core, SQLite, Razor, and Google Cloud Run. It centralizes ARC Raiders planning through loadout management, quest tracking, blueprint collection, map-condition intelligence, skill planning, favorites, farm routes, and reporting.
+
+See `docs/PRODUCTION_READINESS.md` and `docs/DEPLOYMENT_RUNBOOK.md` for portfolio talking points, validation steps, and deployment instructions.

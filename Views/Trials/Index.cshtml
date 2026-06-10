@@ -1,0 +1,4 @@
+@model IEnumerable<RaidersVault.Models.WeeklyTrial>
+@{ ViewData["Title"] = "Weekly Trials"; }
+<section class="hero-panel feature-hero"><div><span class="eyebrow">Score planning console</span><h1>Weekly Trials Optimizer</h1><p>Plan trial routes by score target, required actions, best map, and low-risk strategy.</p></div></section>
+<section class="database-grid trials-grid">@foreach (var trial in Model){<article class="database-card"><div class="card-topline"><span class="rarity rare">@trial.ObjectiveType</span><span>@trial.TargetScore pts</span></div><h2>@trial.Name</h2><p>@trial.Strategy</p><dl class="intel-list"><div><dt>Best Map</dt><dd>@trial.BestMap</dd></div><div><dt>Per Action</dt><dd>@trial.ScorePerAction</dd></div><div><dt>Actions</dt><dd>@trial.ActionsNeeded</dd></div><div><dt>Notes</dt><dd>@trial.Notes</dd></div></dl></article>}</section>

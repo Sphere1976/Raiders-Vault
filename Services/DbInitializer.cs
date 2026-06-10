@@ -319,6 +319,36 @@ public static class DbInitializer
             );
         }
 
+
+        if (!db.InventoryItems.Any())
+        {
+            db.InventoryItems.AddRange(
+                new InventoryItem { Name = "ARC Alloy", Category = "Material", Rarity = "Common", BestSource = "ARC enemies on Dam Battlegrounds", UsedFor = "Quest turn-ins, grenades, and crafting", KeepTarget = 12, CurrentCount = 3, SellValue = 80, Notes = "High-volume material. Keep a reserve before selling extras." },
+                new InventoryItem { Name = "Battery", Category = "Material", Rarity = "Common", BestSource = "Research/Admin shelves and electrical rooms", UsedFor = "Jolt Mine, quests, workshop upgrades", KeepTarget = 8, CurrentCount = 1, SellValue = 60, Notes = "Prioritize early because several systems depend on it." },
+                new InventoryItem { Name = "Wires", Category = "Material", Rarity = "Common", BestSource = "Server racks and maintenance shelves", UsedFor = "Muzzle Brake, Silencer, Shotgun Choke", KeepTarget = 20, CurrentCount = 7, SellValue = 45, Notes = "Always worth grabbing because weapon mods consume a lot." },
+                new InventoryItem { Name = "Magnetic Accelerator", Category = "Rare Component", Rarity = "Epic", BestSource = "High-value technical containers", UsedFor = "Jupiter and Hullcracker blueprint chains", KeepTarget = 3, CurrentCount = 0, SellValue = 450, Favorite = true, Notes = "Critical rare component. Do not sell until major weapons are crafted." },
+                new InventoryItem { Name = "Queen Reactor", Category = "Rare Component", Rarity = "Legendary", BestSource = "Harvester/Queen-related loot paths", UsedFor = "Legendary weapon crafting", KeepTarget = 1, CurrentCount = 0, SellValue = 900, Favorite = true, Notes = "Treat as a top-priority extraction item." },
+                new InventoryItem { Name = "Rope", Category = "Utility", Rarity = "Common", BestSource = "Residential containers", UsedFor = "Snap Hook and movement quick-use crafting", KeepTarget = 6, CurrentCount = 2, SellValue = 35, Notes = "Low-value but important when chasing movement tools." },
+                new InventoryItem { Name = "Speaker Component", Category = "Electronics", Rarity = "Rare", BestSource = "Computers and electronics boxes", UsedFor = "Lure Grenade and scanner utility crafting", KeepTarget = 4, CurrentCount = 0, SellValue = 240, Notes = "Good target for computer-search routes." },
+                new InventoryItem { Name = "Advanced Electrical Components", Category = "Electronics", Rarity = "Epic", BestSource = "Locked Gate, Night, and technical containers", UsedFor = "Showstopper, augments, high-tier upgrades", KeepTarget = 5, CurrentCount = 1, SellValue = 380, Notes = "Farm under major conditions when possible." });
+        }
+
+        if (!db.IntelGuides.Any())
+        {
+            db.IntelGuides.AddRange(
+                new IntelGuide { Name = "Residential Blueprint Sweep", GuideType = "Blueprint Route", MapName = "Blue Gate", MapCondition = "Standard / Locked Gate", Difficulty = "Medium", RecommendedRoute = "Village interiors to apartments to extract.", LootFocus = "Wardrobes, cupboards, desks, residential containers, attachment blueprint pools.", RiskWarning = "Locked Gate routes attract PvP. Avoid over-looting after the target cluster is checked.", Notes = "Built around container-type logic instead of chasing one exact spawn." },
+                new IntelGuide { Name = "Technical Computer Sprint", GuideType = "Trial Route", MapName = "Spaceport", MapCondition = "Standard", Difficulty = "Low", RecommendedRoute = "Office lanes to terminal rooms to side extract.", LootFocus = "Computers, electronics, processors, speaker components, weekly computer-search scoring.", RiskWarning = "Open hallways can become crossfire lanes. Smoke exposed rotations.", Notes = "Pairs well with Search Computers and electronics farming." },
+                new IntelGuide { Name = "Night Raid Rare Pool", GuideType = "Condition Farm", MapName = "Dam Battlegrounds", MapCondition = "Night Raid", Difficulty = "High", RecommendedRoute = "Research/Admin edge route to locked rooms to immediate extraction.", LootFocus = "Advanced electrical components, high-tier mod pools, major-condition blueprint rolls.", RiskWarning = "Night increases route uncertainty and ambush risk. Bring escape utility.", Notes = "Use only when the target item justifies the risk." });
+        }
+
+        if (!db.WeeklyTrials.Any())
+        {
+            db.WeeklyTrials.AddRange(
+                new WeeklyTrial { Name = "Search Computers", ObjectiveType = "Loot", TargetScore = 3000, ScorePerAction = 1000, BestMap = "Spaceport", Strategy = "Route through office and terminal interiors, search three computers, then extract.", Notes = "Companion-style trial optimization." },
+                new WeeklyTrial { Name = "Loot Weapon Crates", ObjectiveType = "Loot", TargetScore = 3000, ScorePerAction = 1000, BestMap = "Dam Battlegrounds", Strategy = "Hit known crate lanes first, avoid optional fights, and leave once three crates are secured.", Notes = "Use a balanced kit with smoke." },
+                new WeeklyTrial { Name = "Damage ARC Enemies", ObjectiveType = "Combat", TargetScore = 3000, ScorePerAction = 500, BestMap = "Dam Battlegrounds", Strategy = "Pull ARC enemies into controlled choke points and use grenades or sustained rifle fire.", Notes = "ARC Breaker loadout recommended." });
+        }
+
         SeedMapConditionOptions(db);
         SeedSkills(db);
 

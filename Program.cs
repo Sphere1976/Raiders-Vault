@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RaidersVault.Data;
+using RaidersVault.Middleware;
 using RaidersVault.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +17,8 @@ builder.Services.AddDbContext<RaidersVaultContext>(options =>
 builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<LoadoutRecommendationService>();
 builder.Services.AddScoped<BlueprintRecommendationService>();
+builder.Services.AddHealthChecks();
+builder.Services.AddResponseCompression();
 
 builder.Services.AddSession(options =>
 {
@@ -23,7 +26,10 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
     options.Cookie.SameSite = SameSiteMode.Strict;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+    options.Cookie.SecurePolicy = builder.Environment.IsDevelopment()
+        ? CookieSecurePolicy.SameAsRequest
+        : CookieSecurePolicy.Always;
+    options.Cookie.Name = "RaidersVault.Session";
 });
 
 var app = builder.Build();
@@ -33,6 +39,7 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<RaidersVaultContext>();
 
     db.Database.EnsureCreated();
+    DatabaseRepairService.EnsurePortfolioTables(db);
     DbInitializer.Seed(db);
 }
 
@@ -43,12 +50,16 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseResponseCompression();
+app.UseMiddleware<SecurityHeadersMiddleware>();
 app.UseStaticFiles();
 
 app.UseRouting();
 
 app.UseSession();
 app.UseAuthorization();
+
+app.MapHealthChecks("/health");
 
 app.MapControllerRoute(
     name: "default",
