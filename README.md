@@ -11,8 +11,8 @@
 <p align="center">
   <a href="https://raiders-vault-698156866612.us-central1.run.app">Live Demo</a> •
   <a href="#project-overview">Overview</a> •
+  <a href="#screenshots">Screenshots</a> •
   <a href="#architecture">Architecture</a> •
-  <a href="#features">Features</a> •
   <a href="#resume-ready-summary">Resume Summary</a>
 </p>
 
@@ -50,21 +50,53 @@ Raiders Vault demonstrates more than basic CRUD. It combines user-facing plannin
 
 ## Screenshots
 
-Production screenshots can be added under `wwwroot/images/portfolio/`.
+### Command Center Dashboard
 
-| Area | Purpose | Suggested File |
-|---|---|---|
-| Command Center | Shows dashboard metrics and operational overview | `dashboard.png` |
-| Run Planner | Demonstrates map condition planning and loadout recommendations | `run-planner.png` |
-| Blueprint Intelligence | Shows collection tracking and farm planning | `blueprints.png` |
-| Map Conditions | Highlights supported map conditions and strategy context | `map-intel.png` |
-| Reports | Shows summary reporting and analytics output | `reports.png` |
+<p align="center">
+  <img src="docs/images/screenshots/dashboard.jpg" alt="Raiders Vault command center dashboard" width="100%" />
+</p>
 
-Example reference format after screenshots are added:
+Centralized operational dashboard displaying saved kits, pinned intel, objective progress, blueprint progress, and next-run recommendations.
 
-```md
-![Command Center](wwwroot/images/portfolio/dashboard.png)
-```
+### Run Planner
+
+<p align="center">
+  <img src="docs/images/screenshots/run-planner.jpg" alt="Raiders Vault run planner" width="100%" />
+</p>
+
+Decision-support workflow for map selection, route strategy, skill focus, blueprint targets, and recommended loadout planning.
+
+### Blueprint Intelligence
+
+<p align="center">
+  <img src="docs/images/screenshots/blueprint-tracker.jpg" alt="Raiders Vault blueprint tracker" width="100%" />
+</p>
+
+Collection management system for tracking missing blueprints, farming routes, item types, map recommendations, and collection status.
+
+### Map Conditions
+
+<p align="center">
+  <img src="docs/images/screenshots/map-conditions.jpg" alt="Raiders Vault map conditions" width="100%" />
+</p>
+
+Operational intelligence dashboard that evaluates active map conditions, risk level, blueprint opportunities, and route readiness.
+
+### Reports and Analytics
+
+<p align="center">
+  <img src="docs/images/screenshots/reports-summary.jpg" alt="Raiders Vault reports summary" width="100%" />
+</p>
+
+Interactive reporting engine for reviewing loadouts, quests, blueprints, status filters, and summary metrics.
+
+### Login Experience
+
+<p align="center">
+  <img src="docs/images/screenshots/login.jpg" alt="Raiders Vault login screen" width="100%" />
+</p>
+
+Clean authentication entry point with the Raiders Vault visual design system.
 
 ---
 
