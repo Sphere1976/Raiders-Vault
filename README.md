@@ -61,7 +61,7 @@ Centralized operational dashboard displaying saved kits, pinned intel, objective
 ### Run Planner
 
 <p align="center">
-  <img src="docs/images/screenshots/run-planner.jpg" alt="Raiders Vault run planner" width="100%" />
+  <img src="docs/images/screenshots/run_planner.jpg" alt="Raiders Vault run planner" width="100%" />
 </p>
 
 Decision-support workflow for map selection, route strategy, skill focus, blueprint targets, and recommended loadout planning.
