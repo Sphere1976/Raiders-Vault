@@ -2,307 +2,374 @@
 
 @{
     ViewData["Title"] = "Run Planner";
+    var loadout = Model.Loadout;
+    var suggestedBlueprintCount = Model.SuggestedBlueprints.Count();
+    var suggestedQuestCount = Model.SuggestedQuests.Count();
+    var suggestedSkillCount = Model.SuggestedSkills.Count();
+    var quickItems = loadout?.QuickUseItems ?? new List<string>();
+
+    string IconClass(string? value)
+    {
+        var text = (value ?? string.Empty).ToLowerInvariant();
+        if (text.Contains("med") || text.Contains("bandage") || text.Contains("heal")) return "med";
+        if (text.Contains("shield") || text.Contains("armor")) return "shield";
+        if (text.Contains("ammo") || text.Contains("weapon") || text.Contains("rifle") || text.Contains("shotgun") || text.Contains("pistol")) return "weapon";
+        if (text.Contains("augment") || text.Contains("tool") || text.Contains("scanner")) return "tool";
+        if (text.Contains("key") || text.Contains("blueprint")) return "intel";
+        return "gear";
+    }
 }
 
-<div class="kicker">
-    Decision Support
-</div>
+<section class="ops-hero planner-command-hero" aria-labelledby="planner-title">
+    <div class="ops-hero-copy">
+        <div class="kicker">Decision Support // Tactical Run Builder</div>
+        <h2 id="planner-title">Run Planner</h2>
+        <p>
+            Configure the drop, generate the kit, line up skill priorities, surface blueprint opportunities,
+            and turn the recommendation into a clean pre-extraction checklist.
+        </p>
 
-<h2>
-    Run Planner
-</h2>
+        <div class="ops-hero-actions" aria-label="Planner shortcuts">
+            <a class="button" asp-controller="MapConditions" asp-action="Index" asp-route-selectedMap="@Model.SelectedMap" asp-route-selectedCondition="@Model.SelectedCondition" asp-route-selectedStyle="@Model.SelectedStyle" asp-route-totalSkillPoints="@Model.TotalSkillPoints">Open Map Intel</a>
+            <a class="button secondary" asp-controller="Skills" asp-action="Index" asp-route-entryStyle="@Model.SelectedStyle" asp-route-totalPoints="@Model.TotalSkillPoints">Tune Skill Build</a>
+            <a class="button secondary" asp-controller="Reports" asp-action="Index">Generate Report</a>
+        </div>
+    </div>
 
-<p class="hint">
-    Choose a map, condition, goal, and entry style.
-    Raiders Vault recommends the kit, skill focus,
-    blueprint targets, and objective priorities.
-</p>
+    <aside class="ops-status-card planner-status-card" aria-label="Current planner configuration">
+        <div class="intel-line"><span>Map</span><strong>@Model.SelectedMap</strong></div>
+        <div class="intel-line"><span>Condition</span><strong>@Model.SelectedCondition</strong></div>
+        <div class="intel-line"><span>Goal</span><strong>@Model.SelectedGoal</strong></div>
+        <div class="intel-line"><span>Style</span><strong>@Model.SelectedStyle</strong></div>
+        <div class="intel-line"><span>Skill Points</span><strong>@Model.TotalSkillPoints</strong></div>
+    </aside>
+</section>
 
-<form method="get" class="planner-form">
-    <div>
-        <label>Map</label>
-        <select name="selectedMap"
-                onchange="this.form.submit()">
-            @foreach (var map in Model.Maps)
+<section class="kpi-grid planner-kpis" aria-label="Run planner summary">
+    <article class="kpi-card"><span>Blueprint Leads</span><strong>@suggestedBlueprintCount</strong><small>matching this run</small></article>
+    <article class="kpi-card"><span>Objective Leads</span><strong>@suggestedQuestCount</strong><small>route-aligned tasks</small></article>
+    <article class="kpi-card"><span>Skill Picks</span><strong>@suggestedSkillCount</strong><small>recommended upgrades</small></article>
+    <article class="kpi-card"><span>Quick Items</span><strong>@quickItems.Count()</strong><small>survival tools</small></article>
+</section>
+
+<section class="ops-layout planner-layout">
+    <aside class="control-panel card" aria-labelledby="planner-controls-title">
+        <div class="kicker">Planner Controls</div>
+        <h3 id="planner-controls-title">Configure Drop</h3>
+        <p class="hint">Update map, condition, goal, playstyle, and available skill points.</p>
+
+        <form method="get" class="ops-control-form">
+            <label>
+                Map
+                <select name="selectedMap" onchange="this.form.submit()">
+                    @foreach (var map in Model.Maps)
+                    {
+                        <option value="@map" selected="@(map == Model.SelectedMap)">@map</option>
+                    }
+                </select>
+            </label>
+
+            <label>
+                Condition
+                <select name="selectedCondition">
+                    @foreach (var condition in Model.Conditions)
+                    {
+                        <option value="@condition" selected="@(condition == Model.SelectedCondition)">@condition</option>
+                    }
+                </select>
+            </label>
+
+            <label>
+                Goal
+                <select name="selectedGoal">
+                    @foreach (var goal in Model.Goals)
+                    {
+                        <option value="@goal" selected="@(goal == Model.SelectedGoal)">@goal</option>
+                    }
+                </select>
+            </label>
+
+            <label>
+                Entry Style
+                <select name="selectedStyle">
+                    @foreach (var style in Model.Styles)
+                    {
+                        <option value="@style" selected="@(style == Model.SelectedStyle)">@style</option>
+                    }
+                </select>
+            </label>
+
+            <label>
+                Skill Points
+                <input name="totalSkillPoints" type="number" min="0" max="120" value="@Model.TotalSkillPoints" />
+            </label>
+
+            <button type="submit">Update Mission Plan</button>
+        </form>
+    </aside>
+
+    <div class="ops-main-stack">
+        <section class="recommendation-card mission-brief-card" aria-labelledby="next-run-title">
+            <div class="section-heading compact-heading">
+                <div>
+                    <div class="kicker">Generated Briefing</div>
+                    <h3 id="next-run-title">Next Run Plan</h3>
+                </div>
+                <span class="badge teal">@Model.SelectedStyle</span>
+            </div>
+
+            <div class="briefing-grid">
+                <article>
+                    <span>Summary</span>
+                    <p>@Model.Summary</p>
+                </article>
+                <article>
+                    <span>Route Advice</span>
+                    <p>@Model.RouteAdvice</p>
+                </article>
+                <article>
+                    <span>Skill Focus</span>
+                    <p>@Model.SkillFocus</p>
+                </article>
+                <article>
+                    <span>Blueprint Target</span>
+                    <p>@Model.BlueprintTarget</p>
+                </article>
+                <article>
+                    <span>Objective Target</span>
+                    <p>@Model.ObjectiveTarget</p>
+                </article>
+            </div>
+
+            <div class="mission-score-strip" aria-label="Mission score summary">
+                <div><span>Priority Score</span><strong>@Model.PriorityScore</strong><small>/100</small></div>
+                <div><span>Risk Level</span><strong>@Model.RiskLevel</strong><small>route pressure</small></div>
+                <div><span>Extraction Window</span><strong>@Model.ExtractionWindow</strong></div>
+            </div>
+        </section>
+
+        <section class="recommendation-card metaforge-card" aria-labelledby="metaforge-signal-title">
+            <div class="section-heading compact-heading">
+                <div>
+                    <div class="kicker">MetaForge-Style Intel Layer</div>
+                    <h3 id="metaforge-signal-title">Companion Hub Signals</h3>
+                    <p class="hint">Uses a professional companion-app pattern: map context, item target, route logic, and operator actions in one place.</p>
+                </div>
+                <span class="badge teal">Intel Linked</span>
+            </div>
+
+            <div class="signal-grid">
+                @foreach (var signal in Model.MetaForgeSignals)
+                {
+                    <article><span>Signal</span><p>@signal</p></article>
+                }
+            </div>
+        </section>
+
+        <section class="recommendation-card interactive-map-card" aria-labelledby="interactive-map-title">
+            <div class="section-heading compact-heading">
+                <div>
+                    <div class="kicker">Interactive Map Layer</div>
+                    <h3 id="interactive-map-title">@Model.SelectedMap Tactical Board</h3>
+                    <p class="hint">Click a zone to preview the route purpose, likely containers, and extraction behavior for this run.</p>
+                </div>
+                <span class="badge teal">Map Active</span>
+            </div>
+
+            <div class="interactive-map-shell" data-map-board>
+                <div class="map-canvas" aria-label="Interactive tactical map">
+                    <button type="button" class="map-zone zone-entry active" data-zone="entry"><span>Entry</span></button>
+                    <button type="button" class="map-zone zone-loot" data-zone="loot"><span>Loot Core</span></button>
+                    <button type="button" class="map-zone zone-blueprint" data-zone="blueprint"><span>Blueprint</span></button>
+                    <button type="button" class="map-zone zone-objective" data-zone="objective"><span>Objective</span></button>
+                    <button type="button" class="map-zone zone-extract" data-zone="extract"><span>Extract</span></button>
+                    <div class="map-route-line"></div>
+                </div>
+
+                <aside class="map-intel-panel">
+                    <div class="kicker">Selected Zone</div>
+                    <h4 data-zone-title>Entry</h4>
+                    <p data-zone-copy>Start quiet, confirm the active condition, and avoid committing to the center until the first container check is complete.</p>
+                    <div class="mini-metrics">
+                        <span><strong data-zone-risk>@Model.RiskLevel</strong><small>Risk</small></span>
+                        <span><strong data-zone-reward>@Model.PriorityScore</strong><small>Value</small></span>
+                    </div>
+                </aside>
+            </div>
+        </section>
+
+        <section class="recommendation-card" aria-labelledby="mission-checklist-title">
+            <div class="section-heading compact-heading">
+                <div>
+                    <div class="kicker">Pre-Extraction Checklist</div>
+                    <h3 id="mission-checklist-title">Mission Readiness Board</h3>
+                    <p class="hint">This interactive checklist saves locally in the browser for the current device.</p>
+                </div>
+                <button type="button" class="button secondary small" data-reset-checklist>Reset Board</button>
+            </div>
+
+            <div class="readiness-board" data-checklist="run-planner">
+                <label class="readiness-item"><input type="checkbox" /> <span>Confirm active map condition: <strong>@Model.SelectedCondition</strong></span></label>
+                <label class="readiness-item"><input type="checkbox" /> <span>Lock entry style: <strong>@Model.SelectedStyle</strong></span></label>
+                <label class="readiness-item"><input type="checkbox" /> <span>Bring recommended quick-use items.</span></label>
+                <label class="readiness-item"><input type="checkbox" /> <span>Check blueprint target before extraction.</span></label>
+                <label class="readiness-item"><input type="checkbox" /> <span>Update objective status after the run.</span></label>
+            </div>
+        </section>
+    </div>
+</section>
+
+<section class="route-intel-grid" aria-label="Route and threat intelligence">
+    <article class="recommendation-card route-board">
+        <div class="kicker">Route Builder</div>
+        <h3>Professional Drop Sequence</h3>
+        <ol class="route-steps">
+            @foreach (var stop in Model.RouteStops)
             {
-                <option value="@map"
-                        selected="@(map == Model.SelectedMap)">
-                    @map
-                </option>
+                <li><span></span><strong>@stop</strong></li>
             }
-        </select>
-    </div>
+        </ol>
+    </article>
 
-    <div>
-        <label>Condition</label>
-        <select name="selectedCondition">
-            @foreach (var condition in Model.Conditions)
+    <article class="recommendation-card threat-board">
+        <div class="kicker">Threat Model</div>
+        <h3>Risk Controls</h3>
+        <ul class="intel-list">
+            @foreach (var note in Model.ThreatNotes)
             {
-                <option value="@condition"
-                        selected="@(condition == Model.SelectedCondition)">
-                    @condition
-                </option>
+                <li>@note</li>
             }
-        </select>
-    </div>
+        </ul>
+    </article>
 
-    <div>
-        <label>Goal</label>
-        <select name="selectedGoal">
-            @foreach (var goal in Model.Goals)
+    <article class="recommendation-card operator-board">
+        <div class="kicker">Operator Standard</div>
+        <h3>Professional Tips</h3>
+        <ul class="intel-list">
+            @foreach (var tip in Model.OperatorTips)
             {
-                <option value="@goal"
-                        selected="@(goal == Model.SelectedGoal)">
-                    @goal
-                </option>
+                <li>@tip</li>
             }
-        </select>
-    </div>
+        </ul>
+    </article>
+</section>
 
-    <div>
-        <label>Entry Style</label>
-        <select name="selectedStyle">
-            @foreach (var style in Model.Styles)
-            {
-                <option value="@style"
-                        selected="@(style == Model.SelectedStyle)">
-                    @style
-                </option>
-            }
-        </select>
-    </div>
-
-    <div>
-        <label>Skill Points</label>
-        <input name="totalSkillPoints"
-               type="number"
-               min="0"
-               max="120"
-               value="@Model.TotalSkillPoints" />
-    </div>
-
-    <button type="submit">
-        Update Plan
-    </button>
-</form>
-
-<div class="card">
-    <h3>
-        Next Run Plan
-    </h3>
-
-    <p>
-        @Model.Summary
-    </p>
-
-    <p>
-        <strong>Route Advice:</strong>
-        @Model.RouteAdvice
-    </p>
-
-    <p>
-        <strong>Skill Focus:</strong>
-        @Model.SkillFocus
-    </p>
-
-    <p>
-        <strong>Blueprint Target:</strong>
-        @Model.BlueprintTarget
-    </p>
-
-    <p>
-        <strong>Objective Target:</strong>
-        @Model.ObjectiveTarget
-    </p>
-</div>
-
-@if (Model.Loadout != null)
+@if (loadout != null)
 {
-    <div class="card">
-        <h3>
-            Recommended Loadout
-        </h3>
-
-        <div class="cards">
-            <div class="card">
-                <div class="kicker">Primary</div>
-                <h4>@Model.Loadout.PrimaryWeapon</h4>
-                <p class="hint">Main weapon recommendation.</p>
+    <section class="recommendation-card" aria-labelledby="loadout-title">
+        <div class="section-heading compact-heading">
+            <div>
+                <div class="kicker">Recommended Kit</div>
+                <h3 id="loadout-title">Loadout Package</h3>
             </div>
-
-            <div class="card">
-                <div class="kicker">Secondary</div>
-                <h4>@Model.Loadout.SecondaryWeapon</h4>
-                <p class="hint">Backup weapon recommendation.</p>
-            </div>
-
-            <div class="card">
-                <div class="kicker">Shield</div>
-                <h4>@Model.Loadout.Shield</h4>
-                <p class="hint">Protection level for this route.</p>
-            </div>
-
-            <div class="card">
-                <div class="kicker">Augment</div>
-                <h4>@Model.Loadout.Augment</h4>
-                <p class="hint">Utility focus for the chosen style.</p>
-            </div>
+            <span class="badge gold">Mission Ready</span>
         </div>
 
-        <h4>
-            Quick Use Items
-        </h4>
-
-        <div class="badge-row">
-            @foreach (var item in Model.Loadout.QuickUseItems)
-            {
-                <span class="badge">
-                    @item
-                </span>
-            }
+        <div class="loadout-grid premium-loadout-grid">
+            <article class="loadout-tile icon-tile"><span class="item-icon @IconClass(loadout.PrimaryWeapon)"></span><div><span>Primary</span><strong>@loadout.PrimaryWeapon</strong></div></article>
+            <article class="loadout-tile icon-tile"><span class="item-icon @IconClass(loadout.SecondaryWeapon)"></span><div><span>Secondary</span><strong>@loadout.SecondaryWeapon</strong></div></article>
+            <article class="loadout-tile icon-tile"><span class="item-icon shield"></span><div><span>Shield</span><strong>@loadout.Shield</strong></div></article>
+            <article class="loadout-tile icon-tile"><span class="item-icon tool"></span><div><span>Augment</span><strong>@loadout.Augment</strong></div></article>
         </div>
-    </div>
+
+        <div class="quick-use-panel">
+            <div>
+                <h4>Quick Use Items</h4>
+                <p class="hint">Carry these to support the route and goal.</p>
+            </div>
+            <div class="badge-row">
+                @foreach (var item in quickItems)
+                {
+                    <span class="badge item-chip"><span class="item-icon tiny @IconClass(item)"></span>@item</span>
+                }
+            </div>
+        </div>
+    </section>
 }
 
-<div class="card">
-    <h3>
-        Suggested Skills
-    </h3>
-
-    <p class="hint">
-        These skills match the selected entry style and point total.
-        Use the Skill Planner to apply or adjust the build.
-    </p>
-
-    @if (Model.SuggestedSkills.Any())
-    {
-        <div class="table-wrap">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Branch</th>
-                        <th>Skill</th>
-                        <th>Points</th>
-                        <th>Requires</th>
-                        <th>Reason</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var skill in Model.SuggestedSkills)
-                    {
-                        <tr>
-                            <td>@skill.Branch</td>
-                            <td>@skill.Name</td>
-                            <td>@skill.RecommendedPoints / @skill.MaxPoints</td>
-                            <td>@skill.Requires</td>
-                            <td>@skill.Reason</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+<section class="ops-layout secondary-layout planner-results-layout">
+    <section class="recommendation-card" aria-labelledby="skills-title">
+        <div class="section-heading compact-heading">
+            <div>
+                <div class="kicker">Progression</div>
+                <h3 id="skills-title">Suggested Skills</h3>
+                <p class="hint">Skills matched to the selected entry style and point total.</p>
+            </div>
+            <a class="button secondary small" asp-controller="Skills" asp-action="Index" asp-route-entryStyle="@Model.SelectedStyle" asp-route-totalPoints="@Model.TotalSkillPoints">Open Skill Planner</a>
         </div>
 
-        <p class="hint">
-            For a complete skill tree breakdown, advanced point allocation,
-            and full progression planning, open the Skill Planner.
-        </p>
+        @if (Model.SuggestedSkills.Any())
+        {
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr><th>Branch</th><th>Skill</th><th>Points</th><th>Requires</th><th>Reason</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var skill in Model.SuggestedSkills)
+                        {
+                            <tr>
+                                <td>@skill.Branch</td>
+                                <td>@skill.Name</td>
+                                <td>@skill.RecommendedPoints / @skill.MaxPoints</td>
+                                <td>@skill.Requires</td>
+                                <td>@skill.Reason</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="empty-state"><h4>No skill recommendation yet</h4><p class="hint">Enter a skill point total to generate suggested skills.</p></div>
+        }
+    </section>
 
-        <a class="button"
-           asp-controller="Skills"
-           asp-action="Index"
-           asp-route-entryStyle="@Model.SelectedStyle"
-           asp-route-totalPoints="@Model.TotalSkillPoints">
-
-            Open Skill Planner
-        </a>
-    }
-    else
-    {
-        <p class="hint">
-            Enter a skill point total to generate suggested skills.
-        </p>
-    }
-</div>
-
-<div class="card">
-    <h3>
-        Suggested Blueprints
-    </h3>
-
-    @if (Model.SuggestedBlueprints.Any())
-    {
-        <div class="table-wrap">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Blueprint</th>
-                        <th>Type</th>
-                        <th>Status</th>
-                        <th>Where to Get</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var blueprint in Model.SuggestedBlueprints)
-                    {
-                        <tr>
-                            <td>@blueprint.Name</td>
-                            <td>@blueprint.Category</td>
-                            <td>@blueprint.CollectionStatus</td>
-                            <td>@blueprint.WhereToGet</td>
-                            <td>
-                                <a asp-controller="Blueprints"
-                                   asp-action="FarmPlan"
-                                   asp-route-id="@blueprint.Id"
-                                   asp-route-playstyle="@Model.SelectedStyle">
-                                    Farm Plan
-                                </a>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+    <section class="recommendation-card" aria-labelledby="blueprints-title">
+        <div class="section-heading compact-heading">
+            <div>
+                <div class="kicker">Collection Intel</div>
+                <h3 id="blueprints-title">Suggested Blueprints</h3>
+            </div>
+            <a class="button secondary small" asp-controller="Blueprints" asp-action="Index" asp-route-playstyle="@Model.SelectedStyle">Open Blueprints</a>
         </div>
 
-        <a class="button secondary"
-           asp-controller="Blueprints"
-           asp-action="Index"
-           asp-route-playstyle="@Model.SelectedStyle">
-            Open Blueprints
-        </a>
-    }
-    else
-    {
-        <p class="hint">
-            No specific blueprint match found for this route.
-            Open Blueprints to pick a target.
-        </p>
+        @if (Model.SuggestedBlueprints.Any())
+        {
+            <div class="stacked-cards">
+                @foreach (var blueprint in Model.SuggestedBlueprints.Take(6))
+                {
+                    <article class="stacked-result">
+                        <div><strong>@blueprint.Name</strong><span>@blueprint.Category · @blueprint.CollectionStatus</span></div>
+                        <p>@blueprint.WhereToGet</p>
+                        <a asp-controller="Blueprints" asp-action="FarmPlan" asp-route-id="@blueprint.Id" asp-route-playstyle="@Model.SelectedStyle">Farm Plan</a>
+                    </article>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="empty-state"><h4>No blueprint match found</h4><p class="hint">Open Blueprints to pick a manual target.</p></div>
+        }
+    </section>
+</section>
 
-        <a class="button secondary"
-           asp-controller="Blueprints"
-           asp-action="Index">
-            Open Blueprints
-        </a>
-    }
-</div>
-
-<div class="card">
-    <h3>
-        Suggested Objectives
-    </h3>
+<section class="recommendation-card" aria-labelledby="objectives-title">
+    <div class="section-heading compact-heading">
+        <div>
+            <div class="kicker">Objective Pipeline</div>
+            <h3 id="objectives-title">Suggested Objectives</h3>
+        </div>
+        <a class="button secondary small" asp-controller="Quests" asp-action="Index">Open Objectives</a>
+    </div>
 
     @if (Model.SuggestedQuests.Any())
     {
         <div class="table-wrap">
             <table>
                 <thead>
-                    <tr>
-                        <th>Objective</th>
-                        <th>Status</th>
-                        <th>Priority</th>
-                        <th>Activity</th>
-                        <th></th>
-                    </tr>
+                    <tr><th>Objective</th><th>Status</th><th>Priority</th><th>Activity</th><th></th></tr>
                 </thead>
                 <tbody>
                     @foreach (var quest in Model.SuggestedQuests)
@@ -312,35 +379,15 @@
                             <td>@quest.Status</td>
                             <td>@quest.Priority</td>
                             <td>@quest.RelatedActivity</td>
-                            <td>
-                                <a asp-controller="Quests"
-                                   asp-action="Edit"
-                                   asp-route-id="@quest.Id">
-                                    Update
-                                </a>
-                            </td>
+                            <td><a asp-controller="Quests" asp-action="Edit" asp-route-id="@quest.Id">Update</a></td>
                         </tr>
                     }
                 </tbody>
             </table>
         </div>
-
-        <a class="button secondary"
-           asp-controller="Quests"
-           asp-action="Index">
-            Open Objectives
-        </a>
     }
     else
     {
-        <p class="hint">
-            No objective match found for this map.
-        </p>
-
-        <a class="button secondary"
-           asp-controller="Quests"
-           asp-action="Index">
-            Open Objectives
-        </a>
+        <div class="empty-state"><h4>No objective match found</h4><p class="hint">Use Objectives to choose the next manual task.</p></div>
     }
-</div>
+</section>

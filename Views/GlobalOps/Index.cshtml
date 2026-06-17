@@ -1,0 +1,266 @@
+@model GlobalOpsViewModel
+
+@{
+    ViewData["Title"] = "Global Ops";
+}
+
+<section class="mega-hero global-ops-hero">
+    <div class="hero-copy">
+        <div class="kicker">Worldwide Command Layer</div>
+        <h1>Operate Raiders Vault like a global companion platform.</h1>
+        <p>
+            Regional readiness, marketplace-style value signals, inventory gaps, blueprint progress,
+            and enterprise controls are brought together for worldwide ARC Raiders planning.
+        </p>
+
+        <div class="hero-actions">
+            <a class="button" asp-controller="RunPlanner" asp-action="Index">Plan Global Run</a>
+            <a class="button secondary" asp-controller="GlobalOps" asp-action="ExportCsv">Export CSV</a>
+            <a class="button secondary" href="/api/v1/global-ops">JSON API</a>
+            <a class="button secondary" asp-controller="Database" asp-action="Index">Needed Items</a>
+            <a class="button secondary" asp-controller="Blueprints" asp-action="Index">Blueprint Vault</a>
+        </div>
+    </div>
+
+    <aside class="hero-intel-card">
+        <div class="kicker">Operator Profile</div>
+        <h3>@Model.PlayerName</h3>
+        <div class="intel-line"><span>Default Map</span><strong>@Model.DefaultMap</strong></div>
+        <div class="intel-line"><span>Playstyle</span><strong>@Model.PreferredPlaystyle</strong></div>
+        <div class="intel-line"><span>Readiness</span><strong>@Model.ReadinessTier</strong></div>
+        <div class="intel-line"><span>Risk Signals</span><strong>@Model.ActiveRiskSignals active</strong></div>
+        <p class="hint">Generated @Model.GeneratedAtUtc.ToLocalTime().ToString("yyyy-MM-dd h:mm tt")</p>
+    </aside>
+</section>
+
+<section class="live-conditions-banner" aria-label="Official ARC Raiders map conditions">
+    <div class="live-banner-copy">
+        <span class="live-dot"></span>
+        <div>
+            <div class="kicker">Official Map Conditions</div>
+            <h2>Live Topside conditions from Embark.</h2>
+            <p>Active and upcoming map conditions are surfaced from the official ARC Raiders feed with local fallback coverage.</p>
+        </div>
+    </div>
+
+    <div class="live-condition-strip">
+        @foreach (var condition in Model.LiveOps.ActiveConditions)
+        {
+            <a class="live-condition-card active" href="@condition.SourceUrl" target="_blank" rel="noopener">
+                <span>@condition.Status</span>
+                <strong>@condition.ConditionName</strong>
+                <small>@condition.MapName // @condition.TimeRemaining</small>
+                <em>@condition.Window</em>
+            </a>
+        }
+    </div>
+</section>
+
+<section class="split premium-split">
+    <div class="panel">
+        <div class="kicker">Embark News Feed</div>
+        <h3>Official ARC Raiders updates</h3>
+        <div class="news-feed-list">
+            @foreach (var news in Model.LiveOps.NewsItems)
+            {
+                <a class="news-feed-card" href="@news.Url" target="_blank" rel="noopener">
+                    <span>@news.Category</span>
+                    <strong>@news.Title</strong>
+                    <small>@news.PublishedAt</small>
+                    <p>@news.Summary</p>
+                </a>
+            }
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="kicker">Coming Conditions</div>
+        <h3>Next map rotations</h3>
+        <div class="upcoming-condition-list">
+            @foreach (var condition in Model.LiveOps.UpcomingConditions)
+            {
+                <a class="upcoming-condition-row" href="@condition.SourceUrl" target="_blank" rel="noopener">
+                    <strong>@condition.ConditionName</strong>
+                    <span>@condition.MapName</span>
+                    <small>@condition.TimeRemaining // @condition.Window</small>
+                </a>
+            }
+        </div>
+    </div>
+</section>
+
+<section class="mission-control-grid global-kpis">
+    <article class="metric-card neon-green">
+        <span class="metric-label">Global Readiness</span>
+        <strong class="stat">@Model.OverallReadinessPercent%</strong>
+        <p>@Model.ReadinessTier for @Model.GlobalUsersLabel.ToLowerInvariant() workflows.</p>
+        <div class="progress-shell"><div class="progress-fill" style="@($"width:{Model.OverallReadinessPercent}%")"></div></div>
+    </article>
+
+    <article class="metric-card neon-blue">
+        <span class="metric-label">Objectives</span>
+        <strong class="stat">@Model.QuestCompletionPercent%</strong>
+        <p>Quest pipeline completion across the active account.</p>
+        <div class="progress-shell"><div class="progress-fill" style="@($"width:{Model.QuestCompletionPercent}%")"></div></div>
+    </article>
+
+    <article class="metric-card neon-purple">
+        <span class="metric-label">Blueprints</span>
+        <strong class="stat">@Model.BlueprintCompletionPercent%</strong>
+        <p>Collection readiness for build crafting and long-term progression.</p>
+        <div class="progress-shell"><div class="progress-fill" style="@($"width:{Model.BlueprintCompletionPercent}%")"></div></div>
+    </article>
+
+    <article class="metric-card neon-gold">
+        <span class="metric-label">Inventory</span>
+        <strong class="stat">@Model.InventoryReadinessPercent%</strong>
+        <p>Keep-target coverage for tracked crafting and quest materials.</p>
+        <div class="progress-shell"><div class="progress-fill" style="@($"width:{Model.InventoryReadinessPercent}%")"></div></div>
+    </article>
+
+    <article class="metric-card neon-blue">
+        <span class="metric-label">Vault Value</span>
+        <strong class="stat">@Model.TotalVaultValue</strong>
+        <p>Estimated local stash value from tracked item counts.</p>
+    </article>
+</section>
+
+<section class="vault-console">
+    <div class="section-heading">
+        <div>
+            <div class="kicker">Regional Operations</div>
+            <h2>Worldwide planning windows without leaving the dashboard.</h2>
+        </div>
+    </div>
+
+    <div class="global-region-grid">
+        @foreach (var region in Model.Regions)
+        {
+            <article class="region-card">
+                <div class="card-topline">
+                    <span class="badge teal">@region.LocalTime local</span>
+                    <span class="badge">@region.RiskLevel risk</span>
+                </div>
+                <h3>@region.Region</h3>
+                <dl class="intel-list compact">
+                    <div><dt>Locales</dt><dd>@region.Locale</dd></div>
+                    <div><dt>Prime Window</dt><dd>@region.PrimeWindow</dd></div>
+                    <div><dt>Focus</dt><dd>@region.RecommendedFocus</dd></div>
+                </dl>
+            </article>
+        }
+    </div>
+</section>
+
+<section class="split premium-split">
+    <div class="panel">
+        <div class="kicker">Blueprint Targets</div>
+        <h3>Global farm queue</h3>
+        <div class="signal-table">
+            @foreach (var item in Model.BlueprintTargets)
+            {
+                <div class="signal-row">
+                    <strong>@item.Name</strong>
+                    <span>@item.Category</span>
+                    <span>@item.Signal</span>
+                    <small>@item.Score priority</small>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="kicker">Weekly Trial Ops</div>
+        <h3>Score planning</h3>
+        <div class="signal-table">
+            @foreach (var trial in Model.TrialSignals)
+            {
+                <div class="signal-row">
+                    <strong>@trial.Name</strong>
+                    <span>@trial.Category</span>
+                    <span>@trial.Signal</span>
+                    <small>@trial.Source</small>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<section class="split premium-split">
+    <div class="panel">
+        <div class="kicker">Marketplace Insights</div>
+        <h3>High-value signals</h3>
+        <div class="signal-table">
+            @foreach (var signal in Model.MarketSignals)
+            {
+                <div class="signal-row">
+                    <strong>@signal.Name</strong>
+                    <span>@signal.Category</span>
+                    <span>@signal.Signal</span>
+                    <small>@signal.Score value</small>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="kicker">Needed Items Tracker</div>
+        <h3>Farm priorities</h3>
+        <div class="signal-table">
+            @foreach (var item in Model.NeededItems)
+            {
+                <div class="signal-row">
+                    <strong>@item.Name</strong>
+                    <span>@item.Signal</span>
+                    <span>@item.Source</span>
+                    <small>@item.Score priority</small>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<section class="vault-console">
+    <div class="section-heading">
+        <div>
+            <div class="kicker">Localization Readiness</div>
+            <h2>Worldwide support signals for global use.</h2>
+        </div>
+    </div>
+
+    <div class="localization-grid">
+        @foreach (var signal in Model.LocalizationSignals)
+        {
+            <article class="localization-card">
+                <h3>@signal.Region</h3>
+                <div class="intel-line"><span>Languages</span><strong>@signal.Languages</strong></div>
+                <div class="intel-line"><span>Currency</span><strong>@signal.Currency</strong></div>
+                <div class="intel-line"><span>Support</span><strong>@signal.SupportWindow</strong></div>
+            </article>
+        }
+    </div>
+</section>
+
+<section class="vault-console">
+    <div class="section-heading">
+        <div>
+            <div class="kicker">Enterprise Controls</div>
+            <h2>Production-grade capability map.</h2>
+        </div>
+        <div class="hero-actions compact-actions">
+            <a class="button secondary" asp-controller="Reports" asp-action="Index">Open Analytics</a>
+            <a class="button secondary" asp-controller="GlobalOps" asp-action="ExportCsv">Download CSV</a>
+        </div>
+    </div>
+
+    <div class="capability-grid">
+        @foreach (var capability in Model.Capabilities)
+        {
+            <article class="capability-card">
+                <span class="badge green">@capability.Status</span>
+                <h3>@capability.Name</h3>
+                <p>@capability.Detail</p>
+            </article>
+        }
+    </div>
+</section>

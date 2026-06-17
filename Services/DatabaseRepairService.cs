@@ -75,5 +75,26 @@ public static class DatabaseRepairService
             CREATE UNIQUE INDEX IF NOT EXISTS "IX_WeeklyTrials_Name"
             ON "WeeklyTrials" ("Name");
             """);
+
+        db.Database.ExecuteSqlRaw("""
+            CREATE TABLE IF NOT EXISTS "AuditEvents" (
+                "Id" INTEGER NOT NULL CONSTRAINT "PK_AuditEvents" PRIMARY KEY AUTOINCREMENT,
+                "Name" TEXT NOT NULL,
+                "Notes" TEXT NULL,
+                "CreatedAt" TEXT NOT NULL,
+                "UpdatedAt" TEXT NOT NULL,
+                "EventType" TEXT NOT NULL,
+                "Actor" TEXT NOT NULL,
+                "Area" TEXT NOT NULL,
+                "Severity" TEXT NOT NULL,
+                "Details" TEXT NOT NULL,
+                "OccurredAt" TEXT NOT NULL
+            );
+            """);
+
+        db.Database.ExecuteSqlRaw("""
+            CREATE INDEX IF NOT EXISTS "IX_AuditEvents_OccurredAt"
+            ON "AuditEvents" ("OccurredAt");
+            """);
     }
 }

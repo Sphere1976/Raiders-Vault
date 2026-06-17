@@ -1974,3 +1974,1334 @@ main > *:last-child,
         gap: 8px;
     }
 }
+
+/* ============================================================
+   RUN PLANNER COMMAND UPGRADE
+   Mission briefing, readiness board, stacked results, and
+   cleaner premium layout for the primary planning workflow.
+   ============================================================ */
+.planner-command-hero {
+    margin-bottom: 24px;
+}
+
+.planner-status-card .intel-line:last-child {
+    border-bottom: 0;
+}
+
+.planner-kpis {
+    margin-bottom: 26px;
+}
+
+.planner-layout {
+    margin-top: 18px;
+}
+
+.mission-brief-card {
+    border-color: rgba(125, 211, 252, .34);
+}
+
+.briefing-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.briefing-grid article {
+    min-height: 150px;
+    padding: 20px;
+    border: 1px solid rgba(255,255,255,.14);
+    border-radius: 22px;
+    background:
+        radial-gradient(circle at 0% 0%, rgba(56,189,248,.12), transparent 42%),
+        rgba(255,255,255,.045);
+}
+
+.briefing-grid article:first-child {
+    grid-column: 1 / -1;
+}
+
+.briefing-grid span,
+.stacked-result span {
+    display: block;
+    margin-bottom: 8px;
+    color: #7dd3fc;
+    text-transform: uppercase;
+    letter-spacing: .14em;
+    font-size: .72rem;
+    font-weight: 1000;
+}
+
+.briefing-grid p {
+    margin: 0;
+}
+
+.readiness-board {
+    display: grid;
+    gap: 12px;
+}
+
+.readiness-item {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    margin: 0;
+    padding: 16px;
+    border: 1px solid rgba(255,255,255,.14);
+    border-radius: 20px;
+    background: rgba(255,255,255,.05);
+    cursor: pointer;
+}
+
+.readiness-item input {
+    width: 20px;
+    min-height: 20px;
+    margin: 0;
+    accent-color: #38bdf8;
+}
+
+.readiness-item:has(input:checked) {
+    border-color: rgba(34,197,94,.48);
+    background: rgba(34,197,94,.08);
+}
+
+.readiness-item:has(input:checked) span {
+    color: #bbf7d0;
+    text-decoration: line-through;
+    text-decoration-thickness: 2px;
+    text-decoration-color: rgba(34,197,94,.65);
+}
+
+.premium-loadout-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.quick-use-panel {
+    display: grid;
+    grid-template-columns: minmax(220px, .35fr) minmax(0, .65fr);
+    gap: 18px;
+    align-items: center;
+    margin-top: 22px;
+    padding: 22px;
+    border: 1px solid rgba(255,255,255,.14);
+    border-radius: 24px;
+    background: rgba(255,255,255,.045);
+}
+
+.stacked-cards {
+    display: grid;
+    gap: 14px;
+}
+
+.stacked-result {
+    display: grid;
+    grid-template-columns: minmax(190px, .35fr) minmax(0, 1fr) auto;
+    gap: 16px;
+    align-items: center;
+    padding: 16px;
+    border: 1px solid rgba(255,255,255,.14);
+    border-radius: 20px;
+    background: rgba(255,255,255,.045);
+}
+
+.stacked-result strong {
+    display: block;
+    color: #fff;
+    font-size: 1.08rem;
+}
+
+.stacked-result p {
+    margin: 0;
+}
+
+.stacked-result a {
+    white-space: nowrap;
+    font-weight: 900;
+}
+
+.planner-results-layout {
+    margin-top: 24px;
+}
+
+.empty-state h4 {
+    margin: 0 0 8px;
+}
+
+@media (max-width: 1050px) {
+    .briefing-grid,
+    .quick-use-panel,
+    .stacked-result,
+    .premium-loadout-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ============================================================
+   METAFORGE-INSPIRED PROFESSIONAL INTEL UPGRADE
+   Adds companion-hub style cards, routing, risk, and blueprint
+   intelligence without depending on external APIs.
+   ============================================================ */
+.mission-score-strip {
+    display: grid;
+    grid-template-columns: .18fr .18fr 1fr;
+    gap: 14px;
+    margin-top: 18px;
+}
+
+.mission-score-strip div,
+.signal-grid article,
+.farm-meta-grid div {
+    padding: 16px;
+    border: 1px solid rgba(255,255,255,.14);
+    border-radius: 18px;
+    background: rgba(255,255,255,.05);
+}
+
+.mission-score-strip span,
+.signal-grid span,
+.farm-meta-grid span,
+.blueprint-card-topline .mini-meta {
+    display: block;
+    color: #7dd3fc;
+    text-transform: uppercase;
+    letter-spacing: .14em;
+    font-size: .68rem;
+    font-weight: 1000;
+}
+
+.mission-score-strip strong {
+    display: block;
+    margin-top: 6px;
+    font-size: clamp(1.15rem, 2vw, 1.8rem);
+    color: #fff;
+    line-height: 1.1;
+}
+
+.mission-score-strip small {
+    display: block;
+    margin-top: 4px;
+    color: var(--muted);
+    font-weight: 800;
+}
+
+.metaforge-card {
+    border-color: rgba(139, 92, 246, .34);
+}
+
+.signal-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.signal-grid p {
+    margin: 8px 0 0;
+}
+
+.route-intel-grid {
+    display: grid;
+    grid-template-columns: 1.15fr .925fr .925fr;
+    gap: 18px;
+    margin: 24px 0;
+}
+
+.route-steps {
+    display: grid;
+    gap: 12px;
+    margin: 14px 0 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: route-step;
+}
+
+.route-steps li {
+    counter-increment: route-step;
+    display: grid;
+    grid-template-columns: 42px 1fr;
+    gap: 12px;
+    align-items: center;
+    padding: 14px;
+    border: 1px solid rgba(255,255,255,.14);
+    border-radius: 18px;
+    background: rgba(255,255,255,.045);
+}
+
+.route-steps li span::before {
+    content: counter(route-step);
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 14px;
+    color: #041018;
+    background: linear-gradient(135deg, #7dd3fc, #f6c85f);
+    font-weight: 1000;
+}
+
+.intel-list {
+    display: grid;
+    gap: 12px;
+    margin: 14px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.intel-list li {
+    padding: 14px 14px 14px 42px;
+    border: 1px solid rgba(255,255,255,.14);
+    border-radius: 18px;
+    background: rgba(255,255,255,.045);
+    position: relative;
+    color: #d9e7f6;
+    line-height: 1.45;
+}
+
+.intel-list li::before {
+    content: "◆";
+    position: absolute;
+    left: 16px;
+    color: #7dd3fc;
+}
+
+.blueprint-hero {
+    margin-bottom: 22px;
+}
+
+.blueprint-kpis {
+    margin-bottom: 24px;
+}
+
+.blueprint-filter-card {
+    margin-bottom: 22px;
+}
+
+.premium-search {
+    align-items: stretch;
+}
+
+.premium-search .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.blueprint-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+    gap: 18px;
+}
+
+.blueprint-vault-card {
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    gap: 14px;
+    min-height: 310px;
+    padding: 22px;
+    border: 1px solid rgba(255,255,255,.14);
+    border-radius: 26px;
+    background:
+        radial-gradient(circle at 100% 0%, rgba(125,211,252,.12), transparent 36%),
+        linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.035));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+}
+
+.blueprint-vault-card::after {
+    content: "BLUEPRINT";
+    position: absolute;
+    right: -8px;
+    bottom: 8px;
+    color: rgba(255,255,255,.035);
+    font-size: 2.5rem;
+    font-weight: 1000;
+    letter-spacing: .12em;
+    pointer-events: none;
+}
+
+.blueprint-vault-card.collected {
+    border-color: rgba(52, 211, 153, .34);
+    background:
+        radial-gradient(circle at 100% 0%, rgba(52,211,153,.13), transparent 36%),
+        linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.035));
+}
+
+.blueprint-card-topline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.blueprint-vault-card h3 {
+    margin: 0;
+    font-size: 1.45rem;
+}
+
+.blueprint-vault-card p {
+    margin: 0;
+}
+
+.farm-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.farm-meta-grid strong {
+    display: block;
+    margin-top: 6px;
+    color: #fff;
+    line-height: 1.25;
+}
+
+.blueprint-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: auto;
+    position: relative;
+    z-index: 1;
+}
+
+.blueprint-actions a,
+.blueprint-actions .link-button {
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    padding: 7px 10px;
+    border: 1px solid rgba(255,255,255,.14);
+    border-radius: 999px;
+    background: rgba(255,255,255,.045);
+    color: #dff5ff;
+    text-decoration: none;
+    font-weight: 900;
+    font-size: .82rem;
+}
+
+.blueprint-actions form {
+    display: inline-flex;
+    margin: 0;
+}
+
+@media (max-width: 1050px) {
+    .mission-score-strip,
+    .signal-grid,
+    .route-intel-grid,
+    .farm-meta-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Raiders Vault v44: interactive maps, skill tree view, and professional item icon system */
+.interactive-map-card,
+.skill-tree-command {
+    position: relative;
+    overflow: hidden;
+}
+
+.interactive-map-shell {
+    display: grid;
+    grid-template-columns: minmax(360px, 1.6fr) minmax(260px, .8fr);
+    gap: 18px;
+    align-items: stretch;
+}
+
+.map-canvas {
+    position: relative;
+    min-height: 420px;
+    border: 1px solid rgba(104, 211, 255, .25);
+    border-radius: 24px;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 28% 28%, rgba(104, 211, 255, .22), transparent 10%),
+        radial-gradient(circle at 72% 38%, rgba(246, 200, 95, .18), transparent 13%),
+        radial-gradient(circle at 58% 78%, rgba(52, 211, 153, .16), transparent 14%),
+        linear-gradient(135deg, rgba(255,255,255,.06), rgba(255,255,255,.025));
+    box-shadow: inset 0 0 60px rgba(0,0,0,.34);
+}
+
+.map-canvas::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: .6;
+    background-image:
+        linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
+    background-size: 38px 38px;
+}
+
+.map-canvas::after {
+    content: "TACTICAL MAP";
+    position: absolute;
+    right: 18px;
+    bottom: 12px;
+    color: rgba(255,255,255,.08);
+    font-weight: 950;
+    letter-spacing: .2em;
+}
+
+.map-route-line {
+    position: absolute;
+    left: 16%;
+    top: 22%;
+    width: 68%;
+    height: 58%;
+    border-top: 2px dashed rgba(104, 211, 255, .55);
+    border-right: 2px dashed rgba(246, 200, 95, .42);
+    border-radius: 45% 25% 55% 20%;
+    transform: rotate(8deg);
+    pointer-events: none;
+}
+
+.map-zone {
+    position: absolute;
+    z-index: 2;
+    width: 118px;
+    height: 66px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,.22);
+    background: rgba(10, 16, 27, .88);
+    color: white;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 0 12px 34px rgba(0,0,0,.34), 0 0 22px rgba(104,211,255,.12);
+}
+
+.map-zone span { display: block; font-size: .82rem; letter-spacing: .05em; text-transform: uppercase; }
+.map-zone:hover,
+.map-zone.active { border-color: rgba(104, 211, 255, .8); transform: translateY(-2px); background: rgba(104, 211, 255, .16); }
+.zone-entry { left: 8%; top: 16%; }
+.zone-loot { left: 34%; top: 24%; }
+.zone-blueprint { right: 13%; top: 20%; }
+.zone-objective { left: 28%; bottom: 18%; }
+.zone-extract { right: 12%; bottom: 14%; }
+
+.map-intel-panel,
+.skill-node-inspector {
+    border: 1px solid rgba(104, 211, 255, .22);
+    border-radius: 24px;
+    padding: 20px;
+    background: linear-gradient(180deg, rgba(104, 211, 255, .09), rgba(255,255,255,.035));
+}
+
+.mini-metrics {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.mini-metrics span {
+    padding: 14px;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: rgba(255,255,255,.05);
+}
+
+.mini-metrics strong { display: block; color: white; font-size: 1.25rem; }
+.mini-metrics small { color: var(--muted); text-transform: uppercase; font-weight: 900; letter-spacing: .08em; }
+
+.item-icon {
+    display: inline-grid;
+    place-items: center;
+    flex: 0 0 auto;
+    width: 42px;
+    height: 42px;
+    border-radius: 15px;
+    border: 1px solid rgba(255,255,255,.18);
+    background: linear-gradient(145deg, rgba(104,211,255,.16), rgba(255,255,255,.04));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 0 24px rgba(104,211,255,.12);
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+.item-icon::before { font-size: 1.2rem; }
+.item-icon.weapon::before { content: "⌁"; }
+.item-icon.shield::before { content: "⬢"; }
+.item-icon.med::before { content: "+"; }
+.item-icon.tool::before { content: "⚙"; }
+.item-icon.intel::before { content: "◆"; }
+.item-icon.gear::before { content: "◈"; }
+.item-icon.mobility::before { content: "↗"; }
+.item-icon.survival::before { content: "✚"; }
+.item-icon.conditioning::before { content: "▲"; }
+.item-icon.balanced::before { content: "◇"; }
+.item-icon.tiny { width: 24px; height: 24px; border-radius: 9px; margin-right: 7px; }
+.item-icon.tiny::before { font-size: .78rem; }
+.item-chip { display: inline-flex; align-items: center; gap: 0; }
+.icon-tile { display: flex; align-items: center; gap: 4px; }
+.loadout-card h3,
+.blueprint-vault-card h3 { display: flex; align-items: center; gap: 2px; }
+
+.skill-tree-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 18px;
+}
+
+.skill-tree-branch {
+    border: 1px solid rgba(255,255,255,.13);
+    border-radius: 24px;
+    padding: 18px;
+    background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.025));
+}
+
+.tree-branch-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.tree-branch-header h4 { margin: 0 0 3px; }
+.tree-branch-header small { color: var(--muted); font-weight: 800; }
+.tree-node-chain {
+    display: grid;
+    gap: 12px;
+    position: relative;
+}
+
+.tree-node-chain::before {
+    content: "";
+    position: absolute;
+    left: 20px;
+    top: 18px;
+    bottom: 18px;
+    width: 2px;
+    background: linear-gradient(var(--accent), rgba(255,255,255,.08));
+}
+
+.tree-node {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    text-align: left;
+    border: 1px solid rgba(255,255,255,.13);
+    border-radius: 18px;
+    padding: 12px 14px 12px 48px;
+    background: rgba(6, 9, 15, .72);
+    color: white;
+}
+
+.tree-node::before {
+    content: "";
+    position: absolute;
+    left: 12px;
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    border: 2px solid rgba(104,211,255,.55);
+    background: #08101a;
+}
+
+.tree-node.active::before { background: var(--green); border-color: rgba(52,211,153,.9); box-shadow: 0 0 18px rgba(52,211,153,.45); }
+.tree-node.recommended { border-color: rgba(246,200,95,.45); background: rgba(246,200,95,.08); }
+.tree-node:hover { border-color: rgba(104,211,255,.75); transform: translateX(2px); }
+.tree-node small { color: var(--muted); font-weight: 900; }
+.skill-node-inspector { margin-top: 18px; }
+
+@media (max-width: 920px) {
+    .interactive-map-shell { grid-template-columns: 1fr; }
+    .map-canvas { min-height: 360px; }
+    .map-zone { width: 102px; height: 58px; }
+}
+
+/* Raiders Vault v45: blueprint overflow + icon reliability hotfix */
+.blueprint-card-grid,
+.blueprint-vault-card,
+.blueprint-vault-card *,
+.farm-meta-grid,
+.farm-meta-grid *,
+.blueprint-actions,
+.blueprint-actions *,
+.ops-status-card,
+.kpi-card,
+.card,
+.panel,
+.recommendation-card {
+    min-width: 0;
+}
+
+.blueprint-vault-card {
+    grid-template-rows: auto auto auto auto 1fr;
+    max-width: 100%;
+}
+
+.blueprint-vault-card h3 {
+    align-items: flex-start;
+    gap: 10px;
+    max-width: 100%;
+    line-height: 1.15;
+}
+
+.blueprint-vault-card .item-title,
+.blueprint-vault-card p,
+.farm-meta-grid strong,
+.farm-meta-grid span,
+.blueprint-card-topline .mini-meta,
+.blueprint-actions a,
+.blueprint-actions .link-button,
+.intel-line span,
+.intel-line strong,
+.kpi-card strong,
+.kpi-card small {
+    overflow-wrap: anywhere;
+    word-break: normal;
+    hyphens: auto;
+}
+
+.blueprint-vault-card .item-title {
+    display: block;
+    min-width: 0;
+    max-width: 100%;
+}
+
+.blueprint-vault-card p {
+    display: block;
+    max-width: 100%;
+}
+
+.farm-meta-grid div {
+    overflow: hidden;
+}
+
+.farm-meta-grid strong {
+    font-size: .95rem;
+}
+
+.blueprint-actions {
+    align-items: flex-start;
+}
+
+.blueprint-actions a,
+.blueprint-actions .link-button {
+    white-space: normal;
+    text-align: center;
+    line-height: 1.15;
+}
+
+.item-icon {
+    color: #ecfeff;
+    font-weight: 1000;
+    font-family: "Segoe UI Symbol", "Apple Color Emoji", "Segoe UI Emoji", Inter, Arial, sans-serif;
+    text-align: center;
+    line-height: 1;
+}
+
+.item-icon::before {
+    content: none !important;
+}
+
+.item-icon:empty::before {
+    content: "◆" !important;
+}
+
+@media (max-width: 760px) {
+    .blueprint-card-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .blueprint-vault-card {
+        padding: 18px;
+    }
+
+    .blueprint-card-topline {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+
+
+/* Raiders Vault v46: screenshot-driven card, icon, and wrap repair */
+.database-grid,
+.blueprint-card-grid {
+    align-items: stretch !important;
+}
+
+@media (min-width: 1800px) {
+    .database-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    }
+
+    .blueprint-card-grid {
+        grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    }
+}
+
+@media (min-width: 2400px) {
+    .database-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    }
+
+    .blueprint-card-grid {
+        grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    }
+}
+
+.database-card,
+.blueprint-vault-card {
+    overflow: hidden !important;
+    isolation: isolate;
+}
+
+.database-card h2,
+.database-card .item-card-title {
+    display: flex !important;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: clamp(1.8rem, 1.9vw, 2.8rem) !important;
+    line-height: 1.04 !important;
+    letter-spacing: -0.045em !important;
+    overflow-wrap: anywhere;
+    word-break: normal;
+}
+
+.database-card .item-card-title > span:last-child,
+.blueprint-vault-card .item-title {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.database-card .item-note,
+.blueprint-vault-card p {
+    color: #d9e7f5;
+    line-height: 1.5;
+    overflow-wrap: break-word !important;
+    word-break: normal !important;
+    hyphens: auto;
+}
+
+.database-card .intel-list div {
+    grid-template-columns: 108px minmax(0, 1fr) !important;
+}
+
+.database-card .intel-list dd,
+.database-card .intel-list dt,
+.farm-meta-grid strong,
+.farm-meta-grid span {
+    overflow-wrap: break-word !important;
+    word-break: normal !important;
+    hyphens: auto;
+}
+
+.farm-meta-grid {
+    grid-template-columns: repeat(3, minmax(96px, 1fr)) !important;
+}
+
+.farm-meta-grid div {
+    min-width: 0;
+    padding: 12px 10px;
+    border-radius: 16px;
+}
+
+.farm-meta-grid span {
+    display: block;
+    font-size: .68rem;
+    line-height: 1.15;
+}
+
+.farm-meta-grid strong {
+    font-size: .82rem !important;
+    line-height: 1.22 !important;
+}
+
+.blueprint-vault-card h3 {
+    display: flex !important;
+    align-items: flex-start !important;
+    font-size: clamp(1.25rem, 1.25vw, 1.75rem) !important;
+    line-height: 1.08 !important;
+    overflow-wrap: anywhere;
+    word-break: normal;
+}
+
+.blueprint-actions {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    align-items: center !important;
+}
+
+.blueprint-actions a,
+.blueprint-actions .link-button {
+    min-width: 0;
+    max-width: 100%;
+    padding: 8px 11px !important;
+    font-size: .76rem !important;
+    overflow-wrap: normal !important;
+    word-break: normal !important;
+}
+
+.item-icon {
+    display: inline-grid !important;
+    place-items: center !important;
+    flex: 0 0 42px !important;
+    width: 42px !important;
+    height: 42px !important;
+    color: #ecfeff !important;
+    font-size: 1.05rem !important;
+    font-weight: 1000 !important;
+    font-family: "Segoe UI Symbol", "Apple Color Emoji", "Segoe UI Emoji", Arial, sans-serif !important;
+    line-height: 1 !important;
+    text-indent: 0 !important;
+    overflow: hidden !important;
+}
+
+.item-icon::before {
+    content: none !important;
+}
+
+.priority-pill {
+    color: #d9e7f5;
+    font-weight: 800;
+    font-size: .82rem;
+    line-height: 1.15;
+    text-align: right;
+}
+
+@media (max-width: 1100px) {
+    .database-grid,
+    .blueprint-card-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+
+    .farm-meta-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+@media (max-width: 760px) {
+    .database-grid,
+    .blueprint-card-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .database-card .intel-list div {
+        grid-template-columns: 1fr !important;
+    }
+
+    .count-update {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* Raiders Vault v47: global operations and marketplace intelligence */
+.global-ops-hero {
+    border-color: rgba(34, 197, 94, .32);
+}
+
+.global-kpis .metric-card {
+    min-height: 245px;
+}
+
+.global-region-grid,
+.localization-grid,
+.capability-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 18px;
+}
+
+.region-card,
+.localization-card,
+.capability-card {
+    position: relative;
+    overflow: hidden;
+    min-width: 0;
+    padding: 22px;
+    border: 1px solid rgba(255,255,255,.14);
+    border-radius: 24px;
+    background:
+        radial-gradient(circle at 100% 0%, rgba(34,197,94,.10), transparent 36%),
+        linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.035));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+}
+
+.region-card::after {
+    content: "REGION";
+    position: absolute;
+    right: 12px;
+    bottom: 10px;
+    color: rgba(255,255,255,.045);
+    font-size: 2rem;
+    font-weight: 1000;
+    letter-spacing: .14em;
+    pointer-events: none;
+}
+
+.region-card h3,
+.localization-card h3,
+.capability-card h3 {
+    margin: 14px 0 12px;
+}
+
+.intel-list.compact {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+}
+
+.intel-list.compact div {
+    display: grid;
+    grid-template-columns: 110px minmax(0, 1fr);
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+.intel-list.compact div:last-child {
+    border-bottom: 0;
+}
+
+.signal-table {
+    display: grid;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.signal-row {
+    display: grid;
+    grid-template-columns: minmax(150px, 1.2fr) minmax(90px, .75fr) minmax(130px, 1fr) auto;
+    gap: 12px;
+    align-items: center;
+    min-width: 0;
+    padding: 13px;
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 16px;
+    background: rgba(255,255,255,.045);
+}
+
+.signal-row strong,
+.signal-row span,
+.signal-row small {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.signal-row strong {
+    color: #fff;
+}
+
+.signal-row span {
+    color: #d9e7f5;
+}
+
+.signal-row small {
+    color: #7dd3fc;
+    font-weight: 900;
+    text-align: right;
+}
+
+.capability-card .badge {
+    width: fit-content;
+}
+
+.compact-actions {
+    margin-top: 0;
+    justify-content: flex-end;
+}
+
+.localization-card .intel-line {
+    align-items: flex-start;
+}
+
+/* Raiders Vault v48: enterprise admin center */
+.admin-hero {
+    border-color: rgba(251, 191, 36, .34);
+}
+
+.admin-kpis {
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+}
+
+.capability-list,
+.integration-table,
+.audit-timeline {
+    display: grid;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.capability-row,
+.integration-row,
+.audit-event {
+    min-width: 0;
+    padding: 14px;
+    border: 1px solid rgba(255,255,255,.13);
+    border-radius: 18px;
+    background: rgba(255,255,255,.045);
+}
+
+.capability-row {
+    display: grid;
+    grid-template-columns: auto minmax(160px, .45fr) minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
+}
+
+.capability-row p {
+    margin: 0;
+}
+
+.integration-row {
+    display: grid;
+    grid-template-columns: minmax(140px, 1fr) 68px minmax(160px, 1fr) 78px;
+    gap: 12px;
+    align-items: center;
+}
+
+.integration-row code {
+    min-width: 0;
+    padding: 8px 10px;
+    border-radius: 12px;
+    background: rgba(0,0,0,.24);
+    color: #dff5ff;
+    overflow-wrap: anywhere;
+}
+
+.integration-row small {
+    color: #7dd3fc;
+    font-weight: 900;
+    text-align: right;
+}
+
+.audit-event {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 14px;
+    align-items: flex-start;
+}
+
+.audit-event strong {
+    display: block;
+    color: #fff;
+    margin-bottom: 4px;
+}
+
+.audit-event p {
+    margin: 0 0 6px;
+}
+
+.audit-event small {
+    color: var(--muted);
+    font-weight: 800;
+}
+
+@media (max-width: 900px) {
+    .capability-row,
+    .integration-row,
+    .audit-event {
+        grid-template-columns: 1fr;
+    }
+
+    .integration-row small {
+        text-align: left;
+    }
+}
+
+/* Raiders Vault v49: Embark news feed and live map condition banner */
+.live-conditions-banner {
+    display: grid;
+    grid-template-columns: minmax(280px, .8fr) minmax(0, 1.2fr);
+    gap: 18px;
+    align-items: stretch;
+    margin: 22px 0;
+    padding: 22px;
+    border: 1px solid rgba(34, 197, 94, .28);
+    border-radius: 26px;
+    background:
+        radial-gradient(circle at 0% 0%, rgba(34,197,94,.14), transparent 36%),
+        linear-gradient(135deg, rgba(255,255,255,.08), rgba(255,255,255,.035));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.10);
+}
+
+.live-banner-copy {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+}
+
+.live-banner-copy h2 {
+    font-size: clamp(1.75rem, 3vw, 3.2rem);
+    letter-spacing: -.045em;
+}
+
+.live-dot {
+    flex: 0 0 auto;
+    width: 14px;
+    height: 14px;
+    margin-top: 4px;
+    border-radius: 999px;
+    background: #22c55e;
+    box-shadow: 0 0 0 8px rgba(34,197,94,.12), 0 0 28px rgba(34,197,94,.55);
+}
+
+.live-condition-strip,
+.news-feed-list,
+.upcoming-condition-list {
+    display: grid;
+    gap: 12px;
+}
+
+.live-condition-card,
+.news-feed-card,
+.upcoming-condition-row {
+    min-width: 0;
+    padding: 14px;
+    border: 1px solid rgba(255,255,255,.13);
+    border-radius: 18px;
+    background: rgba(255,255,255,.045);
+    color: var(--text);
+    text-decoration: none;
+}
+
+.live-condition-card {
+    display: grid;
+    grid-template-columns: 78px minmax(140px, 1fr) minmax(120px, .85fr);
+    gap: 12px;
+    align-items: center;
+}
+
+.live-condition-card.active {
+    border-color: rgba(34,197,94,.42);
+    background: rgba(34,197,94,.075);
+}
+
+.live-condition-card span,
+.news-feed-card span {
+    color: #86efac;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    font-size: .68rem;
+    font-weight: 1000;
+}
+
+.live-condition-card strong,
+.news-feed-card strong,
+.upcoming-condition-row strong {
+    color: #fff;
+    overflow-wrap: anywhere;
+}
+
+.live-condition-card small,
+.upcoming-condition-row span,
+.upcoming-condition-row small,
+.news-feed-card small {
+    color: var(--muted);
+    font-weight: 800;
+}
+
+.live-condition-card em {
+    grid-column: 1 / -1;
+    color: #d9e7f5;
+    font-style: normal;
+    font-size: .9rem;
+}
+
+.news-feed-card {
+    display: grid;
+    gap: 6px;
+}
+
+.news-feed-card p {
+    margin: 0;
+}
+
+.upcoming-condition-row {
+    display: grid;
+    grid-template-columns: minmax(140px, 1fr) minmax(120px, .8fr) minmax(160px, 1fr);
+    gap: 12px;
+    align-items: center;
+}
+
+@media (max-width: 980px) {
+    .live-conditions-banner,
+    .live-condition-card,
+    .upcoming-condition-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 900px) {
+    .signal-row,
+    .intel-list.compact div {
+        grid-template-columns: 1fr;
+    }
+
+    .signal-row small {
+        text-align: left;
+    }
+}
+
+/* Raiders Vault v50: calmer database paging and inline count saves */
+.database-pager {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin: 18px 0 10px;
+    padding: 14px 16px;
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 18px;
+    background: rgba(255,255,255,.045);
+}
+
+.database-pager strong,
+.database-pager span {
+    display: block;
+}
+
+.database-pager span {
+    margin-top: 2px;
+    color: var(--muted);
+    font-weight: 800;
+}
+
+.pager-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.database-card.is-stocked {
+    border-color: rgba(34,197,94,.28);
+}
+
+.database-card.is-stocked .priority-pill {
+    color: #86efac;
+}
+
+.count-update button:disabled {
+    cursor: wait;
+    filter: grayscale(.3);
+    opacity: .72;
+}
+
+.inline-save-status {
+    min-height: 18px;
+    color: #86efac;
+    font-size: .78rem;
+    font-weight: 900;
+    line-height: 1;
+    align-self: center;
+}
+
+.inline-save-status.error {
+    color: #fca5a5;
+}
+
+@media (max-width: 760px) {
+    .database-pager {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .pager-actions {
+        justify-content: flex-start;
+    }
+}

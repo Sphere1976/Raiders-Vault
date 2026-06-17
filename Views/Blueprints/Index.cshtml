@@ -2,177 +2,133 @@
 
 @{
     ViewData["Title"] = "Blueprints";
+    var totalCount = Model.Blueprints.Count;
+    var collectedCount = Model.Blueprints.Count(x => x.Collected || x.CollectionStatus == "Collected");
+    var trackingCount = Model.Blueprints.Count(x => x.CollectionStatus == "Tracking");
+    var missingCount = totalCount - collectedCount;
+
+    string BlueprintIconClass(string? category)
+    {
+        var text = (category ?? string.Empty).ToLowerInvariant();
+        if (text.Contains("weapon") || text.Contains("gun") || text.Contains("ammo")) return "weapon";
+        if (text.Contains("shield") || text.Contains("armor") || text.Contains("defense")) return "shield";
+        if (text.Contains("medical") || text.Contains("med") || text.Contains("health")) return "med";
+        if (text.Contains("augment") || text.Contains("tool") || text.Contains("utility")) return "tool";
+        if (text.Contains("gear") || text.Contains("pack")) return "gear";
+        return "intel";
+    }
+
+    string BlueprintIconGlyph(string? category)
+    {
+        var text = (category ?? string.Empty).ToLowerInvariant();
+        if (text.Contains("weapon") || text.Contains("gun") || text.Contains("ammo")) return "⚔";
+        if (text.Contains("shield") || text.Contains("armor") || text.Contains("defense")) return "⬢";
+        if (text.Contains("medical") || text.Contains("med") || text.Contains("health")) return "+";
+        if (text.Contains("augment") || text.Contains("tool") || text.Contains("utility")) return "⚙";
+        if (text.Contains("gear") || text.Contains("pack")) return "◈";
+        return "◆";
+    }
 }
 
-<h2>Blueprint Tracker</h2>
+<section class="ops-hero blueprint-hero" aria-labelledby="blueprint-title">
+    <div class="ops-hero-copy">
+        <div class="kicker">Blueprint Command Vault</div>
+        <h2 id="blueprint-title">Track, route, and prioritize every unlock.</h2>
+        <p>
+            A MetaForge-inspired blueprint workspace that keeps collection status, farm plans,
+            container pools, map conditions, and operator actions together.
+        </p>
+        <div class="ops-hero-actions">
+            <a class="button" asp-action="Create">Add Blueprint</a>
+            <a class="button secondary" asp-controller="RunPlanner" asp-action="Index" asp-route-selectedGoal="Blueprint Farming" asp-route-selectedStyle="@Model.Playstyle">Plan Blueprint Run</a>
+        </div>
+    </div>
 
-<a
-    class="button"
-    asp-action="Create">
-    Add Blueprint
-</a>
+    <aside class="ops-status-card">
+        <div class="intel-line"><span>Total</span><strong>@totalCount</strong></div>
+        <div class="intel-line"><span>Collected</span><strong>@collectedCount</strong></div>
+        <div class="intel-line"><span>Tracking</span><strong>@trackingCount</strong></div>
+        <div class="intel-line"><span>Missing</span><strong>@missingCount</strong></div>
+    </aside>
+</section>
 
-<form method="get" class="search">
-    <input
-        name="searchTerm"
-        value="@Model.SearchTerm"
-        placeholder="Search by name, type, status, location, or materials" />
+<section class="kpi-grid blueprint-kpis" aria-label="Blueprint tracker metrics">
+    <article class="kpi-card"><span>Collection</span><strong>@collectedCount / @totalCount</strong><small>blueprints secured</small></article>
+    <article class="kpi-card"><span>Missing</span><strong>@missingCount</strong><small>remaining unlocks</small></article>
+    <article class="kpi-card"><span>Tracked</span><strong>@trackingCount</strong><small>active farm targets</small></article>
+    <article class="kpi-card"><span>Playstyle</span><strong>@Model.Playstyle</strong><small>farm plan tuning</small></article>
+</section>
 
-    <select name="playstyle">
-        <option value="Balanced" selected="@(Model.Playstyle == "Balanced")">Balanced</option>
-        <option value="PvE" selected="@(Model.Playstyle == "PvE")">PvE</option>
-        <option value="PvP" selected="@(Model.Playstyle == "PvP")">PvP</option>
-    </select>
+<section class="recommendation-card blueprint-filter-card">
+    <div class="section-heading compact-heading">
+        <div>
+            <div class="kicker">Search & Filter</div>
+            <h3>Blueprint Intelligence Console</h3>
+        </div>
+    </div>
 
-    <button type="submit">
-        Search
-    </button>
+    <form method="get" class="search premium-search">
+        <input name="searchTerm" value="@Model.SearchTerm" placeholder="Search by name, type, status, location, or materials" />
 
-    <a asp-action="Index">
-        Clear
-    </a>
-</form>
+        <select name="playstyle">
+            <option value="Balanced" selected="@(Model.Playstyle == "Balanced")">Balanced</option>
+            <option value="PvE" selected="@(Model.Playstyle == "PvE")">PvE</option>
+            <option value="PvP" selected="@(Model.Playstyle == "PvP")">PvP</option>
+        </select>
 
-<table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Item Type</th>
-            <th>Status</th>
-            <th>Where To Get</th>
-            <th>Best Map</th>
-            <th>Updated</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
+        <button type="submit">Search</button>
+        <a class="button secondary" asp-action="Index">Clear</a>
+    </form>
+</section>
 
-    <tbody>
-        @foreach (var blueprint in Model.Blueprints)
-        {
-            var farmPlan = Model.FarmPlans.ContainsKey(blueprint.Id)
-                ? Model.FarmPlans[blueprint.Id]
-                : null;
+<section class="blueprint-card-grid" aria-label="Blueprint cards">
+    @foreach (var blueprint in Model.Blueprints)
+    {
+        var farmPlan = Model.FarmPlans.ContainsKey(blueprint.Id) ? Model.FarmPlans[blueprint.Id] : null;
+        var isCollected = blueprint.Collected || blueprint.CollectionStatus == "Collected";
+        var statusBadge = isCollected ? "green" : blueprint.CollectionStatus == "Tracking" ? "gold" : "";
 
-            <tr>
-                <td>@blueprint.Name</td>
+        <article class="blueprint-vault-card @(isCollected ? "collected" : "")">
+            <div class="blueprint-card-topline">
+                <span class="badge @statusBadge">@blueprint.CollectionStatus</span>
+                <span class="mini-meta">@blueprint.Category</span>
+            </div>
 
-                <td>@blueprint.Category</td>
+            <h3><span class="item-icon @BlueprintIconClass(blueprint.Category)" aria-hidden="true">@BlueprintIconGlyph(blueprint.Category)</span><span class="item-title">@blueprint.Name</span></h3>
+            <p>@(string.IsNullOrWhiteSpace(blueprint.WhereToGet) ? "No source route entered yet." : blueprint.WhereToGet)</p>
 
-                <td>@blueprint.CollectionStatus</td>
+            <div class="farm-meta-grid">
+                <div><span>Best Map</span><strong>@(farmPlan == null ? "N/A" : farmPlan.BestMap)</strong></div>
+                <div><span>Condition</span><strong>@(farmPlan == null ? "N/A" : farmPlan.BestCondition)</strong></div>
+                <div><span>Weight</span><strong>@(farmPlan == null ? "N/A" : farmPlan.ProbabilityWeight + "/100")</strong></div>
+            </div>
 
-                <td>@blueprint.WhereToGet</td>
+            <div class="blueprint-actions">
+                <a asp-action="FarmPlan" asp-route-id="@blueprint.Id" asp-route-playstyle="@Model.Playstyle">Farm Plan</a>
+                <a asp-action="Edit" asp-route-id="@blueprint.Id">Edit</a>
 
-                <td>
-                    @(farmPlan == null ? "N/A" : farmPlan.BestMap)
-                </td>
+                <form asp-action="ToggleCollected" asp-route-id="@blueprint.Id" method="post">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="link-button">@(isCollected ? "Undo" : "Collected")</button>
+                </form>
 
-                <td>
-                    @blueprint.UpdatedAt.ToShortDateString()
-                </td>
+                <form asp-action="MarkTracking" asp-route-id="@blueprint.Id" method="post">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="link-button">Track</button>
+                </form>
 
-                <td>
-                    <a
-                        asp-action="FarmPlan"
-                        asp-route-id="@blueprint.Id"
-                        asp-route-playstyle="@Model.Playstyle">
-                        Farm Plan
-                    </a>
+                <form asp-controller="Favorites" asp-action="Toggle" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="itemType" value="Blueprint" />
+                    <input type="hidden" name="itemId" value="@blueprint.Id" />
+                    <input type="hidden" name="displayName" value="@blueprint.Name" />
+                    <input type="hidden" name="returnController" value="Blueprints" />
+                    <input type="hidden" name="returnAction" value="Index" />
+                    <button type="submit" class="link-button">Pin</button>
+                </form>
 
-                    |
-
-                    <a
-                        asp-action="Edit"
-                        asp-route-id="@blueprint.Id">
-                        Edit
-                    </a>
-
-                    |
-
-                    <form
-                        asp-action="ToggleCollected"
-                        asp-route-id="@blueprint.Id"
-                        method="post"
-                        style="display:inline">
-
-                        @Html.AntiForgeryToken()
-
-                        <button
-                            type="submit"
-                            class="link-button">
-                            @(blueprint.Collected || blueprint.CollectionStatus == "Collected"
-                                ? "Undo Collected"
-                                : "Collected")
-                        </button>
-                    </form>
-
-                    |
-
-                    <form
-                        asp-action="MarkTracking"
-                        asp-route-id="@blueprint.Id"
-                        method="post"
-                        style="display:inline">
-
-                        @Html.AntiForgeryToken()
-
-                        <button
-                            type="submit"
-                            class="link-button">
-                            Track
-                        </button>
-                    </form>
-
-                    |
-
-                    <form
-                        asp-controller="Favorites"
-                        asp-action="Toggle"
-                        method="post"
-                        style="display:inline">
-
-                        @Html.AntiForgeryToken()
-
-                        <input
-                            type="hidden"
-                            name="itemType"
-                            value="Blueprint" />
-
-                        <input
-                            type="hidden"
-                            name="itemId"
-                            value="@blueprint.Id" />
-
-                        <input
-                            type="hidden"
-                            name="displayName"
-                            value="@blueprint.Name" />
-
-                        <input
-                            type="hidden"
-                            name="returnController"
-                            value="Blueprints" />
-
-                        <input
-                            type="hidden"
-                            name="returnAction"
-                            value="Index" />
-
-                        <button
-                            type="submit"
-                            class="link-button">
-                            Pin
-                        </button>
-                    </form>
-
-                    |
-
-                    <a
-                        asp-action="Delete"
-                        asp-route-id="@blueprint.Id">
-                        Delete
-                    </a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+                <a asp-action="Delete" asp-route-id="@blueprint.Id">Delete</a>
+            </div>
+        </article>
+    }
+</section>

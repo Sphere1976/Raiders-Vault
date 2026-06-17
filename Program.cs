@@ -1,15 +1,27 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using RaidersVault.Data;
 using RaidersVault.Middleware;
 using RaidersVault.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+var keyRingPath = Path.Combine(builder.Environment.ContentRootPath, "DataProtection-Keys");
+
+Directory.CreateDirectory(keyRingPath);
+
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
 
 builder.Services.AddControllersWithViews(options =>
 {
     options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
 });
+
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo(keyRingPath))
+    .SetApplicationName("RaidersVault");
 
 builder.Services.AddDbContext<RaidersVaultContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -17,6 +29,12 @@ builder.Services.AddDbContext<RaidersVaultContext>(options =>
 builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<LoadoutRecommendationService>();
 builder.Services.AddScoped<BlueprintRecommendationService>();
+builder.Services.AddScoped<GlobalOpsService>();
+builder.Services.AddScoped<AuditService>();
+builder.Services.AddHttpClient<ArcRaidersLiveOpsService>(client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(4);
+});
 builder.Services.AddHealthChecks();
 builder.Services.AddResponseCompression();
 

@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Runtime-generated ASP.NET Core Data Protection key ring
+DataProtection-Keys/

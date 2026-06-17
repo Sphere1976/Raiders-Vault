@@ -28,6 +28,7 @@
 
         <nav class="primary-nav" aria-label="Primary navigation">
             <a asp-controller="Home" asp-action="Index">Command Center</a>
+            <a asp-controller="GlobalOps" asp-action="Index">Global Ops</a>
             <a asp-controller="RunPlanner" asp-action="Index">Run Planner</a>
             <a asp-controller="Loadouts" asp-action="Index">Loadouts</a>
             <a asp-controller="MapConditions" asp-action="Index">Map Conditions</a>
@@ -40,6 +41,7 @@
             <a asp-controller="Favorites" asp-action="Index">Watchlist</a>
             <a asp-controller="Profile" asp-action="Index">Operator Profile</a>
             <a asp-controller="Reports" asp-action="Index">Analytics</a>
+            <a asp-controller="Admin" asp-action="Index">Admin Center</a>
             <a asp-controller="Account" asp-action="Logout">Logout</a>
         </nav>
     </header>
@@ -53,6 +55,7 @@
         <span>Strategic planning, progression analytics, and operational reporting.</span>
     </footer>
 
+    <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

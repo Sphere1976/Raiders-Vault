@@ -1,6 +1,110 @@
 @model IEnumerable<RaidersVault.Models.InventoryItem>
-@{ ViewData["Title"] = "Item Database"; }
-<section class="hero-panel feature-hero"><div><span class="eyebrow">MetaForge-style database</span><h1>Item Database & Needed Items Tracker</h1><p>Track materials, blueprint ingredients, keep counts, rarity, source, sell value, and what still needs to be farmed.</p></div></section>
-<form method="get" class="filter-bar command-card"><input name="search" value="@ViewBag.Search" placeholder="Search item, source, or use..." /><label class="checkline"><input type="checkbox" name="hideStocked" value="true" checked="@(ViewBag.HideStocked == true)" /> Hide stocked</label><button class="button primary" type="submit">Filter Database</button></form>
-<section class="kpi-grid"><article class="kpi-card"><span>Total Items</span><strong>@Model.Count()</strong><small>tracked rows</small></article><article class="kpi-card"><span>Needed</span><strong>@Model.Count(x => x.Needed > 0)</strong><small>not at target</small></article><article class="kpi-card"><span>Critical</span><strong>@Model.Count(x => x.Priority == "Critical")</strong><small>rare gaps</small></article><article class="kpi-card"><span>Vault Value</span><strong>@Model.Sum(x => x.SellValue * x.CurrentCount)</strong><small>estimated value</small></article></section>
-<section class="database-grid">@foreach (var item in Model){<article class="database-card"><div class="card-topline"><span class="rarity @item.Rarity.ToLower()">@item.Rarity</span><span>@item.Priority</span></div><h2>@item.Name</h2><p>@item.Notes</p><dl class="intel-list"><div><dt>Category</dt><dd>@item.Category</dd></div><div><dt>Source</dt><dd>@item.BestSource</dd></div><div><dt>Used For</dt><dd>@item.UsedFor</dd></div><div><dt>Need</dt><dd>@item.Needed remaining</dd></div></dl><form asp-action="UpdateCount" method="post" class="count-update"><input type="hidden" name="id" value="@item.Id" /><label>Have <input type="number" min="0" name="currentCount" value="@item.CurrentCount" /></label><span>Keep @item.KeepTarget</span><button class="button small" type="submit">Update</button></form></article>}</section>
+@{
+    ViewData["Title"] = "Item Database";
+    var currentPage = ViewBag.Page as int? ?? 1;
+    var totalPages = ViewBag.TotalPages as int? ?? 1;
+    var totalItems = ViewBag.TotalItems as int? ?? Model.Count();
+    var neededItems = ViewBag.NeededItems as int? ?? Model.Count(x => x.Needed > 0);
+    var criticalItems = ViewBag.CriticalItems as int? ?? Model.Count(x => x.Priority == "Critical");
+    var vaultValue = ViewBag.VaultValue as int? ?? Model.Sum(x => x.SellValue * x.CurrentCount);
+    var search = ViewBag.Search as string;
+    var hideStocked = ViewBag.HideStocked as bool? ?? false;
+
+    string ItemIconClass(string? category, string? name)
+    {
+        var text = ((category ?? string.Empty) + " " + (name ?? string.Empty)).ToLowerInvariant();
+        if (text.Contains("weapon") || text.Contains("gun") || text.Contains("ammo") || text.Contains("reactor")) return "weapon";
+        if (text.Contains("electronics") || text.Contains("electrical") || text.Contains("speaker") || text.Contains("battery")) return "tool";
+        if (text.Contains("medical") || text.Contains("med") || text.Contains("health") || text.Contains("defibrillator")) return "med";
+        if (text.Contains("utility") || text.Contains("rope") || text.Contains("wire")) return "gear";
+        if (text.Contains("rare") || text.Contains("component") || text.Contains("material")) return "intel";
+        return "balanced";
+    }
+
+    string ItemIconGlyph(string? category, string? name)
+    {
+        var text = ((category ?? string.Empty) + " " + (name ?? string.Empty)).ToLowerInvariant();
+        if (text.Contains("weapon") || text.Contains("gun") || text.Contains("ammo") || text.Contains("reactor")) return "⚔";
+        if (text.Contains("electronics") || text.Contains("electrical") || text.Contains("speaker") || text.Contains("battery")) return "⚙";
+        if (text.Contains("medical") || text.Contains("med") || text.Contains("health") || text.Contains("defibrillator")) return "+";
+        if (text.Contains("utility") || text.Contains("rope") || text.Contains("wire")) return "◈";
+        if (text.Contains("rare") || text.Contains("component") || text.Contains("material")) return "◆";
+        return "◇";
+    }
+}
+
+<section class="hero-panel feature-hero">
+    <div>
+        <span class="eyebrow">MetaForge-style database</span>
+        <h1>Item Database & Needed Items Tracker</h1>
+        <p>Track materials, blueprint ingredients, keep counts, rarity, source, sell value, and what still needs to be farmed.</p>
+    </div>
+</section>
+
+<form method="get" class="filter-bar command-card">
+    <input name="search" value="@search" placeholder="Search item, source, or use..." />
+    <input type="hidden" name="pageSize" value="@ViewBag.PageSize" />
+    <label class="checkline"><input type="checkbox" name="hideStocked" value="true" checked="@hideStocked" /> Hide stocked</label>
+    <button class="button primary" type="submit">Filter Database</button>
+</form>
+
+<section class="kpi-grid">
+    <article class="kpi-card"><span>Total Items</span><strong>@totalItems</strong><small>tracked rows</small></article>
+    <article class="kpi-card"><span>Needed</span><strong>@neededItems</strong><small>not at target</small></article>
+    <article class="kpi-card"><span>Critical</span><strong>@criticalItems</strong><small>rare gaps</small></article>
+    <article class="kpi-card"><span>Vault Value</span><strong>@vaultValue</strong><small>estimated value</small></article>
+</section>
+
+<section class="database-pager" aria-label="Item database pages">
+    <div>
+        <strong>Page @currentPage of @totalPages</strong>
+        <span>Showing @Model.Count() of @totalItems matching items.</span>
+    </div>
+
+    <div class="pager-actions">
+        @if (currentPage > 1)
+        {
+            <a class="button secondary small" asp-action="Index" asp-route-search="@search" asp-route-hideStocked="@hideStocked" asp-route-page="@(currentPage - 1)" asp-route-pageSize="@ViewBag.PageSize">Previous</a>
+        }
+
+        @if (currentPage < totalPages)
+        {
+            <a class="button small" asp-action="Index" asp-route-search="@search" asp-route-hideStocked="@hideStocked" asp-route-page="@(currentPage + 1)" asp-route-pageSize="@ViewBag.PageSize">Next</a>
+        }
+    </div>
+</section>
+
+<section class="database-grid">
+@foreach (var item in Model)
+{
+    <article class="database-card" data-item-card="@item.Id">
+        <div class="card-topline">
+            <span class="rarity @item.Rarity.ToLower()">@item.Rarity</span>
+            <span class="priority-pill" data-item-priority>@item.Priority</span>
+        </div>
+
+        <h2 class="item-card-title">
+            <span class="item-icon @ItemIconClass(item.Category, item.Name)" aria-hidden="true">@ItemIconGlyph(item.Category, item.Name)</span>
+            <span>@item.Name</span>
+        </h2>
+
+        <p class="item-note">@item.Notes</p>
+
+        <dl class="intel-list">
+            <div><dt>Category</dt><dd>@item.Category</dd></div>
+            <div><dt>Source</dt><dd>@item.BestSource</dd></div>
+            <div><dt>Used For</dt><dd>@item.UsedFor</dd></div>
+            <div><dt>Need</dt><dd><span data-item-needed>@item.Needed</span> remaining</dd></div>
+        </dl>
+
+        <form asp-action="UpdateCount" method="post" class="count-update" data-count-update>
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@item.Id" />
+            <label>Have <input type="number" min="0" name="currentCount" value="@item.CurrentCount" /></label>
+            <span>Keep @item.KeepTarget</span>
+            <button class="button small" type="submit">Update</button>
+            <small class="inline-save-status" data-save-status aria-live="polite"></small>
+        </form>
+    </article>
+}
+</section>

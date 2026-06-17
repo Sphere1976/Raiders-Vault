@@ -2,6 +2,16 @@
 
 @{
     ViewData["Title"] = "My Loadouts";
+
+    string IconClass(string? value)
+    {
+        var text = (value ?? string.Empty).ToLowerInvariant();
+        if (text.Contains("med") || text.Contains("heal")) return "med";
+        if (text.Contains("shield") || text.Contains("armor")) return "shield";
+        if (text.Contains("rifle") || text.Contains("shotgun") || text.Contains("pistol") || text.Contains("weapon") || text.Contains("ammo")) return "weapon";
+        if (text.Contains("augment") || text.Contains("tool")) return "tool";
+        return "gear";
+    }
 }
 
 <div class="page-heading">
@@ -60,7 +70,7 @@
                         @loadout.ActivityType
                     </div>
 
-                    <h3>@loadout.Name</h3>
+                    <h3><span class="item-icon @IconClass(loadout.GearNotes)"></span>@loadout.Name</h3>
                 </div>
 
                 <span class="badge @riskClass">

@@ -10,6 +10,14 @@
         .ToHashSet();
 
     var savedTotal = Model.TotalCurrentPoints;
+
+    string BranchIcon(string branch) => branch switch
+    {
+        "Mobility" => "mobility",
+        "Survival" => "survival",
+        "Conditioning" => "conditioning",
+        _ => "balanced"
+    };
 }
 
 <div class="hero-panel">
@@ -115,6 +123,60 @@
                 Model.SelectedRecommendations)
         </div>
     }
+</section>
+
+<section class="recommendation-card skill-tree-command" aria-labelledby="skill-tree-title">
+    <div class="section-heading compact-heading">
+        <div>
+            <div class="kicker">Interactive Skill Tree View</div>
+            <h3 id="skill-tree-title">Branch Progression Network</h3>
+            <p class="hint">A professional node view that highlights saved points, recommended paths, and prerequisite flow by branch.</p>
+        </div>
+        <span class="badge teal">@Model.SelectedEntryStyle Build</span>
+    </div>
+
+    <div class="skill-tree-grid">
+        @foreach (var group in Model.Skills.GroupBy(x => x.Branch))
+        {
+            var branchPoints = group.Sum(x => x.CurrentPoints);
+            var branchMax = group.Sum(x => x.MaxPoints);
+            var recommendedBranch = Model.SelectedRecommendations.Where(x => x.Branch == group.Key).Select(x => x.Name).ToHashSet();
+
+            <article class="skill-tree-branch @BranchIcon(group.Key)">
+                <div class="tree-branch-header">
+                    <span class="item-icon @BranchIcon(group.Key)"></span>
+                    <div>
+                        <h4>@group.Key</h4>
+                        <small>@branchPoints / @branchMax saved points</small>
+                    </div>
+                </div>
+
+                <div class="tree-node-chain">
+                    @foreach (var skill in group.OrderBy(x => string.IsNullOrWhiteSpace(x.Requires) ? 0 : 1).ThenBy(x => x.Name))
+                    {
+                        var nodeClass = "tree-node";
+                        if (skill.CurrentPoints > 0) nodeClass += " active";
+                        if (recommendedBranch.Contains(skill.Name)) nodeClass += " recommended";
+
+                        <button type="button" class="@nodeClass" data-skill-node data-title="@skill.Name" data-copy="@skill.Description" data-points="@skill.CurrentPoints / @skill.MaxPoints" data-requires="@(string.IsNullOrWhiteSpace(skill.Requires) ? "No prerequisite" : skill.Requires)">
+                            <span>@skill.Name</span>
+                            <small>@skill.CurrentPoints/@skill.MaxPoints</small>
+                        </button>
+                    }
+                </div>
+            </article>
+        }
+    </div>
+
+    <aside class="skill-node-inspector" data-skill-inspector>
+        <div class="kicker">Node Inspector</div>
+        <h4 data-skill-title>Select a skill node</h4>
+        <p data-skill-copy>Click any node to review its description, saved points, and prerequisite path.</p>
+        <div class="mini-metrics">
+            <span><strong data-skill-points>--</strong><small>Points</small></span>
+            <span><strong data-skill-requires>--</strong><small>Requires</small></span>
+        </div>
+    </aside>
 </section>
 
 <form method="get" class="search panel">

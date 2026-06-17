@@ -9,10 +9,14 @@ namespace RaidersVault.Controllers;
 public class AccountController : Controller
 {
     private readonly RaidersVaultContext _context;
+    private readonly AuditService _auditService;
 
-    public AccountController(RaidersVaultContext context)
+    public AccountController(
+        RaidersVaultContext context,
+        AuditService auditService)
     {
         _context = context;
+        _auditService = auditService;
     }
 
     [HttpGet]
@@ -23,7 +27,7 @@ public class AccountController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult Login(string username, string password)
+    public async Task<IActionResult> Login(string username, string password)
     {
         username = InputSanitizer.Clean(username);
         password ??= string.Empty;
@@ -43,12 +47,24 @@ public class AccountController : Controller
         }
 
         HttpContext.Session.SetString("User", user.Username);
+        await _auditService.RecordAsync(
+            "Login",
+            user.Username,
+            "Identity",
+            "User signed in to the enterprise command platform.");
 
         return RedirectToAction("Index", "Home");
     }
 
-    public IActionResult Logout()
+    public async Task<IActionResult> Logout()
     {
+        var actor = HttpContext.Session.GetString("User") ?? "unknown";
+        await _auditService.RecordAsync(
+            "Logout",
+            actor,
+            "Identity",
+            "User signed out of the platform.");
+
         HttpContext.Session.Clear();
 
         return RedirectToAction("Login");

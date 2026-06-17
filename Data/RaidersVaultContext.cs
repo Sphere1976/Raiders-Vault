@@ -34,6 +34,7 @@ public class RaidersVaultContext : DbContext
     public DbSet<InventoryItem> InventoryItems => Set<InventoryItem>();
     public DbSet<IntelGuide> IntelGuides => Set<IntelGuide>();
     public DbSet<WeeklyTrial> WeeklyTrials => Set<WeeklyTrial>();
+    public DbSet<AuditEvent> AuditEvents => Set<AuditEvent>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -62,5 +63,6 @@ public class RaidersVaultContext : DbContext
         modelBuilder.Entity<InventoryItem>().HasIndex(x => x.Name).IsUnique();
         modelBuilder.Entity<IntelGuide>().HasIndex(x => new { x.Name, x.MapName, x.MapCondition }).IsUnique();
         modelBuilder.Entity<WeeklyTrial>().HasIndex(x => x.Name).IsUnique();
+        modelBuilder.Entity<AuditEvent>().HasIndex(x => x.OccurredAt);
     }
 }

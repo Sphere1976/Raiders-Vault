@@ -33,6 +33,7 @@
 
         <div class="hero-actions">
             <a class="button" asp-controller="RunPlanner" asp-action="Index">Launch Run Planner</a>
+            <a class="button secondary" asp-controller="GlobalOps" asp-action="Index">Global Ops</a>
             <a class="button secondary" asp-controller="Blueprints" asp-action="Index">Blueprint Tracker</a>
             <a class="button secondary" asp-controller="MapConditions" asp-action="Index">Map Intelligence</a>
             <a class="button secondary" asp-controller="Reports" asp-action="Index">Open Analytics</a>
@@ -99,6 +100,20 @@
             <strong>Blueprint Tracker</strong>
             <p>Search, collect, prioritize, and route blueprint farming.</p>
             <small>Collection progress // missing items // farm plans</small>
+        </a>
+
+        <a class="module-card" asp-controller="GlobalOps" asp-action="Index">
+            <span class="module-icon">GO</span>
+            <strong>Global Ops Center</strong>
+            <p>Monitor worldwide readiness, regional play windows, marketplace signals, and inventory gaps.</p>
+            <small>Regions // value signals // enterprise controls</small>
+        </a>
+
+        <a class="module-card" asp-controller="Admin" asp-action="Index">
+            <span class="module-icon">AD</span>
+            <strong>Admin Center</strong>
+            <p>Review security posture, integration endpoints, audit activity, and platform governance.</p>
+            <small>Audit trail // health // API registry</small>
         </a>
 
         <a class="module-card" asp-controller="RunPlanner" asp-action="Index">

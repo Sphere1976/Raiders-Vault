@@ -333,6 +333,8 @@ public static class DbInitializer
                 new InventoryItem { Name = "Advanced Electrical Components", Category = "Electronics", Rarity = "Epic", BestSource = "Locked Gate, Night, and technical containers", UsedFor = "Showstopper, augments, high-tier upgrades", KeepTarget = 5, CurrentCount = 1, SellValue = 380, Notes = "Farm under major conditions when possible." });
         }
 
+        SeedMetaForgeInventoryItems(db);
+
         if (!db.IntelGuides.Any())
         {
             db.IntelGuides.AddRange(
@@ -347,6 +349,51 @@ public static class DbInitializer
                 new WeeklyTrial { Name = "Search Computers", ObjectiveType = "Loot", TargetScore = 3000, ScorePerAction = 1000, BestMap = "Spaceport", Strategy = "Route through office and terminal interiors, search three computers, then extract.", Notes = "Companion-style trial optimization." },
                 new WeeklyTrial { Name = "Loot Weapon Crates", ObjectiveType = "Loot", TargetScore = 3000, ScorePerAction = 1000, BestMap = "Dam Battlegrounds", Strategy = "Hit known crate lanes first, avoid optional fights, and leave once three crates are secured.", Notes = "Use a balanced kit with smoke." },
                 new WeeklyTrial { Name = "Damage ARC Enemies", ObjectiveType = "Combat", TargetScore = 3000, ScorePerAction = 500, BestMap = "Dam Battlegrounds", Strategy = "Pull ARC enemies into controlled choke points and use grenades or sustained rifle fire.", Notes = "ARC Breaker loadout recommended." });
+        }
+
+        if (!db.AuditEvents.Any())
+        {
+            var now = DateTime.UtcNow;
+            db.AuditEvents.AddRange(
+                new AuditEvent
+                {
+                    Name = "Platform: Enterprise Governance Enabled",
+                    EventType = "Governance Enabled",
+                    Actor = "system",
+                    Area = "Platform",
+                    Severity = "Info",
+                    Details = "Admin Center, audit trail, protected API, CSV export, health checks, and security posture tracking are available.",
+                    Notes = "Initial enterprise governance seed event.",
+                    OccurredAt = now.AddMinutes(-20),
+                    CreatedAt = now.AddMinutes(-20),
+                    UpdatedAt = now.AddMinutes(-20)
+                },
+                new AuditEvent
+                {
+                    Name = "Security: Protected Global Ops API",
+                    EventType = "API Protection",
+                    Actor = "system",
+                    Area = "Security",
+                    Severity = "Info",
+                    Details = "Global Ops JSON intelligence requires an authenticated session.",
+                    Notes = "Initial API governance seed event.",
+                    OccurredAt = now.AddMinutes(-12),
+                    CreatedAt = now.AddMinutes(-12),
+                    UpdatedAt = now.AddMinutes(-12)
+                },
+                new AuditEvent
+                {
+                    Name = "Operations: Worldwide Readiness Published",
+                    EventType = "Readiness Published",
+                    Actor = "system",
+                    Area = "Global Ops",
+                    Severity = "Info",
+                    Details = "Regional readiness, localization support windows, trial signals, and blueprint target queues are visible.",
+                    Notes = "Initial Global Ops seed event.",
+                    OccurredAt = now.AddMinutes(-5),
+                    CreatedAt = now.AddMinutes(-5),
+                    UpdatedAt = now.AddMinutes(-5)
+                });
         }
 
         SeedMapConditionOptions(db);
@@ -493,6 +540,142 @@ public static class DbInitializer
         }
 
         db.Skills.AddRange(skills);
+    }
+
+    private static void SeedMetaForgeInventoryItems(RaidersVaultContext db)
+    {
+        var dataPath = Path.Combine(Directory.GetCurrentDirectory(), "Data", "metaforge_arc_items.json");
+
+        if (!File.Exists(dataPath))
+        {
+            dataPath = Path.Combine(AppContext.BaseDirectory, "Data", "metaforge_arc_items.json");
+        }
+
+        if (!File.Exists(dataPath))
+        {
+            return;
+        }
+
+        var json = File.ReadAllText(dataPath);
+        var importedItems = JsonSerializer.Deserialize<List<MetaForgeInventoryItem>>(
+            json,
+            JsonOptions);
+
+        if (importedItems == null || importedItems.Count == 0)
+        {
+            return;
+        }
+
+        var existingByName = db.InventoryItems
+            .AsEnumerable()
+            .ToDictionary(
+                item => item.Name,
+                StringComparer.OrdinalIgnoreCase);
+
+        foreach (var importedItem in importedItems.Where(item => !string.IsNullOrWhiteSpace(item.Name)))
+        {
+            var itemName = Limit(importedItem.Name, 100, "Unknown Item");
+            var category = Limit(importedItem.Category, 60, "Item");
+            var rarity = Limit(importedItem.Rarity, 40, "Common");
+            var bestSource = Limit(importedItem.BestSource, 100, "MetaForge item database");
+            var usedFor = Limit(importedItem.UsedFor, 100, "Collection tracking");
+            var keepTarget = importedItem.KeepTarget <= 0 ? 1 : importedItem.KeepTarget;
+            var sellValue = Math.Max(0, importedItem.SellValue);
+            var notes = Limit(BuildMetaForgeNote(importedItem), 500, "Imported from MetaForge ARC Raiders item database.");
+
+            if (existingByName.TryGetValue(itemName, out var existingItem))
+            {
+                var changed = false;
+
+                changed |= SetIfChanged(existingItem.Category, category, value => existingItem.Category = value);
+                changed |= SetIfChanged(existingItem.Rarity, rarity, value => existingItem.Rarity = value);
+                changed |= SetIfChanged(existingItem.BestSource, bestSource, value => existingItem.BestSource = value);
+                changed |= SetIfChanged(existingItem.UsedFor, usedFor, value => existingItem.UsedFor = value);
+                changed |= SetIfChanged(existingItem.SellValue, sellValue, value => existingItem.SellValue = value);
+
+                var targetCount = Math.Max(existingItem.KeepTarget, keepTarget);
+                changed |= SetIfChanged(existingItem.KeepTarget, targetCount, value => existingItem.KeepTarget = value);
+                changed |= SetIfChanged(existingItem.Notes, notes, value => existingItem.Notes = value);
+
+                if (changed)
+                {
+                    existingItem.UpdatedAt = DateTime.Now;
+                }
+
+                continue;
+            }
+
+            var item = new InventoryItem
+            {
+                Name = itemName,
+                Category = category,
+                Rarity = rarity,
+                BestSource = bestSource,
+                UsedFor = usedFor,
+                KeepTarget = keepTarget,
+                CurrentCount = 0,
+                SellValue = sellValue,
+                Favorite = importedItem.Rarity is "Epic" or "Legendary",
+                Notes = notes
+            };
+
+            db.InventoryItems.Add(item);
+            existingByName[item.Name] = item;
+        }
+    }
+
+    private static bool SetIfChanged<T>(T currentValue, T newValue, Action<T> setValue)
+    {
+        if (EqualityComparer<T>.Default.Equals(currentValue, newValue))
+        {
+            return false;
+        }
+
+        setValue(newValue);
+        return true;
+    }
+
+    private static string BuildMetaForgeNote(MetaForgeInventoryItem item)
+    {
+        var source = string.IsNullOrWhiteSpace(item.SourceUrl)
+            ? "MetaForge ARC Raiders item database"
+            : item.SourceUrl;
+
+        return $"{item.Notes} Source: {source}";
+    }
+
+    private static string Limit(string? value, int maxLength, string? fallback)
+    {
+        var output = string.IsNullOrWhiteSpace(value)
+            ? fallback ?? string.Empty
+            : value.Trim();
+
+        return output.Length <= maxLength
+            ? output
+            : output[..maxLength];
+    }
+
+    private sealed class MetaForgeInventoryItem
+    {
+        public string Id { get; set; } = string.Empty;
+
+        public string Name { get; set; } = string.Empty;
+
+        public string Category { get; set; } = "Item";
+
+        public string Rarity { get; set; } = "Common";
+
+        public string BestSource { get; set; } = "MetaForge item database";
+
+        public string UsedFor { get; set; } = "Collection tracking";
+
+        public int SellValue { get; set; }
+
+        public int KeepTarget { get; set; } = 1;
+
+        public string Notes { get; set; } = string.Empty;
+
+        public string SourceUrl { get; set; } = string.Empty;
     }
 
     public static string HashPassword(string password)

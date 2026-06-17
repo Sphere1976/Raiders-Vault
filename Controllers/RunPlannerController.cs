@@ -496,6 +496,159 @@ public class RunPlannerController : BaseController
             + $"{vm.SelectedMap} during {vm.SelectedCondition}. "
             + $"The selected goal is {vm.SelectedGoal}, and the planner assumes "
             + $"{vm.TotalSkillPoints} total skill points.";
+
+        vm.RiskLevel = CalculateRiskLevel(vm.SelectedStyle, vm.SelectedCondition, vm.SelectedGoal);
+        vm.PriorityScore = CalculatePriorityScore(vm);
+        vm.ExtractionWindow = BuildExtractionWindow(vm);
+        vm.RouteStops = BuildRouteStops(vm.SelectedMap, vm.SelectedCondition, vm.SelectedGoal);
+        vm.ThreatNotes = BuildThreatNotes(vm.SelectedCondition, vm.SelectedStyle);
+        vm.OperatorTips = BuildOperatorTips(vm.SelectedGoal, vm.SelectedStyle);
+        vm.MetaForgeSignals = BuildMetaForgeSignals(vm.SelectedMap, vm.SelectedCondition, vm.SelectedGoal);
+    }
+
+    private static string CalculateRiskLevel(
+        string selectedStyle,
+        string selectedCondition,
+        string selectedGoal)
+    {
+        var score = 35;
+
+        if (selectedStyle == "PvP") score += 25;
+        if (selectedGoal is "PvP Hunting" or "ARC Hunting") score += 20;
+        if (selectedCondition is "Night Raid" or "Hurricane" or "Close Scrutiny" or "Harvester" or "Matriarch") score += 20;
+        if (selectedCondition is "Locked Gate" or "Electromagnetic Storm" or "Hidden Bunker") score += 12;
+
+        return score >= 75 ? "Critical" : score >= 55 ? "Elevated" : "Controlled";
+    }
+
+    private static int CalculatePriorityScore(RunPlannerViewModel vm)
+    {
+        var score = 45;
+        score += vm.SuggestedBlueprints.Count * 8;
+        score += vm.SuggestedQuests.Count * 5;
+        score += vm.SuggestedSkills.Count * 4;
+
+        if (vm.SelectedGoal == "Blueprint Farming") score += 12;
+        if (vm.SelectedCondition != "Standard Patrol") score += 8;
+
+        return Math.Clamp(score, 0, 100);
+    }
+
+    private static string BuildExtractionWindow(RunPlannerViewModel vm)
+    {
+        if (vm.RiskLevel == "Critical")
+        {
+            return "Extract after the first major objective, rare container hit, or confirmed blueprint lead.";
+        }
+
+        if (vm.SelectedGoal == "Blueprint Farming")
+        {
+            return "Extract once the primary container route is cleared or inventory value outweighs the next rotation.";
+        }
+
+        if (vm.SelectedGoal == "Quest Progression")
+        {
+            return "Extract immediately after the quest action is complete unless a nearby blueprint lead is safe.";
+        }
+
+        return "Extract after completing one primary goal, one secondary scan, and one safe loot rotation.";
+    }
+
+    private static List<string> BuildRouteStops(
+        string selectedMap,
+        string selectedCondition,
+        string selectedGoal)
+    {
+        var stops = selectedMap switch
+        {
+            "Dam Battlegrounds" => new List<string> { "Residential containers", "Raider cache clusters", "Dam interior rooms", "Nearest safe extract" },
+            "Buried City" => new List<string> { "Apartment loot loop", "Commercial interiors", "Medical or tech rooms", "Low-noise extraction path" },
+            "Blue Gate" => new List<string> { "Village interiors", "Breachable rooms", "Industrial utility containers", "Outer extraction route" },
+            "Spaceport" => new List<string> { "Admin buildings", "Tech/server rooms", "Weapon case checks", "Vehicle-side extraction" },
+            "Riven Tides" => new List<string> { "Coastal loot lane", "Beachcomber side checks", "Stash and utility containers", "Waterline extraction path" },
+            "Stella Montis" => new List<string> { "Interior medical route", "Research containers", "High-value room checks", "Fast extract before pressure builds" },
+            _ => new List<string> { "Spawn safety check", "Primary loot route", "Objective overlap", "Clean extraction" }
+        };
+
+        if (selectedCondition != "Standard Patrol")
+        {
+            stops.Insert(1, $"Condition objective: {selectedCondition}");
+        }
+
+        if (selectedGoal == "Blueprint Farming")
+        {
+            stops.Insert(0, "Confirm missing blueprint target");
+        }
+
+        return stops.Take(6).ToList();
+    }
+
+    private static List<string> BuildThreatNotes(
+        string selectedCondition,
+        string selectedStyle)
+    {
+        var notes = new List<string>
+        {
+            "Avoid over-looting after the first high-value container chain.",
+            "Re-check extracts before committing to a long interior route."
+        };
+
+        if (selectedStyle == "PvP")
+        {
+            notes.Add("Expect player pressure near breach rooms, caches, and event objectives.");
+        }
+
+        if (selectedCondition is "Night Raid" or "Hurricane")
+        {
+            notes.Add("Visibility and rotation timing are the main failure points for this condition.");
+        }
+
+        if (selectedCondition is "Harvester" or "Matriarch" or "Close Scrutiny")
+        {
+            notes.Add("Treat the condition target as contested and disengage if another squad arrives first.");
+        }
+
+        return notes;
+    }
+
+    private static List<string> BuildOperatorTips(
+        string selectedGoal,
+        string selectedStyle)
+    {
+        var tips = new List<string>
+        {
+            "Pin the best blueprint target before entering the run.",
+            "Use the report page after the run to keep progress evidence clean."
+        };
+
+        if (selectedGoal == "Blueprint Farming")
+        {
+            tips.Add("Do not chase low-value containers once the route stops matching the target pool.");
+        }
+
+        if (selectedStyle == "PvE")
+        {
+            tips.Add("Prioritize smoke, healing, and shield recovery over extra combat utility.");
+        }
+        else if (selectedStyle == "PvP")
+        {
+            tips.Add("Carry one disengage tool and one pressure tool so the kit can both fight and reset.");
+        }
+
+        return tips;
+    }
+
+    private static List<string> BuildMetaForgeSignals(
+        string selectedMap,
+        string selectedCondition,
+        string selectedGoal)
+    {
+        return new List<string>
+        {
+            "Companion-style planning: map, condition, item target, route, and checklist stay visible together.",
+            $"Intel context: {selectedMap} / {selectedCondition} / {selectedGoal}.",
+            "Blueprint routing favors container pools, event conditions, and fast extraction decisions instead of generic item lists."
+        };
     }
 
     private record BlueprintRule(

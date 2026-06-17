@@ -18,6 +18,12 @@ This version is positioned as a production-quality portfolio application: clean 
 
 ---
 
+## Latest Enhancement Pass
+
+This build expands the main planning workflow with a premium Run Planner command interface, mission briefing cards, route-aligned KPI tiles, a browser-local pre-extraction checklist, stacked blueprint intel cards, and stronger dashboard visual hierarchy. The goal is to make the application feel more like a polished operations product while keeping the existing ASP.NET Core MVC architecture intact.
+
+---
+
 ## Product Capabilities
 
 | Domain | Capability |
@@ -226,3 +232,23 @@ This version is prepared for resume and portfolio review with a stronger product
 **Raiders Vault** is a production-style game companion platform built with ASP.NET Core MVC, EF Core, SQLite, Razor, and Google Cloud Run. It centralizes ARC Raiders planning through loadout management, quest tracking, blueprint collection, map-condition intelligence, skill planning, favorites, farm routes, and reporting.
 
 See `docs/PRODUCTION_READINESS.md` and `docs/DEPLOYMENT_RUNBOOK.md` for portfolio talking points, validation steps, and deployment instructions.
+
+## Latest Professional Upgrade
+
+Raiders Vault now includes a MetaForge-inspired companion hub experience:
+
+- Premium Blueprint Command Vault with card-based tracking, farm-plan previews, and collection metrics.
+- Run Planner intelligence layer with priority score, risk level, route sequence, extraction guidance, threat controls, and operator tips.
+- Professional companion-app workflow that keeps map, condition, item target, route, and checklist decisions together.
+- No external API dependency is required; the system uses internal seeded data and local recommendation logic.
+
+
+## v44 Interactive Companion Upgrade
+
+This package adds a more professional companion-app experience inspired by modern loot trackers and MetaForge-style planning tools:
+
+- Interactive tactical map board on Run Planner with clickable Entry, Loot Core, Blueprint, Objective, and Extraction zones.
+- Visual skill tree network with branch cards, node states, recommended-path highlighting, and a click-to-inspect node panel.
+- Reusable item icon system for weapons, shields, medical items, tools, gear, intel, and skill branches.
+- Upgraded loadout and blueprint cards so records feel more like a polished game companion dashboard.
+- Browser-side interactivity is handled in `wwwroot/js/site.js`; no database migration is required.

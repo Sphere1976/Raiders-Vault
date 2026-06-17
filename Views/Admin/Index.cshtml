@@ -1,0 +1,96 @@
+@model AdminCenterViewModel
+
+@{
+    ViewData["Title"] = "Admin Center";
+}
+
+<section class="mega-hero admin-hero">
+    <div class="hero-copy">
+        <div class="kicker">Enterprise Admin Center</div>
+        <h1>Govern the platform, not just the next run.</h1>
+        <p>
+            Monitor security posture, integration endpoints, data coverage, runtime environment,
+            and recent audit activity from one operations console.
+        </p>
+
+        <div class="hero-actions">
+            <a class="button" asp-controller="GlobalOps" asp-action="Index">Open Global Ops</a>
+            <a class="button secondary" asp-controller="Reports" asp-action="Index">Analytics</a>
+            <a class="button secondary" href="/health">Health Probe</a>
+        </div>
+    </div>
+
+    <aside class="hero-intel-card">
+        <div class="kicker">Security Posture</div>
+        <h3>@Model.SecurityScore%</h3>
+        <div class="intel-line"><span>Environment</span><strong>@Model.EnvironmentName</strong></div>
+        <div class="intel-line"><span>Database</span><strong>@Model.DatabaseProvider</strong></div>
+        <div class="intel-line"><span>Warnings</span><strong>@Model.CriticalAuditCount active</strong></div>
+        <p class="hint">Generated @Model.GeneratedAtUtc.ToLocalTime().ToString("yyyy-MM-dd h:mm tt")</p>
+    </aside>
+</section>
+
+<section class="mission-control-grid admin-kpis">
+    <article class="metric-card neon-blue"><span class="metric-label">Users</span><strong class="stat">@Model.UserCount</strong><p>Seeded and active accounts.</p></article>
+    <article class="metric-card neon-green"><span class="metric-label">Loadouts</span><strong class="stat">@Model.LoadoutCount</strong><p>Saved tactical setups.</p></article>
+    <article class="metric-card neon-gold"><span class="metric-label">Objectives</span><strong class="stat">@Model.ObjectiveCount</strong><p>Tracked quest records.</p></article>
+    <article class="metric-card neon-purple"><span class="metric-label">Blueprints</span><strong class="stat">@Model.BlueprintCount</strong><p>Collection records.</p></article>
+    <article class="metric-card neon-blue"><span class="metric-label">Inventory</span><strong class="stat">@Model.InventoryCount</strong><p>Needed-item tracker rows.</p></article>
+    <article class="metric-card neon-green"><span class="metric-label">Integrations</span><strong class="stat">@Model.ApiCapabilityCount</strong><p>External surfaces.</p></article>
+</section>
+
+<section class="split premium-split">
+    <div class="panel">
+        <div class="kicker">Platform Capabilities</div>
+        <h3>Operational controls</h3>
+        <div class="capability-list">
+            @foreach (var capability in Model.CapabilityStatuses)
+            {
+                <article class="capability-row">
+                    <span class="badge green">@capability.Status</span>
+                    <strong>@capability.Name</strong>
+                    <p>@capability.Detail</p>
+                </article>
+            }
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="kicker">Integration Registry</div>
+        <h3>Connected surfaces</h3>
+        <div class="integration-table">
+            @foreach (var endpoint in Model.IntegrationEndpoints)
+            {
+                <div class="integration-row">
+                    <strong>@endpoint.Name</strong>
+                    <span>@endpoint.Method</span>
+                    <code>@endpoint.Path</code>
+                    <small>@endpoint.Access</small>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<section class="vault-console">
+    <div class="section-heading">
+        <div>
+            <div class="kicker">Audit Trail</div>
+            <h2>Recent governance activity.</h2>
+        </div>
+    </div>
+
+    <div class="audit-timeline">
+        @foreach (var auditEvent in Model.RecentAuditEvents)
+        {
+            <article class="audit-event">
+                <span class="badge @(auditEvent.Severity == "Warning" ? "gold" : auditEvent.Severity == "Critical" ? "danger" : "teal")">@auditEvent.Severity</span>
+                <div>
+                    <strong>@auditEvent.EventType</strong>
+                    <p>@auditEvent.Details</p>
+                    <small>@auditEvent.Actor // @auditEvent.Area // @auditEvent.OccurredAt.ToLocalTime().ToString("yyyy-MM-dd h:mm tt")</small>
+                </div>
+            </article>
+        }
+    </div>
+</section>
