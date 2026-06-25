@@ -1,0 +1,13 @@
+{{- range $name, $image := .Values.images }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ printf "raiders-vault-%s" $name }}
+spec:
+  selector:
+    app.kubernetes.io/name: {{ printf "raiders-vault-%s" $name }}
+  ports:
+    - port: {{ ternary 3000 8080 (eq $name "next") }}
+      targetPort: {{ ternary 3000 8080 (eq $name "next") }}
+---
+{{- end }}

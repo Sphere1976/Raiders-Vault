@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: raiders-vault-config
+  namespace: raiders-vault
+data:
+  ASPNETCORE_ENVIRONMENT: Production
+  ASPNETCORE_URLS: http://+:8080
+  RAIDERS_VAULT_API_URL: http://raiders-vault-mvc:8080

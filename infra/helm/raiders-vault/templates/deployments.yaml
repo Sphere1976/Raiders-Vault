@@ -1,0 +1,27 @@
+{{- $root := . -}}
+{{- range $name, $image := .Values.images }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ printf "raiders-vault-%s" $name }}
+  labels:
+    app.kubernetes.io/name: {{ printf "raiders-vault-%s" $name }}
+spec:
+  replicas: {{ $root.Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ printf "raiders-vault-%s" $name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ printf "raiders-vault-%s" $name }}
+    spec:
+      containers:
+        - name: {{ $name }}
+          image: {{ $image }}
+          ports:
+            - containerPort: {{ ternary 3000 8080 (eq $name "next") }}
+          resources:
+            {{- toYaml $root.Values.resources | nindent 12 }}
+---
+{{- end }}

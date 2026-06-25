@@ -1,0 +1,13 @@
+{
+  "expo": {
+    "name": "Raiders Vault Mobile",
+    "slug": "raiders-vault-mobile",
+    "scheme": "raidersvault",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "platforms": ["ios", "android", "web"],
+    "extra": {
+      "apiBaseUrl": "http://127.0.0.1:5217"
+    }
+  }
+}

@@ -1,0 +1,18 @@
+replicaCount: 2
+
+images:
+  mvc: ghcr.io/example/raiders-vault-mvc:latest
+  next: ghcr.io/example/raiders-vault-next:latest
+  liveops: ghcr.io/example/raiders-vault-liveops:latest
+
+ingress:
+  enabled: true
+  host: raiders-vault.local
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi

@@ -1,0 +1,13 @@
+sequenceDiagram
+    participant MVC as ASP.NET Core MVC
+    participant Bus as EventBridge Bus
+    participant Spring as Spring LiveOps
+    participant Warehouse as Analytics Warehouse
+    participant Ops as Ops Dashboard
+
+    MVC->>Bus: AuditEventRecorded
+    MVC->>Bus: GlobalOpsExported
+    Spring->>Bus: LiveOpsSnapshotRefreshed
+    Bus->>Warehouse: Store operational facts
+    Warehouse->>Ops: Publish dashboard metrics
+    Ops->>MVC: Drill into source workflow

@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: raiders-vault
+  labels:
+    app.kubernetes.io/name: raiders-vault
+    app.kubernetes.io/part-of: raiders-vault-platform

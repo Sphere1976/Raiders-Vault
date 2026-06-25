@@ -1,0 +1,116 @@
+openapi: 3.0.3
+info:
+  title: Raiders Vault API
+  version: 1.0.0
+  description: REST contracts for the Raiders Vault MVC platform and Spring LiveOps service.
+servers:
+  - url: http://127.0.0.1:5217
+    description: ASP.NET Core MVC application
+  - url: http://127.0.0.1:8080
+    description: Spring Boot LiveOps service
+paths:
+  /health:
+    get:
+      summary: Application health check
+      tags: [Platform]
+      responses:
+        "200":
+          description: Application is healthy.
+  /api/v1/global-ops:
+    get:
+      summary: Protected Raiders Vault global operations dashboard data
+      tags: [GlobalOps]
+      responses:
+        "200":
+          description: Authenticated global operations data.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GlobalOpsDashboard"
+        "401":
+          description: Authentication required.
+        "302":
+          description: Browser session redirected to login.
+  /api/v1/live-ops:
+    get:
+      summary: Spring Boot live operations snapshot
+      tags: [LiveOps]
+      responses:
+        "200":
+          description: Live operations snapshot.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LiveOpsSnapshot"
+components:
+  schemas:
+    GlobalOpsDashboard:
+      type: object
+      properties:
+        generatedAtUtc:
+          type: string
+          format: date-time
+        liveOps:
+          $ref: "#/components/schemas/LiveOpsFeed"
+    LiveOpsFeed:
+      type: object
+      properties:
+        sourceName:
+          type: string
+        sourceUrl:
+          type: string
+          format: uri
+        activeConditions:
+          type: array
+          items:
+            $ref: "#/components/schemas/MapCondition"
+        news:
+          type: array
+          items:
+            $ref: "#/components/schemas/NewsItem"
+    LiveOpsSnapshot:
+      type: object
+      required: [generatedAt, source, activeConditions, newsUpdates]
+      properties:
+        generatedAt:
+          type: string
+          format: date-time
+        source:
+          type: string
+        activeConditions:
+          type: array
+          items:
+            $ref: "#/components/schemas/MapCondition"
+        newsUpdates:
+          type: array
+          items:
+            $ref: "#/components/schemas/NewsItem"
+    MapCondition:
+      type: object
+      properties:
+        map:
+          type: string
+        condition:
+          type: string
+        status:
+          type: string
+        timeWindow:
+          type: string
+        summary:
+          type: string
+        recommendation:
+          type: string
+    NewsItem:
+      type: object
+      properties:
+        title:
+          type: string
+        publishedAt:
+          type: string
+        source:
+          type: string
+        url:
+          type: string
+          format: uri
+        summary:
+          type: string

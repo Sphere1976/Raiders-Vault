@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: raiders-vault-liveops
+  namespace: raiders-vault
+  labels:
+    app.kubernetes.io/name: raiders-vault-liveops
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: raiders-vault-liveops
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: raiders-vault-liveops
+    spec:
+      containers:
+        - name: liveops
+          image: ghcr.io/example/raiders-vault-liveops:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            initialDelaySeconds: 25
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 100m
+              memory: 384Mi
+            limits:
+              cpu: 750m
+              memory: 768Mi

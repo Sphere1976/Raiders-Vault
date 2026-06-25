@@ -1,0 +1,43 @@
+flowchart LR
+    User["User / Hiring Reviewer"] --> Next["Next.js + React + TypeScript"]
+    User --> MVC["ASP.NET Core MVC"]
+    User --> Mobile["Expo / React Native Mobile"]
+
+    Next --> GlobalOps["MVC /api/v1/global-ops"]
+    Next --> Spring["Spring Boot /api/v1/live-ops"]
+    Next --> GraphQL["Spring GraphQL BFF"]
+    Mobile --> GraphQL
+    MVC --> SQLite["SQLite / EF Core"]
+    MVC --> Audit["Audit Events"]
+    Spring --> LiveOps["LiveOps Snapshot Service"]
+    Audit --> Events["EventBridge Events"]
+    Events --> Warehouse["Analytics Warehouse"]
+
+    subgraph Quality["Quality Gates"]
+        Playwright["Playwright E2E"]
+        JUnit["JUnit + MockMvc"]
+        Cucumber["Cucumber BDD"]
+        Postman["Postman API"]
+        K6["k6 Performance"]
+        Chaos["Chaos Drills"]
+        Policy["OPA / Rego Policy"]
+    end
+
+    subgraph Delivery["Delivery and Platform"]
+        Actions["GitHub Actions"]
+        Docker["Docker Compose"]
+        Terraform["AWS Terraform"]
+        CloudFormation["AWS CloudFormation"]
+        Kubernetes["Kubernetes + Kustomize"]
+        Helm["Helm Chart"]
+        MobileBuild["Expo Mobile Build"]
+    end
+
+    Quality --> Actions
+    Actions --> Docker
+    Actions --> Terraform
+    Actions --> Kubernetes
+    Terraform --> AWS["AWS ECS Fargate + ALB + CloudWatch"]
+    CloudFormation --> AWS
+    Helm --> Kubernetes
+    Policy --> Kubernetes

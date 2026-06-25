@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: raiders-vault-mvc
+  namespace: raiders-vault
+spec:
+  selector:
+    app.kubernetes.io/name: raiders-vault-mvc
+  ports:
+    - port: 8080
+      targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: raiders-vault-liveops
+  namespace: raiders-vault
+spec:
+  selector:
+    app.kubernetes.io/name: raiders-vault-liveops
+  ports:
+    - port: 8080
+      targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: raiders-vault-next
+  namespace: raiders-vault
+spec:
+  selector:
+    app.kubernetes.io/name: raiders-vault-next
+  ports:
+    - port: 3000
+      targetPort: 3000

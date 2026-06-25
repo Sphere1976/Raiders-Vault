@@ -1,0 +1,80 @@
+{
+  "info": {
+    "name": "Raiders Vault API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/health"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('health endpoint is available', function () {",
+              "  pm.response.to.have.status(200);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Protected Global Ops API",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/v1/global-ops"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('global ops is protected or returns data for an authenticated session', function () {",
+              "  pm.expect([200, 401, 302]).to.include(pm.response.code);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Spring LiveOps Service",
+      "request": {
+        "method": "GET",
+        "url": "{{springBaseUrl}}/api/v1/live-ops"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('spring service returns typed live ops data', function () {",
+              "  pm.response.to.have.status(200);",
+              "  const body = pm.response.json();",
+              "  pm.expect(body.activeConditions.length).to.be.greaterThan(0);",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:5217"
+    },
+    {
+      "key": "springBaseUrl",
+      "value": "http://127.0.0.1:8080"
+    }
+  ]
+}

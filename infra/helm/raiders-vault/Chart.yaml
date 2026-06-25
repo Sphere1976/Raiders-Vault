@@ -1,0 +1,6 @@
+apiVersion: v2
+name: raiders-vault
+description: Helm chart for the Raiders Vault full-stack platform.
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

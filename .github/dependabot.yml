@@ -1,0 +1,30 @@
+version: 2
+updates:
+  - package-ecosystem: "nuget"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "npm"
+    directory: "/frontend/raiders-vault-next"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "maven"
+    directory: "/Services/liveops-spring"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "maven"
+    directory: "/gateway/graphql-bff"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "npm"
+    directory: "/mobile/raiders-vault-mobile"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "terraform"
+    directory: "/infra/aws/terraform"
+    schedule:
+      interval: "weekly"

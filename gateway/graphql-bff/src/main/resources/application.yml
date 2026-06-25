@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: raiders-vault-graphql-bff
+  graphql:
+    graphiql:
+      enabled: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+server:
+  port: 8090

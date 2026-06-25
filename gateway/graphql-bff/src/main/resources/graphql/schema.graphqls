@@ -1,0 +1,10 @@
+type Query {
+  globalOpsSummary: GlobalOpsSummary!
+}
+
+type GlobalOpsSummary {
+  generatedAt: String!
+  activeConditionCount: Int!
+  newsUpdateCount: Int!
+  executiveSignals: [String!]!
+}

@@ -331,6 +331,11 @@ public static class DbInitializer
                 new InventoryItem { Name = "Rope", Category = "Utility", Rarity = "Common", BestSource = "Residential containers", UsedFor = "Snap Hook and movement quick-use crafting", KeepTarget = 6, CurrentCount = 2, SellValue = 35, Notes = "Low-value but important when chasing movement tools." },
                 new InventoryItem { Name = "Speaker Component", Category = "Electronics", Rarity = "Rare", BestSource = "Computers and electronics boxes", UsedFor = "Lure Grenade and scanner utility crafting", KeepTarget = 4, CurrentCount = 0, SellValue = 240, Notes = "Good target for computer-search routes." },
                 new InventoryItem { Name = "Advanced Electrical Components", Category = "Electronics", Rarity = "Epic", BestSource = "Locked Gate, Night, and technical containers", UsedFor = "Showstopper, augments, high-tier upgrades", KeepTarget = 5, CurrentCount = 1, SellValue = 380, Notes = "Farm under major conditions when possible." });
+
+            // Persist the starter inventory before importing the larger MetaForge list.
+            // The importer checks existing names in SQLite, and saving here keeps seeding
+            // idempotent when the JSON file contains one of the starter item names.
+            db.SaveChanges();
         }
 
         SeedMetaForgeInventoryItems(db);

@@ -1,0 +1,34 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: raiders-vault
+  namespace: raiders-vault
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: raiders-vault.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: raiders-vault-next
+                port:
+                  number: 3000
+          - path: /mvc
+            pathType: Prefix
+            backend:
+              service:
+                name: raiders-vault-mvc
+                port:
+                  number: 8080
+          - path: /liveops
+            pathType: Prefix
+            backend:
+              service:
+                name: raiders-vault-liveops
+                port:
+                  number: 8080

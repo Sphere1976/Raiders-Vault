@@ -1,0 +1,33 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Raiders Vault EventBridge reference architecture for platform events.
+
+Resources:
+  EventBus:
+    Type: AWS::Events::EventBus
+    Properties:
+      Name: raiders-vault-events
+
+  AuditEventRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: raiders-vault-audit-events
+      EventBusName: !Ref EventBus
+      EventPattern:
+        source:
+          - raiders-vault.mvc
+        detail-type:
+          - AuditEventRecorded
+          - GlobalOpsExported
+          - LiveOpsSnapshotRefreshed
+      State: ENABLED
+
+  LiveOpsRefreshRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: raiders-vault-liveops-refresh
+      ScheduleExpression: rate(15 minutes)
+      State: ENABLED
+
+Outputs:
+  EventBusName:
+    Value: !Ref EventBus

@@ -1,0 +1,29 @@
+services:
+  raiders-vault-mvc:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      ASPNETCORE_URLS: http://+:8080
+      ASPNETCORE_ENVIRONMENT: Development
+    ports:
+      - "5217:8080"
+
+  liveops-spring:
+    build:
+      context: ./Services/liveops-spring
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+
+  raiders-vault-next:
+    build:
+      context: ./frontend/raiders-vault-next
+      dockerfile: Dockerfile
+    environment:
+      RAIDERS_VAULT_API_URL: http://raiders-vault-mvc:8080
+    ports:
+      - "3000:3000"
+    depends_on:
+      - raiders-vault-mvc
+      - liveops-spring
