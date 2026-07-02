@@ -1,3 +1,11 @@
+@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? string.Empty;
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? string.Empty;
+    var pageTitle = ViewData["Title"]?.ToString() ?? currentController;
+
+    string ActiveNav(string controller) =>
+        string.Equals(currentController, controller, StringComparison.OrdinalIgnoreCase) ? "active" : string.Empty;
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,7 +17,10 @@
 
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
-<body>
+<body data-page-controller="@currentController" data-page-action="@currentAction">
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <div class="scroll-progress" data-scroll-progress aria-hidden="true"></div>
+
     <header class="app-header">
         <div class="header-row">
             <a class="brand" asp-controller="Home" asp-action="Index" aria-label="Raiders Vault dashboard">
@@ -24,35 +35,146 @@
                 <span class="status-dot"></span>
                 Live Production Console
             </div>
+
+            <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="primary-nav">
+                Menu
+            </button>
         </div>
 
-        <nav class="primary-nav" aria-label="Primary navigation">
-            <a asp-controller="Home" asp-action="Index">Command Center</a>
-            <a asp-controller="GlobalOps" asp-action="Index">Global Ops</a>
-            <a asp-controller="RunPlanner" asp-action="Index">Run Planner</a>
-            <a asp-controller="Loadouts" asp-action="Index">Loadouts</a>
-            <a asp-controller="MapConditions" asp-action="Index">Map Conditions</a>
-            <a asp-controller="Intel" asp-action="Index">Intel Hub</a>
-            <a asp-controller="Database" asp-action="Index">Item Database</a>
-            <a asp-controller="Trials" asp-action="Index">Weekly Trials</a>
-            <a asp-controller="Quests" asp-action="Index">Objectives</a>
-            <a asp-controller="Blueprints" asp-action="Index">Blueprints</a>
-            <a asp-controller="Skills" asp-action="Index">Skills</a>
-            <a asp-controller="Favorites" asp-action="Index">Watchlist</a>
-            <a asp-controller="Profile" asp-action="Index">Operator Profile</a>
-            <a asp-controller="Reports" asp-action="Index">Analytics</a>
-            <a asp-controller="Admin" asp-action="Index">Admin Center</a>
+        <nav class="primary-nav" id="primary-nav" data-primary-nav aria-label="Primary navigation">
+            <a class="@ActiveNav("Home")" asp-controller="Home" asp-action="Index">Command Center</a>
+            <a class="@ActiveNav("GlobalOps")" asp-controller="GlobalOps" asp-action="Index">Global Ops</a>
+            <a class="@ActiveNav("Assistant")" asp-controller="Assistant" asp-action="Index">AI Assistant</a>
+            <a class="@ActiveNav("RunPlanner")" asp-controller="RunPlanner" asp-action="Index">Run Planner</a>
+            <a class="@ActiveNav("Loadouts")" asp-controller="Loadouts" asp-action="Index">Loadouts</a>
+            <a class="@ActiveNav("MapConditions")" asp-controller="MapConditions" asp-action="Index">Map Conditions</a>
+            <a class="@ActiveNav("Intel")" asp-controller="Intel" asp-action="Index">Intel Hub</a>
+            <a class="@ActiveNav("Database")" asp-controller="Database" asp-action="Index">Item Database</a>
+            <a class="@ActiveNav("Trials")" asp-controller="Trials" asp-action="Index">Weekly Trials</a>
+            <a class="@ActiveNav("Quests")" asp-controller="Quests" asp-action="Index">Objectives</a>
+            <a class="@ActiveNav("Blueprints")" asp-controller="Blueprints" asp-action="Index">Blueprints</a>
+            <a class="@ActiveNav("Skills")" asp-controller="Skills" asp-action="Index">Skills</a>
+            <a class="@ActiveNav("Favorites")" asp-controller="Favorites" asp-action="Index">Watchlist</a>
+            <a class="@ActiveNav("Profile")" asp-controller="Profile" asp-action="Index">Operator Profile</a>
+            <a class="@ActiveNav("Reports")" asp-controller="Reports" asp-action="Index">Analytics</a>
+            <a class="@ActiveNav("Admin")" asp-controller="Admin" asp-action="Index">Admin Center</a>
             <a asp-controller="Account" asp-action="Logout">Logout</a>
         </nav>
     </header>
 
-    <main class="content-shell">
+    <section class="global-page-tools" aria-label="Page tools">
+        <div class="global-page-title">
+            <span class="kicker">Current Page</span>
+            <strong>@pageTitle</strong>
+        </div>
+        <div class="global-page-actions">
+            <button class="button secondary small" type="button" data-command-open>Search Pages</button>
+            <button class="button secondary small" type="button" data-scroll-top>Top</button>
+        </div>
+    </section>
+
+    <section class="global-command-panel" data-command-panel hidden aria-hidden="true">
+        <div class="global-command-backdrop" data-command-close></div>
+        <div class="global-command-dialog" role="dialog" aria-modal="true" aria-labelledby="global-command-title">
+            <div class="global-command-header">
+                <div>
+                    <span class="kicker">Quick Switch</span>
+                    <h2 id="global-command-title">Search pages</h2>
+                </div>
+                <button class="button secondary small" type="button" data-command-close>Close</button>
+            </div>
+
+            <label class="command-search">
+                <span>Destination</span>
+                <input type="search" data-command-search placeholder="Type a page, tool, or workflow" autocomplete="off" />
+            </label>
+
+            <div class="global-command-list" data-command-list>
+                <a class="command-item" href="/Home/Index" data-command-item data-keywords="dashboard overview command center home">
+                    <strong>Command Center</strong>
+                    <span>Operational dashboard and saved activity.</span>
+                </a>
+                <a class="command-item" href="/GlobalOps/Index" data-command-item data-keywords="global ops live operations events status">
+                    <strong>Global Ops</strong>
+                    <span>Live operation signals and activity windows.</span>
+                </a>
+                <a class="command-item" href="/Assistant/Index" data-command-item data-keywords="ai assistant chatbot chat route farming blueprint help">
+                    <strong>AI Assistant</strong>
+                    <span>Ask for farming priorities, route plans, blueprints, and trial help.</span>
+                </a>
+                <a class="command-item" href="/RunPlanner/Index" data-command-item data-keywords="route planner run farming loadout plan">
+                    <strong>Run Planner</strong>
+                    <span>Build extraction routes around goals and conditions.</span>
+                </a>
+                <a class="command-item" href="/Loadouts/Index" data-command-item data-keywords="loadouts weapons gear kits builds">
+                    <strong>Loadouts</strong>
+                    <span>Manage kits, gear, and readiness choices.</span>
+                </a>
+                <a class="command-item" href="/MapConditions/Index" data-command-item data-keywords="map conditions weather routes zones">
+                    <strong>Map Conditions</strong>
+                    <span>Review zone pressure, modifiers, and route notes.</span>
+                </a>
+                <a class="command-item" href="/Intel/Index" data-command-item data-keywords="intel hub signals research notes">
+                    <strong>Intel Hub</strong>
+                    <span>Browse tactical notes and discovery intel.</span>
+                </a>
+                <a class="command-item" href="/Database/Index" data-command-item data-keywords="item database inventory materials icons">
+                    <strong>Item Database</strong>
+                    <span>Search items, sources, needs, and loot plans.</span>
+                </a>
+                <a class="command-item" href="/Trials/Index" data-command-item data-keywords="weekly trials challenges objectives">
+                    <strong>Weekly Trials</strong>
+                    <span>Track trial progress and weekly priorities.</span>
+                </a>
+                <a class="command-item" href="/Quests/Index" data-command-item data-keywords="objectives quests missions tasks">
+                    <strong>Objectives</strong>
+                    <span>Follow mission objectives and progression steps.</span>
+                </a>
+                <a class="command-item" href="/Blueprints/Index" data-command-item data-keywords="blueprints recipes crafting unlocks">
+                    <strong>Blueprints</strong>
+                    <span>Track blueprint targets and recipe planning.</span>
+                </a>
+                <a class="command-item" href="/Skills/Index" data-command-item data-keywords="skills progression tree perks">
+                    <strong>Skills</strong>
+                    <span>Plan skill investments and unlock paths.</span>
+                </a>
+                <a class="command-item" href="/Favorites/Index" data-command-item data-keywords="watchlist favorites saved priority">
+                    <strong>Watchlist</strong>
+                    <span>Jump back to priority items and saved targets.</span>
+                </a>
+                <a class="command-item" href="/Profile/Index" data-command-item data-keywords="operator profile account progress">
+                    <strong>Operator Profile</strong>
+                    <span>Review personal progression and account state.</span>
+                </a>
+                <a class="command-item" href="/Reports/Index" data-command-item data-keywords="analytics reports metrics history">
+                    <strong>Analytics</strong>
+                    <span>Inspect planning performance and reporting.</span>
+                </a>
+                <a class="command-item" href="/Admin/Index" data-command-item data-keywords="admin center management repair tools">
+                    <strong>Admin Center</strong>
+                    <span>Administrative tools and system controls.</span>
+                </a>
+                <p class="command-empty" data-command-empty hidden>No matching page found.</p>
+            </div>
+        </div>
+    </section>
+
+    <main class="content-shell" id="main-content" tabindex="-1">
         @RenderBody()
     </main>
 
     <footer class="app-footer">
-        <span>Raiders Vault Enterprise Command Platform</span>
-        <span>Strategic planning, progression analytics, and operational reporting.</span>
+        <div>
+            <span>Raiders Vault Enterprise Command Platform</span>
+            <span>Strategic planning, progression analytics, and operational reporting.</span>
+        </div>
+        <nav class="official-social-links" aria-label="Official ARC Raiders social links">
+            <a href="https://x.com/ARCRaidersGame" target="_blank" rel="noopener">X</a>
+            <a href="https://discord.com/invite/arcraiders" target="_blank" rel="noopener">Discord</a>
+            <a href="https://www.youtube.com/@@ARCRaidersGame" target="_blank" rel="noopener">YouTube</a>
+            <a href="https://www.instagram.com/arcraidersgame" target="_blank" rel="noopener">Instagram</a>
+            <a href="https://www.tiktok.com/@@arcraidersgame" target="_blank" rel="noopener">TikTok</a>
+        </nav>
     </footer>
 
     <script src="~/js/site.js" asp-append-version="true"></script>

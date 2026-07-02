@@ -35,7 +35,7 @@
         <div class="kicker">Blueprint Command Vault</div>
         <h2 id="blueprint-title">Track, route, and prioritize every unlock.</h2>
         <p>
-            A MetaForge-inspired blueprint workspace that keeps collection status, farm plans,
+            A companion-grade blueprint workspace that keeps collection status, farm plans,
             container pools, map conditions, and operator actions together.
         </p>
         <div class="ops-hero-actions">
@@ -85,6 +85,7 @@
     @foreach (var blueprint in Model.Blueprints)
     {
         var farmPlan = Model.FarmPlans.ContainsKey(blueprint.Id) ? Model.FarmPlans[blueprint.Id] : null;
+        var iconPath = Model.IconPaths.TryGetValue(blueprint.Id, out var matchedIconPath) ? matchedIconPath : null;
         var isCollected = blueprint.Collected || blueprint.CollectionStatus == "Collected";
         var statusBadge = isCollected ? "green" : blueprint.CollectionStatus == "Tracking" ? "gold" : "";
 
@@ -94,7 +95,19 @@
                 <span class="mini-meta">@blueprint.Category</span>
             </div>
 
-            <h3><span class="item-icon @BlueprintIconClass(blueprint.Category)" aria-hidden="true">@BlueprintIconGlyph(blueprint.Category)</span><span class="item-title">@blueprint.Name</span></h3>
+            <h3>
+                <span class="item-icon-shell blueprint-icon-shell @BlueprintIconClass(blueprint.Category)" aria-hidden="true">
+                    @if (!string.IsNullOrWhiteSpace(iconPath))
+                    {
+                        <img class="game-item-icon" src="@iconPath" alt="" loading="lazy" />
+                    }
+                    else
+                    {
+                        <span class="item-icon @BlueprintIconClass(blueprint.Category)">@BlueprintIconGlyph(blueprint.Category)</span>
+                    }
+                </span>
+                <span class="item-title">@blueprint.Name</span>
+            </h3>
             <p>@(string.IsNullOrWhiteSpace(blueprint.WhereToGet) ? "No source route entered yet." : blueprint.WhereToGet)</p>
 
             <div class="farm-meta-grid">

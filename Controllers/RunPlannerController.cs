@@ -503,7 +503,7 @@ public class RunPlannerController : BaseController
         vm.RouteStops = BuildRouteStops(vm.SelectedMap, vm.SelectedCondition, vm.SelectedGoal);
         vm.ThreatNotes = BuildThreatNotes(vm.SelectedCondition, vm.SelectedStyle);
         vm.OperatorTips = BuildOperatorTips(vm.SelectedGoal, vm.SelectedStyle);
-        vm.MetaForgeSignals = BuildMetaForgeSignals(vm.SelectedMap, vm.SelectedCondition, vm.SelectedGoal);
+        vm.CompanionSignals = BuildCompanionSignals(vm.SelectedMap, vm.SelectedCondition, vm.SelectedGoal);
     }
 
     private static string CalculateRiskLevel(
@@ -638,7 +638,7 @@ public class RunPlannerController : BaseController
         return tips;
     }
 
-    private static List<string> BuildMetaForgeSignals(
+    private static List<string> BuildCompanionSignals(
         string selectedMap,
         string selectedCondition,
         string selectedGoal)

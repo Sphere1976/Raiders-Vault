@@ -372,3 +372,7 @@ FodyWeavers.xsd
 
 # Runtime-generated ASP.NET Core Data Protection key ring
 DataProtection-Keys/
+
+# Local secrets and developer-only environment files
+.env
+.env.*

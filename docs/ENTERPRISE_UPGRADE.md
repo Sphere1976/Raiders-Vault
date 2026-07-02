@@ -160,14 +160,14 @@ Potential enterprise-grade product features:
 7. Add integration tests.
 8. Deploy to Cloud Run with managed database.
 
-## MetaForge-Inspired Professional Companion Upgrade
+## Professional Companion Upgrade
 
-This update expands Raiders Vault from a basic CRUD planner into a more polished companion-style command platform. The design is intentionally inspired by modern game companion hubs such as MetaForge, which are known for combining guides, tools, interactive map-style planning, item intelligence, overlays, and event alerts into one workflow.
+This update expands Raiders Vault from a basic CRUD planner into a more polished companion-style command platform. The design is inspired by modern game companion hubs that combine guides, tools, interactive map-style planning, item intelligence, overlays, and event alerts into one workflow.
 
 ### Added polish
 
 - Rebuilt the Blueprint Tracker into a card-based command vault with status badges, collection metrics, farm-plan previews, best map, best condition, and relative farming weight.
-- Expanded the Run Planner with a MetaForge-style intelligence layer that keeps map, condition, target, route, and checklist decisions visible together.
+- Expanded the Run Planner with a companion intelligence layer that keeps map, condition, target, route, and checklist decisions visible together.
 - Added generated mission risk level, priority score, extraction window, route sequence, threat controls, and operator tips.
 - Improved the user experience by replacing plain blueprint rows with scannable professional cards and faster action buttons.
 - Kept all logic local to the application so the project remains evaluator-friendly and does not require third-party API credentials.
@@ -179,7 +179,7 @@ This update expands Raiders Vault from a basic CRUD planner into a more polished
 - Added an Admin Center for security posture, integration registry, environment health, data coverage, and recent audit activity.
 - Added persistent audit events for login, logout, Global Ops CSV export, and authenticated Global Ops API access.
 - Added database repair and seed support for audit history so existing demo databases upgrade without manual resets.
-- Imported the full MetaForge ARC Raiders item database from `/arc-raiders/database/items/page/1` through `/page/15`, adding 581 item records to the local Item Database while preserving existing inventory counts.
+- Imported a larger ARC Raiders item catalog, adding 581 item records to the local Item Database while preserving existing inventory counts.
 - Added an Embark Live Ops feed with official ARC Raiders news cards, active map-condition banners, upcoming condition rotations, and protected API exposure.
 
 ### Why this helps the capstone

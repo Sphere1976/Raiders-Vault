@@ -56,6 +56,19 @@
     </div>
 </section>
 
+<section class="official-social-panel" aria-label="Official ARC Raiders community links">
+    <div>
+        <div class="kicker">Official Community Channels</div>
+        <h2>Jump from planning to the source.</h2>
+    </div>
+    <div class="official-social-links large">
+        @foreach (var link in Model.LiveOps.SocialLinks)
+        {
+            <a href="@link.Url" target="_blank" rel="noopener">@link.Label</a>
+        }
+    </div>
+</section>
+
 <section class="split premium-split">
     <div class="panel">
         <div class="kicker">Embark News Feed</div>

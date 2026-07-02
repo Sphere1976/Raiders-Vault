@@ -22,12 +22,15 @@ public static class DatabaseRepairService
                 "Rarity" TEXT NOT NULL,
                 "BestSource" TEXT NOT NULL,
                 "UsedFor" TEXT NOT NULL,
+                "IconUrl" TEXT NULL,
                 "KeepTarget" INTEGER NOT NULL,
                 "CurrentCount" INTEGER NOT NULL,
                 "SellValue" INTEGER NOT NULL,
                 "Favorite" INTEGER NOT NULL
             );
             """);
+
+        EnsureColumn(db, "InventoryItems", "IconUrl", "TEXT NULL");
 
         db.Database.ExecuteSqlRaw("""
             CREATE UNIQUE INDEX IF NOT EXISTS "IX_InventoryItems_Name"
@@ -96,5 +99,59 @@ public static class DatabaseRepairService
             CREATE INDEX IF NOT EXISTS "IX_AuditEvents_OccurredAt"
             ON "AuditEvents" ("OccurredAt");
             """);
+    }
+
+    private static void EnsureColumn(
+        RaidersVaultContext db,
+        string tableName,
+        string columnName,
+        string columnDefinition)
+    {
+        var connection = db.Database.GetDbConnection();
+        var shouldClose = connection.State == System.Data.ConnectionState.Closed;
+
+        if (shouldClose)
+        {
+            connection.Open();
+        }
+
+        try
+        {
+            var columnExists = false;
+
+            using var command = connection.CreateCommand();
+            command.CommandText = $"PRAGMA table_info(\"{tableName}\");";
+
+            using (var reader = command.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    if (string.Equals(reader.GetString(1), columnName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        columnExists = true;
+                        break;
+                    }
+                }
+            }
+
+            if (columnExists)
+            {
+                return;
+            }
+
+            using var alterCommand = connection.CreateCommand();
+            alterCommand.CommandText = $"""
+                ALTER TABLE "{tableName}"
+                ADD COLUMN "{columnName}" {columnDefinition};
+                """;
+            alterCommand.ExecuteNonQuery();
+        }
+        finally
+        {
+            if (shouldClose)
+            {
+                connection.Close();
+            }
+        }
     }
 }

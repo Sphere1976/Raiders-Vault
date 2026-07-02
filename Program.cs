@@ -8,6 +8,7 @@ using RaidersVault.Services;
 var builder = WebApplication.CreateBuilder(args);
 var keyRingPath = Path.Combine(builder.Environment.ContentRootPath, "DataProtection-Keys");
 
+LoadLocalEnvironment(builder.Environment.ContentRootPath);
 Directory.CreateDirectory(keyRingPath);
 
 builder.Logging.ClearProviders();
@@ -31,6 +32,10 @@ builder.Services.AddScoped<LoadoutRecommendationService>();
 builder.Services.AddScoped<BlueprintRecommendationService>();
 builder.Services.AddScoped<GlobalOpsService>();
 builder.Services.AddScoped<AuditService>();
+builder.Services.AddHttpClient<AiChatService>(client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(18);
+});
 builder.Services.AddHttpClient<ArcRaidersLiveOpsService>(client =>
 {
     client.Timeout = TimeSpan.FromSeconds(4);
@@ -85,6 +90,37 @@ app.MapControllerRoute(
     pattern: "{controller=Account}/{action=Login}/{id?}");
 
 app.Run();
+
+static void LoadLocalEnvironment(string contentRootPath)
+{
+    var envPath = Path.Combine(contentRootPath, ".env.local");
+    if (!File.Exists(envPath))
+    {
+        return;
+    }
+
+    foreach (var rawLine in File.ReadAllLines(envPath))
+    {
+        var line = rawLine.Trim();
+        if (line.Length == 0 || line.StartsWith('#'))
+        {
+            continue;
+        }
+
+        var separatorIndex = line.IndexOf('=');
+        if (separatorIndex <= 0)
+        {
+            continue;
+        }
+
+        var name = line[..separatorIndex].Trim();
+        var value = line[(separatorIndex + 1)..].Trim().Trim('"');
+        if (Environment.GetEnvironmentVariable(name) == null)
+        {
+            Environment.SetEnvironmentVariable(name, value);
+        }
+    }
+}
 
 public partial class Program
 {

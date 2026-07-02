@@ -7,12 +7,32 @@
     var neededItems = ViewBag.NeededItems as int? ?? Model.Count(x => x.Needed > 0);
     var criticalItems = ViewBag.CriticalItems as int? ?? Model.Count(x => x.Priority == "Critical");
     var vaultValue = ViewBag.VaultValue as int? ?? Model.Sum(x => x.SellValue * x.CurrentCount);
+    var totalNeededUnits = ViewBag.TotalNeededUnits as int? ?? Model.Sum(x => x.Needed);
+    var stockedItems = ViewBag.StockedItems as int? ?? Model.Count(x => x.Needed == 0);
+    var readinessPercent = ViewBag.ReadinessPercent as int? ?? 0;
+    var runValue = ViewBag.RunValue as int? ?? 0;
+    var favoriteGaps = ViewBag.FavoriteGaps as int? ?? 0;
+    var criticalRouteCount = ViewBag.CriticalRouteCount as int? ?? 0;
+    var topFarmTargetName = ViewBag.TopFarmTargetName as string ?? "No urgent gaps";
+    var topFarmTargetSource = ViewBag.TopFarmTargetSource as string ?? "Inventory is on target";
+    var topFarmTargetNeed = ViewBag.TopFarmTargetNeed as int? ?? 0;
+    var topFarmTargetRarity = ViewBag.TopFarmTargetRarity as string ?? "Stocked";
     var search = ViewBag.Search as string;
+    var category = ViewBag.Category as string;
+    var rarity = ViewBag.Rarity as string;
+    var priority = ViewBag.Priority as string;
+    var source = ViewBag.Source as string;
+    var focus = ViewBag.Focus as string;
+    var sort = ViewBag.Sort as string ?? "needed";
     var hideStocked = ViewBag.HideStocked as bool? ?? false;
+    var categories = ViewBag.Categories as IEnumerable<string> ?? Enumerable.Empty<string>();
+    var rarities = ViewBag.Rarities as IEnumerable<string> ?? Enumerable.Empty<string>();
+    var sources = ViewBag.Sources as IEnumerable<string> ?? Enumerable.Empty<string>();
+    var sourceClusters = ViewBag.SourceClusters as IEnumerable<DatabaseSourceClusterViewModel> ?? Enumerable.Empty<DatabaseSourceClusterViewModel>();
 
-    string ItemIconClass(string? category, string? name)
+    string ItemIconClass(string? itemCategory, string? name)
     {
-        var text = ((category ?? string.Empty) + " " + (name ?? string.Empty)).ToLowerInvariant();
+        var text = ((itemCategory ?? string.Empty) + " " + (name ?? string.Empty)).ToLowerInvariant();
         if (text.Contains("weapon") || text.Contains("gun") || text.Contains("ammo") || text.Contains("reactor")) return "weapon";
         if (text.Contains("electronics") || text.Contains("electrical") || text.Contains("speaker") || text.Contains("battery")) return "tool";
         if (text.Contains("medical") || text.Contains("med") || text.Contains("health") || text.Contains("defibrillator")) return "med";
@@ -21,38 +41,219 @@
         return "balanced";
     }
 
-    string ItemIconGlyph(string? category, string? name)
+    string ItemIconGlyph(string? itemCategory, string? name)
     {
-        var text = ((category ?? string.Empty) + " " + (name ?? string.Empty)).ToLowerInvariant();
-        if (text.Contains("weapon") || text.Contains("gun") || text.Contains("ammo") || text.Contains("reactor")) return "⚔";
-        if (text.Contains("electronics") || text.Contains("electrical") || text.Contains("speaker") || text.Contains("battery")) return "⚙";
+        var text = ((itemCategory ?? string.Empty) + " " + (name ?? string.Empty)).ToLowerInvariant();
+        if (text.Contains("weapon") || text.Contains("gun") || text.Contains("ammo") || text.Contains("reactor")) return "WP";
+        if (text.Contains("electronics") || text.Contains("electrical") || text.Contains("speaker") || text.Contains("battery")) return "TL";
         if (text.Contains("medical") || text.Contains("med") || text.Contains("health") || text.Contains("defibrillator")) return "+";
-        if (text.Contains("utility") || text.Contains("rope") || text.Contains("wire")) return "◈";
-        if (text.Contains("rare") || text.Contains("component") || text.Contains("material")) return "◆";
-        return "◇";
+        if (text.Contains("utility") || text.Contains("rope") || text.Contains("wire")) return "UT";
+        if (text.Contains("rare") || text.Contains("component") || text.Contains("material")) return "MT";
+        return "IT";
     }
 }
 
-<section class="hero-panel feature-hero">
+<section class="hero-panel feature-hero database-command-hero">
     <div>
-        <span class="eyebrow">MetaForge-style database</span>
-        <h1>Item Database & Needed Items Tracker</h1>
-        <p>Track materials, blueprint ingredients, keep counts, rarity, source, sell value, and what still needs to be farmed.</p>
+        <span class="eyebrow">Operator-grade item intelligence</span>
+        <h1>Search faster, compare smarter, and farm only what matters.</h1>
+        <p>Track materials, blueprint ingredients, keep counts, rarity, source, sell value, and actionable stash gaps from one dense command surface.</p>
     </div>
+
+    <aside class="database-brief-card">
+        <span class="kicker">Next Farm Target</span>
+        <strong>@topFarmTargetName</strong>
+        <span>@topFarmTargetNeed needed // @topFarmTargetRarity</span>
+        <small>@topFarmTargetSource</small>
+    </aside>
 </section>
 
-<form method="get" class="filter-bar command-card">
-    <input name="search" value="@search" placeholder="Search item, source, or use..." />
-    <input type="hidden" name="pageSize" value="@ViewBag.PageSize" />
+<form method="get" class="filter-bar command-card database-filter-console">
+    <label>
+        Search
+        <input name="search" value="@search" placeholder="Item, source, use, or material..." data-card-filter />
+    </label>
+
+    <label>
+        Category
+        <select name="category">
+            <option value="">All categories</option>
+            @foreach (var option in categories)
+            {
+                <option value="@option" selected="@(category == option)">@option</option>
+            }
+        </select>
+    </label>
+
+    <label>
+        Rarity
+        <select name="rarity">
+            <option value="">All rarities</option>
+            @foreach (var option in rarities)
+            {
+                <option value="@option" selected="@(rarity == option)">@option</option>
+            }
+        </select>
+    </label>
+
+    <label>
+        Source
+        <select name="source">
+            <option value="">All sources</option>
+            @foreach (var option in sources)
+            {
+                <option value="@option" selected="@(source == option)">@option</option>
+            }
+        </select>
+    </label>
+
+    <label>
+        Priority
+        <select name="priority">
+            <option value="">Any priority</option>
+            <option value="Critical" selected="@(priority == "Critical")">Critical</option>
+            <option value="High" selected="@(priority == "High")">High</option>
+            <option value="Medium" selected="@(priority == "Medium")">Medium</option>
+            <option value="Stocked" selected="@(priority == "Stocked")">Stocked</option>
+        </select>
+    </label>
+
+    <label>
+        Focus
+        <select name="focus">
+            <option value="">Full database</option>
+            <option value="farmNow" selected="@(focus == "farmNow")">Farm now</option>
+            <option value="critical" selected="@(focus == "critical")">Critical gaps</option>
+            <option value="highValue" selected="@(focus == "highValue")">High value</option>
+            <option value="favorites" selected="@(focus == "favorites")">Favorites</option>
+            <option value="lowStock" selected="@(focus == "lowStock")">Low stock</option>
+        </select>
+    </label>
+
+    <label>
+        Sort
+        <select name="sort">
+            <option value="needed" selected="@(sort == "needed")">Need first</option>
+            <option value="efficiency" selected="@(sort == "efficiency")">Best route impact</option>
+            <option value="rarity" selected="@(sort == "rarity")">Rarity</option>
+            <option value="value" selected="@(sort == "value")">Value</option>
+            <option value="source" selected="@(sort == "source")">Source</option>
+            <option value="name" selected="@(sort == "name")">Name</option>
+        </select>
+    </label>
+
+    <label>
+        Page Size
+        <select name="pageSize">
+            <option value="24" selected="@((ViewBag.PageSize as int? ?? 72) == 24)">24</option>
+            <option value="48" selected="@((ViewBag.PageSize as int? ?? 72) == 48)">48</option>
+            <option value="72" selected="@((ViewBag.PageSize as int? ?? 72) == 72)">72</option>
+            <option value="120" selected="@((ViewBag.PageSize as int? ?? 72) == 120)">120</option>
+        </select>
+    </label>
+
     <label class="checkline"><input type="checkbox" name="hideStocked" value="true" checked="@hideStocked" /> Hide stocked</label>
-    <button class="button primary" type="submit">Filter Database</button>
+    <button class="button primary" type="submit">Filter</button>
+    <a class="button secondary" asp-action="Index">Reset</a>
 </form>
+
+<section class="database-preset-strip" aria-label="Database focus presets">
+    <a class="preset-chip @(focus == "farmNow" ? "active" : "")" asp-action="Index" asp-route-focus="farmNow" asp-route-sort="efficiency" asp-route-hideStocked="true">Farm Now</a>
+    <a class="preset-chip @(focus == "critical" ? "active" : "")" asp-action="Index" asp-route-focus="critical" asp-route-sort="efficiency" asp-route-hideStocked="true">Critical Gaps</a>
+    <a class="preset-chip @(focus == "highValue" ? "active" : "")" asp-action="Index" asp-route-focus="highValue" asp-route-sort="value">High Value</a>
+    <a class="preset-chip @(focus == "lowStock" ? "active" : "")" asp-action="Index" asp-route-focus="lowStock" asp-route-sort="needed">Low Stock</a>
+    <a class="preset-chip" asp-controller="Blueprints" asp-action="FarmPlan">Open Blueprint Farm Plan</a>
+</section>
 
 <section class="kpi-grid">
     <article class="kpi-card"><span>Total Items</span><strong>@totalItems</strong><small>tracked rows</small></article>
     <article class="kpi-card"><span>Needed</span><strong>@neededItems</strong><small>not at target</small></article>
     <article class="kpi-card"><span>Critical</span><strong>@criticalItems</strong><small>rare gaps</small></article>
     <article class="kpi-card"><span>Vault Value</span><strong>@vaultValue</strong><small>estimated value</small></article>
+    <article class="kpi-card"><span>Readiness</span><strong>@readinessPercent%</strong><small>@stockedItems stocked</small></article>
+    <article class="kpi-card"><span>Units Needed</span><strong>@totalNeededUnits</strong><small>total farm gap</small></article>
+    <article class="kpi-card"><span>Route Value</span><strong>@runValue</strong><small>needed-unit value</small></article>
+    <article class="kpi-card"><span>Favorite Gaps</span><strong>@favoriteGaps</strong><small>pinned items short</small></article>
+    <article class="kpi-card"><span>Critical Routes</span><strong>@criticalRouteCount</strong><small>sources to plan</small></article>
+</section>
+
+<section class="database-intelligence-grid" aria-label="Vault intelligence planning">
+    <article class="database-planner-panel">
+        <div class="section-heading compact-heading">
+            <div>
+                <span class="kicker">Route Intelligence</span>
+                <h2>Best source clusters for this filter.</h2>
+            </div>
+            <button class="button secondary small" type="button" data-copy-route-plan>Copy Route Plan</button>
+        </div>
+
+        <div class="source-cluster-list" data-route-plan>
+            @if (sourceClusters.Any())
+            {
+                @foreach (var cluster in sourceClusters)
+                {
+                    <article class="source-cluster-card">
+                        <div>
+                            <strong>@cluster.Source</strong>
+                            <span>@cluster.TopItemName</span>
+                        </div>
+                        <dl>
+                            <div><dt>Items</dt><dd>@cluster.ItemCount</dd></div>
+                            <div><dt>Need</dt><dd>@cluster.NeededUnits</dd></div>
+                            <div><dt>Critical</dt><dd>@cluster.CriticalCount</dd></div>
+                            <div><dt>Value</dt><dd>@cluster.TotalValue</dd></div>
+                        </dl>
+                        <p>@cluster.Recommendation</p>
+                        <a class="button secondary small" asp-action="Index" asp-route-source="@cluster.Source" asp-route-hideStocked="true" asp-route-sort="efficiency">Focus Source</a>
+                    </article>
+                }
+            }
+            else
+            {
+                <article class="source-cluster-card">
+                    <div>
+                        <strong>No active route gaps</strong>
+                        <span>Your filtered stash targets are stocked.</span>
+                    </div>
+                    <p>Relax the filters or open the blueprint farm plan to build a longer route.</p>
+                </article>
+            }
+        </div>
+    </article>
+
+    <article class="database-planner-panel">
+        <div class="section-heading compact-heading">
+            <div>
+                <span class="kicker">Loot Plan</span>
+                <h2>Build a run list from visible items.</h2>
+            </div>
+            <button class="button secondary small" type="button" data-clear-loot-plan>Clear Plan</button>
+        </div>
+        <div class="loot-plan-summary">
+            <div><span>Selected</span><strong data-loot-plan-count>0</strong></div>
+            <div><span>Needed Units</span><strong data-loot-plan-needed>0</strong></div>
+            <div><span>Potential Value</span><strong data-loot-plan-value>0</strong></div>
+        </div>
+        <div class="loot-plan-list" data-loot-plan-list>
+            <p class="hint">Add items from cards to build a focused pre-run checklist.</p>
+        </div>
+        <div class="loot-plan-actions">
+            <button class="button small" type="button" data-export-loot-plan>Export CSV</button>
+            <button class="button secondary small" type="button" data-copy-loot-plan>Copy Checklist</button>
+        </div>
+    </article>
+</section>
+
+<section class="database-quickbar" aria-label="Fast database tools">
+    <div>
+        <strong>Live page filter</strong>
+        <span>Type above to narrow visible cards instantly; submit to search the whole database.</span>
+    </div>
+    <div class="database-quick-actions">
+        <button class="button secondary small" type="button" data-priority-filter="Critical">Critical only</button>
+        <button class="button secondary small" type="button" data-priority-filter="High">High only</button>
+        <button class="button secondary small" type="button" data-priority-filter="">Show page</button>
+    </div>
 </section>
 
 <section class="database-pager" aria-label="Item database pages">
@@ -64,12 +265,12 @@
     <div class="pager-actions">
         @if (currentPage > 1)
         {
-            <a class="button secondary small" asp-action="Index" asp-route-search="@search" asp-route-hideStocked="@hideStocked" asp-route-page="@(currentPage - 1)" asp-route-pageSize="@ViewBag.PageSize">Previous</a>
+            <a class="button secondary small" asp-action="Index" asp-route-search="@search" asp-route-category="@category" asp-route-rarity="@rarity" asp-route-priority="@priority" asp-route-source="@source" asp-route-focus="@focus" asp-route-sort="@sort" asp-route-hideStocked="@hideStocked" asp-route-page="@(currentPage - 1)" asp-route-pageSize="@ViewBag.PageSize">Previous</a>
         }
 
         @if (currentPage < totalPages)
         {
-            <a class="button small" asp-action="Index" asp-route-search="@search" asp-route-hideStocked="@hideStocked" asp-route-page="@(currentPage + 1)" asp-route-pageSize="@ViewBag.PageSize">Next</a>
+            <a class="button small" asp-action="Index" asp-route-search="@search" asp-route-category="@category" asp-route-rarity="@rarity" asp-route-priority="@priority" asp-route-source="@source" asp-route-focus="@focus" asp-route-sort="@sort" asp-route-hideStocked="@hideStocked" asp-route-page="@(currentPage + 1)" asp-route-pageSize="@ViewBag.PageSize">Next</a>
         }
     </div>
 </section>
@@ -77,24 +278,57 @@
 <section class="database-grid">
 @foreach (var item in Model)
 {
-    <article class="database-card" data-item-card="@item.Id">
+    <article class="database-card @(item.Needed == 0 ? "is-stocked" : "")"
+             data-item-card="@item.Id"
+             data-item-name="@item.Name"
+             data-item-category="@item.Category"
+             data-item-rarity="@item.Rarity"
+             data-item-source="@item.BestSource"
+             data-item-used-for="@item.UsedFor"
+             data-item-notes="@item.Notes"
+             data-item-current="@item.CurrentCount"
+             data-item-target="@item.KeepTarget"
+             data-item-needed="@item.Needed"
+             data-item-priority-value="@item.Priority"
+             data-item-sell-value="@item.SellValue"
+             data-item-favorite="@item.Favorite.ToString().ToLowerInvariant()"
+             data-filter-text="@($"{item.Name} {item.Category} {item.Rarity} {item.BestSource} {item.UsedFor} {item.Priority}")">
         <div class="card-topline">
             <span class="rarity @item.Rarity.ToLower()">@item.Rarity</span>
             <span class="priority-pill" data-item-priority>@item.Priority</span>
         </div>
 
         <h2 class="item-card-title">
-            <span class="item-icon @ItemIconClass(item.Category, item.Name)" aria-hidden="true">@ItemIconGlyph(item.Category, item.Name)</span>
+            <span class="item-icon-shell @ItemIconClass(item.Category, item.Name)" aria-hidden="true">
+                @if (!string.IsNullOrWhiteSpace(item.IconUrl))
+                {
+                    <img class="game-item-icon"
+                         src="@item.IconUrl"
+                         alt="" loading="lazy" />
+                }
+                else
+                {
+                    <span class="item-icon">@ItemIconGlyph(item.Category, item.Name)</span>
+                }
+            </span>
             <span>@item.Name</span>
         </h2>
 
         <p class="item-note">@item.Notes</p>
+
+        <div class="item-progress-rail" aria-label="Stash progress for @item.Name">
+            @{
+                var progress = item.KeepTarget <= 0 ? 100 : Math.Min(100, (int)Math.Round((item.CurrentCount / (double)item.KeepTarget) * 100));
+            }
+            <span style="@($"width:{progress}%")">@progress%</span>
+        </div>
 
         <dl class="intel-list">
             <div><dt>Category</dt><dd>@item.Category</dd></div>
             <div><dt>Source</dt><dd>@item.BestSource</dd></div>
             <div><dt>Used For</dt><dd>@item.UsedFor</dd></div>
             <div><dt>Need</dt><dd><span data-item-needed>@item.Needed</span> remaining</dd></div>
+            <div><dt>Value Gap</dt><dd>@(item.Needed * item.SellValue)</dd></div>
         </dl>
 
         <form asp-action="UpdateCount" method="post" class="count-update" data-count-update>
@@ -105,6 +339,89 @@
             <button class="button small" type="submit">Update</button>
             <small class="inline-save-status" data-save-status aria-live="polite"></small>
         </form>
+
+        <div class="item-card-actions">
+            <button class="button secondary small"
+                    type="button"
+                    data-add-loot-plan>
+                Add Plan
+            </button>
+            <button class="button secondary small"
+                    type="button"
+                    data-compare-item>
+                Compare
+            </button>
+            <button class="button secondary small"
+                    type="button"
+                    data-item-detail>
+                Details
+            </button>
+        </div>
     </article>
 }
 </section>
+
+<aside class="compare-dock" data-compare-dock hidden aria-live="polite">
+    <div>
+        <strong data-compare-count>0 selected</strong>
+        <span>Compare stash gaps, source, rarity, and value.</span>
+    </div>
+    <div class="compare-dock-actions">
+        <button class="button small" type="button" data-open-compare>Open Compare</button>
+        <button class="button secondary small" type="button" data-clear-compare>Clear</button>
+    </div>
+</aside>
+
+<div class="item-detail-overlay" data-compare-overlay hidden>
+    <section class="item-detail-panel compare-panel"
+             role="dialog"
+             aria-modal="true"
+             aria-labelledby="compare-title">
+        <button class="item-detail-close"
+                type="button"
+                aria-label="Close item compare"
+                data-compare-close>
+            x
+        </button>
+        <div class="item-detail-heading">
+            <span class="kicker">Selection Analyzer</span>
+            <h2 id="compare-title">Item Compare</h2>
+            <p>Use this to decide what to farm, sell, or ignore before the next run.</p>
+        </div>
+        <div class="compare-table" data-compare-table></div>
+    </section>
+</div>
+
+<div class="item-detail-overlay" data-item-detail-overlay hidden>
+    <section class="item-detail-panel"
+             role="dialog"
+             aria-modal="true"
+             aria-labelledby="item-detail-title">
+        <button class="item-detail-close"
+                type="button"
+                aria-label="Close item details"
+                data-item-detail-close>
+            x
+        </button>
+
+        <div class="item-detail-heading">
+            <span class="rarity" data-detail-rarity></span>
+            <h2 id="item-detail-title" data-detail-name></h2>
+            <p data-detail-notes></p>
+        </div>
+
+        <div class="item-detail-meter"
+             aria-label="Inventory progress">
+            <span data-detail-meter></span>
+        </div>
+
+        <dl class="intel-list compact item-detail-list">
+            <div><dt>Category</dt><dd data-detail-category></dd></div>
+            <div><dt>Source</dt><dd data-detail-source></dd></div>
+            <div><dt>Used For</dt><dd data-detail-used-for></dd></div>
+            <div><dt>Stock</dt><dd data-detail-stock></dd></div>
+            <div><dt>Priority</dt><dd data-detail-priority></dd></div>
+            <div><dt>Sell Value</dt><dd data-detail-value></dd></div>
+        </dl>
+    </section>
+</div>

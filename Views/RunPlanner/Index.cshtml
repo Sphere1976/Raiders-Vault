@@ -148,18 +148,18 @@
             </div>
         </section>
 
-        <section class="recommendation-card metaforge-card" aria-labelledby="metaforge-signal-title">
+        <section class="recommendation-card companion-card" aria-labelledby="companion-signal-title">
             <div class="section-heading compact-heading">
                 <div>
-                    <div class="kicker">MetaForge-Style Intel Layer</div>
-                    <h3 id="metaforge-signal-title">Companion Hub Signals</h3>
+                    <div class="kicker">Companion Intel Layer</div>
+                    <h3 id="companion-signal-title">Companion Hub Signals</h3>
                     <p class="hint">Uses a professional companion-app pattern: map context, item target, route logic, and operator actions in one place.</p>
                 </div>
                 <span class="badge teal">Intel Linked</span>
             </div>
 
             <div class="signal-grid">
-                @foreach (var signal in Model.MetaForgeSignals)
+                @foreach (var signal in Model.CompanionSignals)
                 {
                     <article><span>Signal</span><p>@signal</p></article>
                 }

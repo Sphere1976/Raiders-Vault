@@ -44,7 +44,7 @@ public class RunPlannerViewModel
 
     public List<string> OperatorTips { get; set; } = new();
 
-    public List<string> MetaForgeSignals { get; set; } = new();
+    public List<string> CompanionSignals { get; set; } = new();
 
     public OptimalLoadoutViewModel? Loadout { get; set; }
 

@@ -332,13 +332,13 @@ public static class DbInitializer
                 new InventoryItem { Name = "Speaker Component", Category = "Electronics", Rarity = "Rare", BestSource = "Computers and electronics boxes", UsedFor = "Lure Grenade and scanner utility crafting", KeepTarget = 4, CurrentCount = 0, SellValue = 240, Notes = "Good target for computer-search routes." },
                 new InventoryItem { Name = "Advanced Electrical Components", Category = "Electronics", Rarity = "Epic", BestSource = "Locked Gate, Night, and technical containers", UsedFor = "Showstopper, augments, high-tier upgrades", KeepTarget = 5, CurrentCount = 1, SellValue = 380, Notes = "Farm under major conditions when possible." });
 
-            // Persist the starter inventory before importing the larger MetaForge list.
-            // The importer checks existing names in SQLite, and saving here keeps seeding
-            // idempotent when the JSON file contains one of the starter item names.
+            // Save starter inventory before importing the larger item catalog.
+            // The importer checks existing names in SQLite, keeping seeding idempotent
+            // when the JSON file contains one of the starter item names.
             db.SaveChanges();
         }
 
-        SeedMetaForgeInventoryItems(db);
+        SeedArcItemCatalog(db);
 
         if (!db.IntelGuides.Any())
         {
@@ -348,13 +348,7 @@ public static class DbInitializer
                 new IntelGuide { Name = "Night Raid Rare Pool", GuideType = "Condition Farm", MapName = "Dam Battlegrounds", MapCondition = "Night Raid", Difficulty = "High", RecommendedRoute = "Research/Admin edge route to locked rooms to immediate extraction.", LootFocus = "Advanced electrical components, high-tier mod pools, major-condition blueprint rolls.", RiskWarning = "Night increases route uncertainty and ambush risk. Bring escape utility.", Notes = "Use only when the target item justifies the risk." });
         }
 
-        if (!db.WeeklyTrials.Any())
-        {
-            db.WeeklyTrials.AddRange(
-                new WeeklyTrial { Name = "Search Computers", ObjectiveType = "Loot", TargetScore = 3000, ScorePerAction = 1000, BestMap = "Spaceport", Strategy = "Route through office and terminal interiors, search three computers, then extract.", Notes = "Companion-style trial optimization." },
-                new WeeklyTrial { Name = "Loot Weapon Crates", ObjectiveType = "Loot", TargetScore = 3000, ScorePerAction = 1000, BestMap = "Dam Battlegrounds", Strategy = "Hit known crate lanes first, avoid optional fights, and leave once three crates are secured.", Notes = "Use a balanced kit with smoke." },
-                new WeeklyTrial { Name = "Damage ARC Enemies", ObjectiveType = "Combat", TargetScore = 3000, ScorePerAction = 500, BestMap = "Dam Battlegrounds", Strategy = "Pull ARC enemies into controlled choke points and use grenades or sustained rifle fire.", Notes = "ARC Breaker loadout recommended." });
-        }
+        SeedWeeklyTrials(db);
 
         if (!db.AuditEvents.Any())
         {
@@ -408,13 +402,46 @@ public static class DbInitializer
     }
 
 
+    private static void SeedWeeklyTrials(RaidersVaultContext db)
+    {
+        var trials = new[]
+        {
+            new WeeklyTrial { Name = "Damage flying ARC enemies inside the Spaceport walls", ObjectiveType = "Active Combat", TargetScore = 3000, ScorePerAction = 1, BestMap = "Spaceport", Strategy = "Run Spaceport walls and prioritize Wasps, Hornets, Fireflies, and other airborne ARC before extracting.", Notes = "Current weekly trial. Scores about 1.1 points per damage; the app rounds per-damage scoring for planning." },
+            new WeeklyTrial { Name = "Search ARC Probes, Couriers and Assessors", ObjectiveType = "Active Loot", TargetScore = 3000, ScorePerAction = 286, BestMap = "Any Map", Strategy = "Use Electromagnetic Storm or ARC-heavy routes, search Probes, Couriers, and Assessors, then leave once the score target is secured.", Notes = "Current weekly trial. Each search is about 285.8 points." },
+            new WeeklyTrial { Name = "Search Supply Drops", ObjectiveType = "Active Loot", TargetScore = 3000, ScorePerAction = 1000, BestMap = "Any Map", Strategy = "Track supply-drop audio and smoke the approach. Three clean searches should hit the three-star target.", Notes = "Current weekly trial." },
+            new WeeklyTrial { Name = "Damage Leapers", ObjectiveType = "Active Combat", TargetScore = 3000, ScorePerAction = 2, BestMap = "Any Map", Strategy = "Bring sustained damage and safe cover. Kite Leapers into open sightlines instead of fighting them inside tight rooms.", Notes = "Current weekly trial. Scores about 1.6 points per damage; the app rounds for planning." },
+            new WeeklyTrial { Name = "Destroy Pops", ObjectiveType = "Active Combat", TargetScore = 3000, ScorePerAction = 400, BestMap = "Any Map", Strategy = "Farm small ARC spawns and clear Pops before they chain into bad positioning. Eight kills should clear the target.", Notes = "Current weekly trial." },
+            new WeeklyTrial { Name = "Damage Hornets", ObjectiveType = "Upcoming Combat", TargetScore = 3000, ScorePerAction = 2, BestMap = "Any Map", Strategy = "Prepare an anti-air route with long sightlines and ammo economy for the next rotation.", Notes = "Upcoming weekly trial. Scores about 1.9 points per damage." },
+            new WeeklyTrial { Name = "Damage ARC enemies using Light Impact Grenades", ObjectiveType = "Upcoming Combat", TargetScore = 3000, ScorePerAction = 2, BestMap = "Any Map", Strategy = "Stock Light Impact Grenades and group ARC before committing throws for efficient burst score.", Notes = "Upcoming weekly trial." },
+            new WeeklyTrial { Name = "Open containers inside the traffic tunnels", ObjectiveType = "Upcoming Loot", TargetScore = 3000, ScorePerAction = 100, BestMap = "The Blue Gate", Strategy = "Queue Blue Gate routes and pair this with Locked Gate windows when traffic-tunnel access is favorable.", Notes = "Upcoming weekly trial." },
+            new WeeklyTrial { Name = "Search Kitchen Cabinets", ObjectiveType = "Upcoming Loot", TargetScore = 3000, ScorePerAction = 267, BestMap = "Buried City", Strategy = "Sweep residential interiors and kitchens first, then extract before routes become contested.", Notes = "Upcoming weekly trial. Each search is about 266.7 points." }
+        };
+
+        var existingByName = db.WeeklyTrials
+            .ToList()
+            .ToDictionary(x => x.Name, StringComparer.OrdinalIgnoreCase);
+
+        foreach (var trial in trials)
+        {
+            if (existingByName.TryGetValue(trial.Name, out var existing))
+            {
+                SetIfChanged(existing.ObjectiveType, trial.ObjectiveType, value => existing.ObjectiveType = value);
+                SetIfChanged(existing.TargetScore, trial.TargetScore, value => existing.TargetScore = value);
+                SetIfChanged(existing.ScorePerAction, trial.ScorePerAction, value => existing.ScorePerAction = value);
+                SetIfChanged(existing.BestMap, trial.BestMap, value => existing.BestMap = value);
+                SetIfChanged(existing.Strategy, trial.Strategy, value => existing.Strategy = value);
+                SetIfChanged(existing.Notes, trial.Notes, value => existing.Notes = value);
+                existing.UpdatedAt = DateTime.UtcNow;
+            }
+            else
+            {
+                db.WeeklyTrials.Add(trial);
+            }
+        }
+    }
+
     private static void SeedMapConditionOptions(RaidersVaultContext db)
     {
-        if (db.MapConditionOptions.Any())
-        {
-            return;
-        }
-
         var mapConditions = new Dictionary<string, string[]>
         {
             ["Dam Battlegrounds"] = new[]
@@ -424,6 +451,7 @@ public static class DbInitializer
                 "Husk Graveyard",
                 "Uncovered Caches",
                 "Lush Blooms",
+                "Bird City",
                 "Harvester",
                 "Matriarch",
                 "Night Raid",
@@ -439,6 +467,7 @@ public static class DbInitializer
                 "Husk Graveyard",
                 "Uncovered Caches",
                 "Lush Blooms",
+                "Bird City",
                 "Matriarch",
                 "Night Raid",
                 "Electromagnetic Storm",
@@ -455,6 +484,7 @@ public static class DbInitializer
                 "Lush Blooms",
                 "Launch Tower Loot",
                 "Harvester",
+                "Close Scrutiny",
                 "Night Raid",
                 "Electromagnetic Storm",
                 "Hidden Bunker",
@@ -471,6 +501,7 @@ public static class DbInitializer
                 "Lush Blooms",
                 "Harvester",
                 "Matriarch",
+                "Close Scrutiny",
                 "Night Raid",
                 "Electromagnetic Storm",
                 "Locked Gate",
@@ -481,25 +512,34 @@ public static class DbInitializer
             ["Stella Montis"] = new[]
             {
                 "Standard Patrol",
-                "Night Raid"
+                "Night Raid",
+                "Close Scrutiny"
             },
             ["Riven Tides"] = new[]
             {
-                "Standard",
-                "Night",
+                "Standard Patrol",
+                "Night Raid",
                 "Husk Graveyard",
-                "Beachcomber"
+                "Uncovered Caches",
+                "Beachcombing",
+                "Close Scrutiny"
             }
         };
 
+        db.MapConditionOptions.RemoveRange(db.MapConditionOptions);
+
         foreach (var map in mapConditions)
         {
-            for (var i = 0; i < map.Value.Length; i++)
+            var conditions = map.Value
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+
+            for (var i = 0; i < conditions.Length; i++)
             {
                 db.MapConditionOptions.Add(new MapConditionOption
                 {
                     MapName = map.Key,
-                    ConditionName = map.Value[i],
+                    ConditionName = conditions[i],
                     DisplayOrder = i + 1
                 });
             }
@@ -547,13 +587,13 @@ public static class DbInitializer
         db.Skills.AddRange(skills);
     }
 
-    private static void SeedMetaForgeInventoryItems(RaidersVaultContext db)
+    private static void SeedArcItemCatalog(RaidersVaultContext db)
     {
-        var dataPath = Path.Combine(Directory.GetCurrentDirectory(), "Data", "metaforge_arc_items.json");
+        var dataPath = Path.Combine(Directory.GetCurrentDirectory(), "Data", "arc_raiders_item_catalog.json");
 
         if (!File.Exists(dataPath))
         {
-            dataPath = Path.Combine(AppContext.BaseDirectory, "Data", "metaforge_arc_items.json");
+            dataPath = Path.Combine(AppContext.BaseDirectory, "Data", "arc_raiders_item_catalog.json");
         }
 
         if (!File.Exists(dataPath))
@@ -562,7 +602,7 @@ public static class DbInitializer
         }
 
         var json = File.ReadAllText(dataPath);
-        var importedItems = JsonSerializer.Deserialize<List<MetaForgeInventoryItem>>(
+        var importedItems = JsonSerializer.Deserialize<List<ArcItemCatalogRecord>>(
             json,
             JsonOptions);
 
@@ -582,11 +622,12 @@ public static class DbInitializer
             var itemName = Limit(importedItem.Name, 100, "Unknown Item");
             var category = Limit(importedItem.Category, 60, "Item");
             var rarity = Limit(importedItem.Rarity, 40, "Common");
-            var bestSource = Limit(importedItem.BestSource, 100, "MetaForge item database");
+            var bestSource = Limit(importedItem.BestSource, 100, "ARC Raiders item catalog");
             var usedFor = Limit(importedItem.UsedFor, 100, "Collection tracking");
             var keepTarget = importedItem.KeepTarget <= 0 ? 1 : importedItem.KeepTarget;
             var sellValue = Math.Max(0, importedItem.SellValue);
-            var notes = Limit(BuildMetaForgeNote(importedItem), 500, "Imported from MetaForge ARC Raiders item database.");
+            var iconUrl = Limit(importedItem.Icon, 300, null);
+            var notes = Limit(BuildCatalogNote(importedItem), 500, "Imported from the local ARC Raiders item catalog.");
 
             if (existingByName.TryGetValue(itemName, out var existingItem))
             {
@@ -596,6 +637,7 @@ public static class DbInitializer
                 changed |= SetIfChanged(existingItem.Rarity, rarity, value => existingItem.Rarity = value);
                 changed |= SetIfChanged(existingItem.BestSource, bestSource, value => existingItem.BestSource = value);
                 changed |= SetIfChanged(existingItem.UsedFor, usedFor, value => existingItem.UsedFor = value);
+                changed |= SetIfChanged(existingItem.IconUrl, iconUrl, value => existingItem.IconUrl = value);
                 changed |= SetIfChanged(existingItem.SellValue, sellValue, value => existingItem.SellValue = value);
 
                 var targetCount = Math.Max(existingItem.KeepTarget, keepTarget);
@@ -617,6 +659,7 @@ public static class DbInitializer
                 Rarity = rarity,
                 BestSource = bestSource,
                 UsedFor = usedFor,
+                IconUrl = iconUrl,
                 KeepTarget = keepTarget,
                 CurrentCount = 0,
                 SellValue = sellValue,
@@ -640,13 +683,11 @@ public static class DbInitializer
         return true;
     }
 
-    private static string BuildMetaForgeNote(MetaForgeInventoryItem item)
+    private static string BuildCatalogNote(ArcItemCatalogRecord item)
     {
-        var source = string.IsNullOrWhiteSpace(item.SourceUrl)
-            ? "MetaForge ARC Raiders item database"
-            : item.SourceUrl;
-
-        return $"{item.Notes} Source: {source}";
+        return string.IsNullOrWhiteSpace(item.Notes)
+            ? "Local ARC Raiders item catalog entry."
+            : item.Notes;
     }
 
     private static string Limit(string? value, int maxLength, string? fallback)
@@ -660,7 +701,7 @@ public static class DbInitializer
             : output[..maxLength];
     }
 
-    private sealed class MetaForgeInventoryItem
+    private sealed class ArcItemCatalogRecord
     {
         public string Id { get; set; } = string.Empty;
 
@@ -670,7 +711,7 @@ public static class DbInitializer
 
         public string Rarity { get; set; } = "Common";
 
-        public string BestSource { get; set; } = "MetaForge item database";
+        public string BestSource { get; set; } = "ARC Raiders item catalog";
 
         public string UsedFor { get; set; } = "Collection tracking";
 
@@ -679,6 +720,8 @@ public static class DbInitializer
         public int KeepTarget { get; set; } = 1;
 
         public string Notes { get; set; } = string.Empty;
+
+        public string Icon { get; set; } = string.Empty;
 
         public string SourceUrl { get; set; } = string.Empty;
     }

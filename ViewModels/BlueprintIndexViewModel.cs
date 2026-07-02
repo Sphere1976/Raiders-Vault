@@ -12,6 +12,8 @@ public class BlueprintIndexViewModel
 
     public Dictionary<int, BlueprintFarmPlanViewModel> FarmPlans { get; set; } = new();
 
+    public Dictionary<int, string> IconPaths { get; set; } = new();
+
     public bool HasBlueprints =>
         Blueprints.Any();
 

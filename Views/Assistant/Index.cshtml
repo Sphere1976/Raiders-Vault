@@ -1,0 +1,60 @@
+@{
+    ViewData["Title"] = "AI Assistant";
+}
+
+<section class="assistant-shell" data-ai-chat>
+    <div class="assistant-hero">
+        <div>
+            <div class="kicker">Raiders Vault AI</div>
+            <h1>Ask for the next best move.</h1>
+            <p>
+                Get focused help with farming priorities, blueprint routes, weekly trials,
+                inventory gaps, and safer extraction plans using the current vault data.
+            </p>
+        </div>
+        <div class="assistant-status">
+            <span class="status-dot"></span>
+            <strong>Operational assistant</strong>
+            <small>Server-side AI with local fallback</small>
+        </div>
+    </div>
+
+    <div class="assistant-layout">
+        <section class="assistant-chat-panel" aria-label="AI chat">
+            <div class="assistant-thread" data-ai-thread aria-live="polite">
+                <article class="assistant-message assistant-message-ai">
+                    <span>AI</span>
+                    <p>Tell me what you want to optimize: farming, blueprints, weekly trials, loadouts, or route safety.</p>
+                </article>
+            </div>
+
+            <form class="assistant-composer" data-ai-form>
+                @Html.AntiForgeryToken()
+                <label for="assistantPrompt">Message</label>
+                <div class="assistant-input-row">
+                    <textarea id="assistantPrompt" name="message" data-ai-input rows="3" maxlength="1200" placeholder="Example: Build me a safe route for my next blueprint run"></textarea>
+                    <button type="submit">Send</button>
+                </div>
+                <p class="hint" data-ai-status>Ready for a planning question.</p>
+            </form>
+        </section>
+
+        <aside class="assistant-side-panel" aria-label="Suggested prompts">
+            <div class="kicker">Prompt Starters</div>
+            <div class="assistant-suggestions" data-ai-suggestions>
+                <button type="button" data-ai-suggestion="What should I farm next?">What should I farm next?</button>
+                <button type="button" data-ai-suggestion="Build me a safe route.">Build me a safe route.</button>
+                <button type="button" data-ai-suggestion="Which blueprint should I chase?">Which blueprint should I chase?</button>
+                <button type="button" data-ai-suggestion="Plan my weekly trial run.">Plan my weekly trial run.</button>
+            </div>
+
+            <div class="assistant-context-card">
+                <strong>Good at</strong>
+                <span>Inventory needs</span>
+                <span>Blueprint targets</span>
+                <span>Route planning</span>
+                <span>Weekly trial focus</span>
+            </div>
+        </aside>
+    </div>
+</section>

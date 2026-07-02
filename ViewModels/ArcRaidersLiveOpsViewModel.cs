@@ -13,6 +13,8 @@ public class ArcRaidersLiveOpsViewModel
     public List<LiveMapConditionItem> UpcomingConditions { get; set; } = new();
 
     public List<EmbarkNewsItem> NewsItems { get; set; } = new();
+
+    public List<ArcRaidersSocialLink> SocialLinks { get; set; } = new();
 }
 
 public class LiveMapConditionItem
@@ -41,4 +43,11 @@ public class EmbarkNewsItem
     public string Summary { get; set; } = string.Empty;
 
     public string Url { get; set; } = "https://arcraiders.com/news";
+}
+
+public class ArcRaidersSocialLink
+{
+    public string Label { get; set; } = string.Empty;
+
+    public string Url { get; set; } = string.Empty;
 }

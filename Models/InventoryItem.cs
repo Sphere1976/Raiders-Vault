@@ -8,6 +8,7 @@ public class InventoryItem : TrackedRecord
     [StringLength(40)] public string Rarity { get; set; } = "Common";
     [StringLength(100)] public string BestSource { get; set; } = "Any Map";
     [StringLength(100)] public string UsedFor { get; set; } = "Crafting";
+    [StringLength(300)] public string? IconUrl { get; set; }
     public int KeepTarget { get; set; } = 5;
     public int CurrentCount { get; set; }
     public int SellValue { get; set; }

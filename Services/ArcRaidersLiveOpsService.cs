@@ -7,6 +7,7 @@ namespace RaidersVault.Services;
 public class ArcRaidersLiveOpsService
 {
     private const string OfficialHomeUrl = "https://arcraiders.com/";
+    private const string OfficialNewsUrl = "https://arcraiders.com/news";
     private const string OfficialMapConditionsUrl = "https://arcraiders.com/map-conditions";
 
     private readonly HttpClient _httpClient;
@@ -26,11 +27,11 @@ public class ArcRaidersLiveOpsService
 
         try
         {
-            var homeTask = ReadOfficialPageAsync(OfficialHomeUrl);
+            var newsTask = ReadOfficialPageAsync(OfficialNewsUrl);
             var conditionsTask = ReadOfficialPageAsync(OfficialMapConditionsUrl);
-            await Task.WhenAll(homeTask, conditionsTask);
+            await Task.WhenAll(newsTask, conditionsTask);
 
-            var newsItems = ParseNews(homeTask.Result);
+            var newsItems = ParseNews(newsTask.Result);
             var conditions = ParseMapConditions(conditionsTask.Result);
 
             if (newsItems.Any())
@@ -72,19 +73,40 @@ public class ArcRaidersLiveOpsService
     {
         var items = new List<EmbarkNewsItem>();
         var regex = new Regex(
-            @"href=""(?<url>/news/[^""]+)""[^>]*>.*?(?<category>Store Update|Patch Notes|Update|News|Notes)[^<]*</[^>]+>\s*<[^>]+>\s*(?<title>[^<]+?)\s*</[^>]+>\s*<[^>]+>\s*(?<date>[A-Z][a-z]+\s+\d{1,2},\s+\d{4})",
+            @"href=""(?<url>/news/[^""]+)""[^>]*>\s*(?<text>[^<]+?)\s*</a>",
             RegexOptions.IgnoreCase | RegexOptions.Singleline);
 
-        foreach (Match match in regex.Matches(html).Take(4))
+        foreach (Match match in regex.Matches(html))
         {
+            var text = Clean(match.Groups["text"].Value);
+            var dateMatch = Regex.Match(text, @"(?<date>[A-Z][a-z]+\s+\d{1,2},\s+\d{4})$");
+            if (!dateMatch.Success)
+            {
+                continue;
+            }
+
+            var titleWithCategory = text[..dateMatch.Index].Trim();
+            var category = DetectNewsCategory(titleWithCategory);
+            var title = Clean(titleWithCategory);
+
+            if (category != "News" && title.StartsWith(category, StringComparison.OrdinalIgnoreCase))
+            {
+                title = title[category.Length..].Trim();
+            }
+
             items.Add(new EmbarkNewsItem
             {
-                Category = Clean(match.Groups["category"].Value),
-                Title = Clean(match.Groups["title"].Value),
-                PublishedAt = Clean(match.Groups["date"].Value),
+                Category = category,
+                Title = title,
+                PublishedAt = Clean(dateMatch.Groups["date"].Value),
                 Summary = "Official ARC Raiders update from Embark.",
                 Url = $"https://arcraiders.com{match.Groups["url"].Value}"
             });
+
+            if (items.Count == 6)
+            {
+                break;
+            }
         }
 
         return items;
@@ -161,12 +183,34 @@ public class ArcRaidersLiveOpsService
             },
             NewsItems = new List<EmbarkNewsItem>
             {
-                new() { Category = "Store Update", Title = "Store Update 1.32.0", PublishedAt = "June 9, 2026", Summary = "Macrame Set colour variants, Lob Bangs hairstyle, and Ermal offer rotation.", Url = "https://arcraiders.com/news/store-update-1-32-0" },
-                new() { Category = "Store Update", Title = "Store Update 1.31.0", PublishedAt = "June 2, 2026", Summary = "Official weekly store update from Embark.", Url = "https://arcraiders.com/news/store-update-1-31-0" },
-                new() { Category = "Store Update", Title = "Store Update 1.30.0", PublishedAt = "May 26, 2026", Summary = "Official weekly store update from Embark.", Url = "https://arcraiders.com/news/store-update-1-30-0" },
-                new() { Category = "Notes", Title = "Notes on The Matchmaking System", PublishedAt = "May 20, 2026", Summary = "Official notes from Embark on matchmaking.", Url = "https://arcraiders.com/news/notes-on-the-matchmaking-system" }
-            }
+                new() { Category = "News", Title = "The Fourth Expedition", PublishedAt = "June 25, 2026", Summary = "Official ARC Raiders Expedition update from Embark.", Url = "https://arcraiders.com/news/the-fourth-expedition" },
+                new() { Category = "Store Update", Title = "Store Update 1.34.0", PublishedAt = "June 23, 2026", Summary = "Official weekly store update from Embark.", Url = "https://arcraiders.com/news/store-update-1-34-0" },
+                new() { Category = "Patch Notes", Title = "Live Update 1.33.0", PublishedAt = "June 16, 2026", Summary = "Official live update notes from Embark.", Url = "https://arcraiders.com/news/live-update-1-33-0" },
+                new() { Category = "Store Update", Title = "Store Update 1.32.0", PublishedAt = "June 9, 2026", Summary = "Official weekly store update from Embark.", Url = "https://arcraiders.com/news/store-update-1-32-0" }
+            },
+            SocialLinks = BuildSocialLinks()
         };
+    }
+
+    private static List<ArcRaidersSocialLink> BuildSocialLinks()
+    {
+        return new List<ArcRaidersSocialLink>
+        {
+            new() { Label = "X", Url = "https://x.com/ARCRaidersGame" },
+            new() { Label = "Discord", Url = "https://discord.com/invite/arcraiders" },
+            new() { Label = "YouTube", Url = "https://www.youtube.com/@ARCRaidersGame" },
+            new() { Label = "Instagram", Url = "https://www.instagram.com/arcraidersgame" },
+            new() { Label = "TikTok", Url = "https://www.tiktok.com/@arcraidersgame" }
+        };
+    }
+
+    private static string DetectNewsCategory(string value)
+    {
+        if (value.Contains("Store Update", StringComparison.OrdinalIgnoreCase)) return "Store Update";
+        if (value.Contains("Patch Notes", StringComparison.OrdinalIgnoreCase)) return "Patch Notes";
+        if (value.Contains("Hotfix", StringComparison.OrdinalIgnoreCase)) return "Hotfix";
+        if (value.Contains("Live Update", StringComparison.OrdinalIgnoreCase)) return "Patch Notes";
+        return "News";
     }
 
     private static string Clean(string value)

@@ -61,13 +61,15 @@ public class BlueprintsController : BaseController
         var farmPlans = blueprints.ToDictionary(
             x => x.Id,
             x => _blueprintRecommendations.BuildFarmPlan(x, playstyle));
+        var iconPaths = await BuildBlueprintIconPathsAsync(blueprints);
 
         var model = new BlueprintIndexViewModel
         {
             SearchTerm = searchTerm,
             Playstyle = playstyle,
             Blueprints = blueprints,
-            FarmPlans = farmPlans
+            FarmPlans = farmPlans,
+            IconPaths = iconPaths
         };
 
         return View(model);
@@ -371,5 +373,62 @@ public class BlueprintsController : BaseController
 
         blueprint.Collected = false;
         blueprint.CollectionStatus = "Not Collected";
+    }
+
+    private async Task<Dictionary<int, string>> BuildBlueprintIconPathsAsync(
+        IReadOnlyCollection<Blueprint> blueprints)
+    {
+        var inventoryIcons = await _context.InventoryItems
+            .AsNoTracking()
+            .Where(x => x.IconUrl != null && x.IconUrl != "")
+            .Select(x => new { x.Name, x.IconUrl })
+            .ToListAsync();
+
+        var iconsByName = inventoryIcons
+            .GroupBy(x => NormalizeIconLookupName(x.Name))
+            .ToDictionary(
+                group => group.Key,
+                group => group.First().IconUrl ?? string.Empty);
+
+        var output = new Dictionary<int, string>();
+
+        foreach (var blueprint in blueprints)
+        {
+            var icon = BuildIconLookupCandidates(blueprint)
+                .Select(candidate => iconsByName.TryGetValue(candidate, out var path) ? path : null)
+                .FirstOrDefault(path => !string.IsNullOrWhiteSpace(path));
+
+            if (!string.IsNullOrWhiteSpace(icon))
+            {
+                output[blueprint.Id] = icon;
+            }
+        }
+
+        return output;
+    }
+
+    private static IEnumerable<string> BuildIconLookupCandidates(Blueprint blueprint)
+    {
+        var name = blueprint.Name ?? string.Empty;
+        var baseName = name
+            .Replace(" Blueprint", string.Empty, StringComparison.OrdinalIgnoreCase)
+            .Replace(" Recipe", string.Empty, StringComparison.OrdinalIgnoreCase)
+            .Trim();
+
+        yield return NormalizeIconLookupName(name);
+        yield return NormalizeIconLookupName($"{baseName} Blueprint");
+        yield return NormalizeIconLookupName($"{baseName} Recipe");
+        yield return NormalizeIconLookupName($"{baseName} I");
+        yield return NormalizeIconLookupName(baseName);
+    }
+
+    private static string NormalizeIconLookupName(string? value)
+    {
+        return (value ?? string.Empty)
+            .Replace("’", "'", StringComparison.Ordinal)
+            .Replace(".", string.Empty, StringComparison.Ordinal)
+            .Replace(" ", string.Empty, StringComparison.Ordinal)
+            .Replace("-", string.Empty, StringComparison.Ordinal)
+            .ToLowerInvariant();
     }
 }
