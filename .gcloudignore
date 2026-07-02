@@ -1,10 +1,19 @@
 bin/
 obj/
+publish/
 
 .vs/
+.agents/
+.codex/
 
 .git/
 .gitignore
+
+.env
+.env.*
+app-run.log
+app-run.err.log
+DataProtection-Keys/
 
 raidersvault.db
 raidersvault.db-shm
