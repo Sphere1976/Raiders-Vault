@@ -28,7 +28,7 @@ jobs:
         run: dotnet publish RaidersVault.csproj --configuration Release --output ./artifacts/publish --no-build
 
       - name: Upload publish artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: raiders-vault-publish
           path: ./artifacts/publish
