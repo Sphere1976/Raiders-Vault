@@ -11,7 +11,7 @@ jobs:
     name: ASP.NET Core build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
@@ -26,7 +26,7 @@ jobs:
       run:
         working-directory: frontend/raiders-vault-next
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -42,7 +42,7 @@ jobs:
       run:
         working-directory: Services/liveops-spring
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -57,7 +57,7 @@ jobs:
       run:
         working-directory: gateway/graphql-bff
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -72,7 +72,7 @@ jobs:
       run:
         working-directory: infra/aws/terraform
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: hashicorp/setup-terraform@v3
       - run: terraform fmt -check
       - run: terraform init -backend=false
@@ -82,7 +82,7 @@ jobs:
     name: Kubernetes and Helm validation
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: azure/setup-kubectl@v4
       - uses: azure/setup-helm@v4
       - run: kubectl kustomize infra/kubernetes/base
@@ -95,7 +95,7 @@ jobs:
       run:
         working-directory: mobile/raiders-vault-mobile
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v4
         with:
           node-version: 20
